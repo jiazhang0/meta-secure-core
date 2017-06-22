@@ -1,0 +1,25 @@
+From 93f3d150cc1147997be4401b5a14c5bb3120bf0a Mon Sep 17 00:00:00 2001
+From: Yang, Xiao <xiao.yang@windriver.com>
+Date: Thu, 21 Mar 2013 14:24:24 +0800
+Subject: [PATCH] fix missing LDFLAGS in compile command line to locate libs
+
+---
+ tcg/transport/Makefile |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/tcg/transport/Makefile b/tcg/transport/Makefile
+index 7b511a0..21568dc 100644
+--- a/tcg/transport/Makefile
++++ b/tcg/transport/Makefile
+@@ -27,7 +27,7 @@ else
+ 	OPTS =
+ endif
+ ALL = $(shell ls *.c | sed "s/\.c//g")
+-LIBS = ../common/common.o -ltspi
++LIBS = ../common/common.o -ltspi $(LDFLAGS)
+ CFLAGS += -g -I../include
+ 
+ .c:
+-- 
+1.7.0.4
+

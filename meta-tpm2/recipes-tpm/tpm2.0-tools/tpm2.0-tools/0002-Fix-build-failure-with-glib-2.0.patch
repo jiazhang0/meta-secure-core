@@ -1,0 +1,39 @@
+From 53f9b2f63c5370f4d269bf08d940cc8576fcbbf4 Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Mon, 19 Jun 2017 13:54:34 +0800
+Subject: [PATCH 2/2] Fix build failure with glib-2.0
+
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ Makefile.am  | 2 +-
+ configure.ac | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 68ba044..e792049 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -35,7 +35,7 @@ ACLOCAL_AMFLAGS = -I m4
+ INCLUDE_DIRS = -I$(srcdir)/src -I$(srcdir)/lib
+ LIB_COMMON := lib/libcommon.a
+ 
+-AM_CFLAGS    := $(INCLUDE_DIRS) $(TPM20_TSS_CFLAGS) $(EXTRA_CFLAGS) $(TCTI_TABRMD_CFLAGS)
++AM_CFLAGS    := $(INCLUDE_DIRS) $(GLIB_CFLAGS) $(TPM20_TSS_CFLAGS) $(EXTRA_CFLAGS) $(TCTI_TABRMD_CFLAGS)
+ AM_LDFLAGS   := $(EXTRA_LDFLAGS)
+ 
+ LDADD = $(LIB_COMMON) $(TPM20_TSS_LIBS) $(TCTI_SOCK_LIBS) $(TCTI_DEV_LIBS) $(TCTI_TABRMD_LIBS) -ldl
+diff --git a/configure.ac b/configure.ac
+index ce781ea..08fa81c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -6,6 +6,7 @@ LT_INIT
+ AM_INIT_AUTOMAKE([foreign
+                   subdir-objects])
+ AC_CONFIG_FILES([Makefile])
++PKG_CHECK_MODULES([GLIB], [glib-2.0])
+ PKG_CHECK_MODULES([SAPI],[sapi])
+ # disable libtcti-device selectively (enabled by default)
+ AC_ARG_WITH(
+-- 
+2.7.5
+

@@ -1,0 +1,44 @@
+From 04da6c928d5f15b7adb6c51e55b9aa0a8126063d Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Wed, 21 Sep 2016 11:31:02 +0800
+Subject: [PATCH 07/11] Use sbsign to sign MokManager and fallback
+
+Upstream-Status: Pending
+
+pesign is written with -std=gnu11 and thus the host gcc version lower
+than 4.7 cannot build out pesign.
+
+sbsign is another alternate used to sign efi binary and it works well.
+Therefore, drop to use sbsign to sign efi binary.
+
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ Makefile | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 7c71993..58b4b4c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -12,6 +12,7 @@ HEXDUMP		?= hexdump
+ PK12UTIL	?= pk12util
+ CERTUTIL	?= certutil
+ PESIGN		?= pesign
++SBSIGN		?= sbsign
+ 
+ ARCH		= $(shell $(CC) -dumpmachine | cut -f1 -d- | sed s,i[3456789]86,ia32,)
+ OBJCOPY_GTE224  = $(shell expr `$(OBJCOPY) --version |grep ^"GNU objcopy" | sed 's/^.*\((.*)\|version\) //g' | cut -f1-2 -d.` \>= 2.24)
+@@ -190,8 +191,8 @@ endif
+ 		-j .note.gnu.build-id \
+ 		$(FORMAT) $^ $@.debug
+ 
+-%.efi.signed: %.efi certdb/secmod.db
+-	$(PESIGN) -n certdb -i $< -c "shim" -s -o $@ -f
++%.efi.signed: %.efi shim.key shim.crt
++	$(SBSIGN) --key shim.key --cert shim.crt --output $@ $<
+ 
+ clean:
+ 	$(MAKE) -C Cryptlib clean
+-- 
+2.11.0
+

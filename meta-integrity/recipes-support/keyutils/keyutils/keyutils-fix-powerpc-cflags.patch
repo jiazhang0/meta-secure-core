@@ -1,0 +1,28 @@
+From 1cc17e3c8b1f73db43011775292396338f932a20 Mon Sep 17 00:00:00 2001
+From: Lei Maohui <leimaohui at cn.fujitsu.com>
+Date: Mon, 17 Aug 2015 15:30:40 +0900
+Subject: [PATCH] keyutils fix powerpc cflags
+
+---
+ Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 82e1a0f..0746c82 100644
+--- a/Makefile
++++ b/Makefile
+@@ -65,12 +65,10 @@ BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-
+ LNS	   	  := ln -sf
+ 
+ ifeq ($(BUILDFOR),32-bit)
+-CFLAGS		+= -m32
+ LIBDIR		   := /usr/lib
+ USRLIBDIR		   := /usr/lib
+ else
+ ifeq ($(BUILDFOR),64-bit)
+-CFLAGS		+= -m64
+ LIBDIR		   := /usr/lib
+ USRLIBDIR		   := /usr/lib
+ endif
+-- 
+1.8.4.2

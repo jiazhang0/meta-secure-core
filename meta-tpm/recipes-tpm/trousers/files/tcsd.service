@@ -1,0 +1,21 @@
+[Unit]
+Description=TrouSerS TCG Core Services daemon
+After=syslog.target network.target
+ConditionPathExists=|/dev/tpm0
+ConditionPathExists=|/udev/tpm0
+ConditionPathExists=|/dev/tpm
+ConditionPathExistsGlob=/sys/class/*/tpm0/@TPM_CAPS@
+
+[Service]
+Type=forking
+ExecStartPre=/bin/sh -c "fgrep '@FAMILY_MAJOR@' /sys/class/*/tpm0/@TPM_CAPS@"
+ExecStart=/usr/sbin/tcsd
+
+TimeoutSec=30s
+Restart=on-failure
+RestartSec=4
+StartLimitInterval=25
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

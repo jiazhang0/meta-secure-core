@@ -1,0 +1,33 @@
+From 1f03018aa0b7df2eab576d410ec88e8cf66b06e0 Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Wed, 21 Sep 2016 11:25:14 +0800
+Subject: [PATCH 06/11] Prevent from removing intermediate .efi
+
+Upstream-Status: Pending
+
+Otherwise Make will delete the .efi during the build:
+sysroots/x86_64-linux/usr/bin/pesign -n certdb -i MokManager.efi -c "shim" -s -o MokManager.efi.signed -f
+rm fallback.efi MokManager.efi
+DEBUG: Shell function do_compile finished
+
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index efab050..7c71993 100644
+--- a/Makefile
++++ b/Makefile
+@@ -100,6 +100,8 @@ MOK_SOURCES = MokManager.c shim.h include/console.h PasswordCrypt.c PasswordCryp
+ FALLBACK_OBJS = fallback.o
+ FALLBACK_SRCS = fallback.c
+ 
++.PRECIOUS: $(MMNAME).efi $(FBNAME).efi
++
+ ifneq ($(origin ENABLE_HTTPBOOT), undefined)
+ 	OBJS += httpboot.o
+ 	SOURCES += httpboot.c httpboot.h
+-- 
+2.11.0
+

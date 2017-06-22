@@ -1,0 +1,35 @@
+From b3d57a092d837fe8134e0b3ff408040fa33d4efc Mon Sep 17 00:00:00 2001
+From: Yunguo Wei <yunguo.wei@windriver.com>
+Date: Wed, 28 Dec 2016 11:08:37 +0800
+Subject: [PATCH 10/11] Makefile: do not sign the efi file
+
+Shim tries to sign all the efi binaries at build time, but is not
+suitable for us. Because the private key has to be supplied, and this
+doesn't make sense to EDSS key.
+
+We will use a seperated function in bitbake file to
+sign these efi binaries, so that we can freely use EDSS key, Wind
+River sample key or user key.
+
+Signed-off-by: Yunguo Wei <yunguo.wei@windriver.com>
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 24e21a8..0912cd0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -92,7 +92,7 @@ endif
+ 
+ LDFLAGS		= --hash-style=sysv -nostdlib -znocombreloc -T $(EFI_LDS) -shared -Bsymbolic -L$(EFI_PATH) -L$(LIB_PATH) -LCryptlib -LCryptlib/OpenSSL $(EFI_CRT_OBJS) --build-id=sha1
+ 
+-TARGET	= $(SHIMNAME).efi $(MMNAME).efi.signed $(FBNAME).efi.signed
++TARGET	= $(SHIMNAME).efi $(MMNAME).efi $(FBNAME).efi
+ OBJS	= shim.o netboot.o cert.o replacements.o tpm.o version.o
+ KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
+ SOURCES	= shim.c shim.h netboot.c include/PeImage.h include/wincert.h include/console.h replacements.c replacements.h tpm.c tpm.h version.c version.h
+-- 
+2.11.0
+

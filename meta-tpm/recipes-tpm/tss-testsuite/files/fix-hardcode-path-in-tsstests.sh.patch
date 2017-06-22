@@ -1,0 +1,16 @@
+diff --git a/tsstests.sh b/tsstests.sh
+index 6a1a5e5..ebaf6c3 100755
+--- a/tsstests.sh
++++ b/tsstests.sh
+@@ -54,9 +54,9 @@ TEST_OUTPUT=
+ OUTPUT_FORMAT="standard"
+ 
+ # this variable needs to be changed to testcases/tcg/ for ltp compatibility
+-TESTCASEDIR=testsuite/tcg/
++TESTCASEDIR=tcg/
+ 
+-cd ..
++cd `dirname $0`
+ 
+ export LTPTSSROOT=$PWD
+ 

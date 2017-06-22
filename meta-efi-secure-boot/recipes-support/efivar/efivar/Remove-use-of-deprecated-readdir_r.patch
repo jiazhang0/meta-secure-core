@@ -1,0 +1,44 @@
+From 7078852e4a89f5ba27e7a70bc69641e01a6bff7a Mon Sep 17 00:00:00 2001
+From: Yunguo Wei <yunguo.wei@windriver.com>
+Date: Thu, 19 Jan 2017 15:11:25 +0800
+Subject: [PATCH] Remove use of deprecated readdir_r
+
+Backport 1dc6d576fa4(Remove use of deprecated readdir_r) from
+https://github.com/rhinstaller/efivar.git
+
+Signed-off-by: Yunguo Wei <yunguo.wei@windriver.com>
+---
+ src/vars.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/src/vars.c b/src/vars.c
+index 2a276de..ec0d6bf 100644
+--- a/src/vars.c
++++ b/src/vars.c
+@@ -126,19 +126,15 @@ is_64bit(void)
+ 	if (dfd < 0)
+ 		goto err;
+ 
+-	struct dirent entry;
+-	struct dirent *result = NULL;
+ 	while (1) {
+-		int rc = readdir_r(dir, &entry, &result);
+-		if (rc != 0)
+-			break;
+-		if (result == NULL)
++		struct dirent *entry = readdir(dir);
++		if (entry == NULL)
+ 			break;
+ 
+-		if (!strcmp(entry.d_name, "..") || !strcmp(entry.d_name, "."))
++		if (!strcmp(entry->d_name, "..") || !strcmp(entry->d_name, "."))
+ 			continue;
+ 
+-		ssize_t size = get_file_data_size(dfd, entry.d_name);
++		ssize_t size = get_file_data_size(dfd, entry->d_name);
+ 		if (size < 0) {
+ 			continue;
+ 		} else if (size == 2084) {
+-- 
+2.7.4
+
