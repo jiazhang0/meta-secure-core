@@ -52,3 +52,22 @@ do_install_append() {
 
 INSANE_SKIP_${PN} = "libdir"
 INSANE_SKIP_${PN}-dbg = "libdir"
+
+# The definitions below are used to decrypt the srk password.
+# It is allowed to define the values in 3 forms: string, hex number and
+# the hybrid, e.g,
+# srk_dec_pw = "incendia"
+# srk_dec_pw = "\x69\x6e\x63\x65\x6e\x64\x69\x61"
+# srk_dec_pw = "\x1""nc""\x3""nd""\x1""a"
+#
+# Due to the limit of escape character, the hybrid must be written in
+# above style. The actual values defined below in C code style are:
+# srk_dec_pw[] = { 0x01, 'n', 'c', 0x03, 'n', 'd', 0x01, 'a' };
+# srk_dec_salt[] = { 'r', 0x00, 0x00, 't' };
+srk_dec_pw ?= "\\"\\\x1\\"\\"nc\\"\\"\\\x3\\"\\"nd\\"\\"\\\x1\\"\\"a\\""
+srk_dec_salt ?= "\\"r\\"\\"\\\x00\\\x00\\"\\"t\\""
+
+CFLAGS_append += "-DSRK_DEC_PW=${srk_dec_pw} -DSRK_DEC_SALT=${srk_dec_salt}"
+
+# Uncomment below line if using the plain srk password for development
+#CFLAGS_append += "-DTPM_SRK_PLAIN_PW"
