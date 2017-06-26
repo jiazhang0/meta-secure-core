@@ -7,7 +7,7 @@ DEPENDS += "${@'key-store openssl-native' if d.getVar('IMA_ENABLED', True) == '1
 # in initramfs only. So we don't add it to RDEPENDS_${PN} here.
 
 SRC_URI += " \
-    ${@'file://ima.scc file://ima.cfg' if d.getVar('IMA_ENABLED', True) == '1' else ''} \
+    ${@'file://ima.scc file://ima.cfg file://integrity.scc file://integrity.cfg' if d.getVar('IMA_ENABLED', True) == '1' else ''} \
 "
 
 do_configure_append() {

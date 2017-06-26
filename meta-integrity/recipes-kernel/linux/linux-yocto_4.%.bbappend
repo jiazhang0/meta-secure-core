@@ -1,1 +1,1 @@
-include linux-yocto-integrity.inc
+require linux-yocto-integrity.inc
