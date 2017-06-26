@@ -59,6 +59,7 @@ EXTRA_OEMAKE = " \
 	AR=${AR} \
 	${@'VENDOR_CERT_FILE=${WORKDIR}/vendor_cert.cer' if d.getVar('MOK_SB', True) == '1' else ''} \
 	${@'VENDOR_DBX_FILE=${WORKDIR}/vendor_dbx.esl' if uks_signing_model(d) == 'user' else ''} \
+	ENABLE_HTTPBOOT=1 \
 "
 
 PARALLEL_MAKE = ""
