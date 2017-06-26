@@ -1,11 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
 
-sccs = " \
+efi_secure_boot_sccs = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', \
                          'cfg/efi-ext.scc', '', d)} \
 "
-KERNEL_FEATURES_append_x86 += "${sccs}"
-KERNEL_FEATURES_append_x86-64 += "${sccs}"
+KERNEL_FEATURES_append_x86 += "${efi_secure_boot_sccs}"
+KERNEL_FEATURES_append_x86-64 += "${efi_secure_boot_sccs}"
 
 inherit user-key-store
 
