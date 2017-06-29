@@ -47,43 +47,48 @@ MOK_SB_KEYS_DIR="$KEYS_DIR/mok_sb_keys"
 SYSTEM_KEYS_DIR="$KEYS_DIR/system_trusted_keys"
 IMA_KEYS_DIR="$KEYS_DIR/ima_keys"
 
+ca_sign() {
+    local key_dir="$1"
+    local key_name="$2"
+    local ca_key_dir="$3"
+    local ca_key_name="$4"
+    local subject="$5"
+
+    # Self signing ?
+    if [ "$key_name" = "$ca_key_name" ]; then
+        openssl req -new -x509 -newkey rsa:2048 \
+            -sha256 -nodes -days 3650 \
+            -subj "$subject" \
+            -keyout "$key_dir/$key_name.key" \
+            -out "$key_dir/$key_name.crt"
+    else
+        openssl req -new -newkey rsa:2048 \
+            -sha256 -nodes \
+            -subj "$subject" \
+            -keyout "$key_dir/$key_name.key" \
+            -out "$key_dir/$key_name.csr"
+
+        openssl x509 -req -in "$key_dir/$key_name.csr" \
+            -CA "$ca_key_dir/$ca_key_name.crt" \
+	    -CAkey "$ca_key_dir/$ca_key_name.key" \
+            -set_serial 1 -days 3650 \
+	    -out "$key_dir/$key_name.crt"
+
+        rm -f "$key_dir/$key_name.csr"
+    fi
+}
+
 create_uefi_sb_user_keys() {
     local key_dir="$UEFI_SB_KEYS_DIR"
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-    # PK is self-signed.
-    openssl req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=PK Certificate for $USER@`hostname`/" \
-        -keyout "$key_dir/PK.key" \
-        -out "$key_dir/PK.pem"
-
-    # KEK is signed by PK. 
-    openssl req -new -newkey rsa:2048 \
-        -sha256 -nodes \
-        -subj "/CN=KEK Certificate for $USER@`hostname`" \
-        -keyout "$key_dir/KEK.key" \
-        -out "$key_dir/KEK.csr"
-
-    openssl x509 -req -in "$key_dir/KEK.csr" \
-        -CA "$key_dir/PK.pem" -CAkey "$key_dir/PK.key" \
-        -set_serial 1 -days 3650 -out "$key_dir/KEK.pem"
-
-    rm -f "$key_dir/KEK.csr"
-
-    # DB is signed by KEK.
-    openssl req -new -newkey rsa:2048 \
-        -sha256 -nodes \
-        -subj "/CN=DB Certificate for $USER@`hostname`" \
-        -keyout "$key_dir/DB.key" \
-        -out "$key_dir/DB.csr"
-
-    openssl x509 -req -in "key_dir/DB.csr" \
-        -CA "$key_dir/KEK.pem" -CAkey "$key_dir/KEK.key" \
-        -set_serial 1 -days 3650 -out "$key_dir/DB.pem"
-
-    rm -f "$key_dir/DB.csr"
+    ca_sign "$key_dir" PK "$key_dir" PK \
+        "/CN=PK Certificate for $USER@`hostname`/"
+    ca_sign "$key_dir" KEK "$key_dir" PK \
+        "/CN=KEK Certificate for $USER@`hostname`"
+    ca_sign "$key_dir" DB "$key_dir" KEK \
+        "/CN=DB Certificate for $USER@`hostname`"
 }
 
 create_mok_sb_user_keys() {
@@ -91,39 +96,28 @@ create_mok_sb_user_keys() {
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-    openssl req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=Shim Certificate for $USER@`hostname`/" \
-        -keyout "$key_dir/shim_cert.key" -out "$key_dir/shim_cert.pem"
-
-    openssl req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=Vendor Certificate for $USER@`hostname`/" \
-        -keyout "$key_dir/vendor_cert.key" -out "$key_dir/vendor_cert.pem"
+    ca_sign "$key_dir" shim_cert "$key_dir" shim_cert \
+        "/CN=Shim Certificate for $USER@`hostname`/"
+    ca_sign "$key_dir" vendor_cert "$key_dir" vendor_cert \
+        "/CN=Vendor Certificate for $USER@`hostname`/"
 }
 
-create_system_trusted_keys() {
+create_system_user_key() {
     local key_dir="$SYSTEM_KEYS_DIR"
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-    openssl req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=System Trusted Certificate/" \
-        -keyout "$key_dir/system_trusted_key.key" \
-        -out "$key_dir/system_trusted_key.pem"
+    ca_sign "$key_dir" system_trusted_key "$key_dir" system_trusted_key \
+        "/CN=System Trusted Certificate for $USER@`hostname`/"
 }
 
-create_ima_user_keys() {
+create_ima_user_key() {
     local key_dir="$IMA_KEYS_DIR"
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-    openssl req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=IMA Trusted Certificate/" \
-        -keyout "$key_dir/x509_ima.key" \
-        -outform DER -out "$key_dir/x509_ima.der"
+    ca_sign "$key_dir" x509_ima "$SYSTEM_KEYS_DIR" system_trusted_key \
+        "/CN=IMA Trusted Certificate for $USER@`hostname`/"
 }
 
 create_user_keys() {
@@ -133,11 +127,11 @@ create_user_keys() {
     echo "Creating the user keys for MOK Secure Boot"
     create_mok_sb_user_keys
 
-    echo "Creating the system trusted keys"
-    create_system_trusted_keys
+    echo "Creating the user key for system"
+    create_system_user_key
 
-    echo "Creating the user keys for IMA appraisal"
-    create_ima_user_keys
+    echo "Creating the user key for IMA appraisal"
+    create_ima_user_key
 }
 
 create_user_keys
