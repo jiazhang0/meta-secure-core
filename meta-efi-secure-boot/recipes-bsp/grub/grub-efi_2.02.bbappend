@@ -1,10 +1,10 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/grub-efi:"
 
-EXTRA_SRC_URI = " \
+EXTRA_SRC_URI = "\
     ${@'file://efi-secure-boot.inc file://password.inc' if d.getVar('UEFI_SB', True) == '1' else ''} \
 "
 
-SRC_URI += " \
+SRC_URI += "\
     file://0001-pe32.h-add-header-structures-for-TE-and-DOS-executab.patch \
     file://0002-shim-add-needed-data-structures.patch \
     file://0003-efi-chainloader-implement-an-UEFI-Exit-service-for-s.patch \
@@ -27,7 +27,7 @@ SRC_URI += " \
 
 EFI_BOOT_PATH = "/boot/efi/EFI/BOOT"
 
-#GRUB_BUILDIN_append = " chain ${@'efivar mok2verify password_pbkdf2' if d.getVar('UEFI_SB', True) == '1' else ''}"
+# TODO: re-add mok2verify when refreshed
 GRUB_BUILDIN_append += " chain ${@'efivar password_pbkdf2' if d.getVar('UEFI_SB', True) == '1' else ''}"
 
 # For efi_call_foo and efi_shim_exit

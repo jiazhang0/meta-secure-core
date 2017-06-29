@@ -17,7 +17,7 @@ COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 
 inherit deploy user-key-store
 
-SRC_URI = " \
+SRC_URI = "\
 	git://github.com/rhinstaller/shim.git \
 	file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch \
 	file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
@@ -28,7 +28,7 @@ SRC_URI = " \
 	file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
 	file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
 "
-SRC_URI_append_x86-64 = " \
+SRC_URI_append_x86-64 = "\
        ${@bb.utils.contains('DISTRO_FEATURES', 'msft', 'file://shim${EFI_ARCH}.efi.signed file://LICENSE' if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
 
@@ -43,7 +43,7 @@ DEPENDS += "\
 EFI_ARCH_x86 = "ia32"
 EFI_ARCH_x86-64 = "x64"
 
-EXTRA_OEMAKE = " \
+EXTRA_OEMAKE = "\
 	CROSS_COMPILE="${TARGET_PREFIX}" \
 	LIB_GCC="`${CC} -print-libgcc-file-name`" \
 	LIB_PATH="${STAGING_LIBDIR}" \

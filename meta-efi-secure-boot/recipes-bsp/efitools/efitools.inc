@@ -10,7 +10,7 @@ in the Linux 3.8 kernel. \
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e28f66b16cb46be47b20a4cdfe6e99a1"
 
-SRC_URI = " \
+SRC_URI = "\
     git://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools.git \
     file://Fix-for-the-cross-compilation.patch \
     file://Kill-all-the-build-warning-caused-by-implicit-declar.patch \
@@ -37,7 +37,7 @@ DEPENDS_append += "\
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = " \
+EXTRA_OEMAKE = "\
     HELP2MAN='${STAGING_BINDIR_NATIVE}/help2man' \
     OPENSSL='${STAGING_BINDIR_NATIVE}/openssl' \
     SBSIGN='${STAGING_BINDIR_NATIVE}/sbsign' \

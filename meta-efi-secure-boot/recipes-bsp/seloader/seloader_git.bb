@@ -19,7 +19,7 @@ SECTION = "bootloaders"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d9bf404642f21afb4ad89f95d7bc91ee"
 PR = "r0"
-SRC_URI = " \
+SRC_URI = "\
     git://github.com/jiazhang0/SELoader.git \
 "
 SRCREV = "32e3292c33603f319354aac273938fe63897a8da"
@@ -30,14 +30,14 @@ COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 inherit deploy user-key-store
 
 S = "${WORKDIR}/git"
-DEPENDS += " \
+DEPENDS += "\
     gnu-efi sbsigntool-native \
 "
 
 EFI_ARCH_x86 = "ia32"
 EFI_ARCH_x86-64 = "x64"
 
-EXTRA_OEMAKE = " \
+EXTRA_OEMAKE = "\
     CROSS_COMPILE="${TARGET_PREFIX}" \
     SBSIGN=${STAGING_BINDIR_NATIVE}/sbsign \
     gnuefi_libdir=${STAGING_LIBDIR} \
@@ -50,9 +50,12 @@ EFI_TARGET = "/boot/efi/EFI/BOOT"
 FILES_${PN} += "${EFI_TARGET}"
 
 python do_sign() {
-    sb_sign(d.expand('${B}/Src/Efi/SELoader.efi'), d.expand('${B}/Src/Efi/SELoader.efi.signed'), d)
-    sb_sign(d.expand('${B}/Bin/Hash2DxeCrypto.efi'), d.expand('${B}/Bin/Hash2DxeCrypto.efi.signed'), d)
-    sb_sign(d.expand('${B}/Bin/Pkcs7VerifyDxe.efi'), d.expand('${B}/Bin/Pkcs7VerifyDxe.efi.signed'), d)
+    sb_sign(d.expand('${B}/Src/Efi/SELoader.efi'), \
+            d.expand('${B}/Src/Efi/SELoader.efi.signed'), d)
+    sb_sign(d.expand('${B}/Bin/Hash2DxeCrypto.efi'), \
+            d.expand('${B}/Bin/Hash2DxeCrypto.efi.signed'), d)
+    sb_sign(d.expand('${B}/Bin/Pkcs7VerifyDxe.efi'), \
+            d.expand('${B}/Bin/Pkcs7VerifyDxe.efi.signed'), d)
 }
 addtask sign after do_compile before do_install
 
@@ -63,20 +66,20 @@ do_install() {
 
     if [ x"${UEFI_SB}" = x"1" ]; then
         if [ x"${MOK_SB}" != x"1" ]; then
-            mv ${D}${EFI_TARGET}/SELoader${EFI_ARCH}.efi \
-                ${D}${EFI_TARGET}/boot${EFI_ARCH}.efi
+            mv "${D}${EFI_TARGET}/SELoader${EFI_ARCH}.efi" \
+                "${D}${EFI_TARGET}/boot${EFI_ARCH}.efi"
         fi
     fi
 }
 
 do_deploy() {
     # Deploy the unsigned images for manual signing
-    install -d ${DEPLOYDIR}/efi-unsigned
+    install -d "${DEPLOYDIR}/efi-unsigned"
 
-    install -m 0600 ${B}/Src/Efi/SELoader.efi \
-        ${DEPLOYDIR}/efi-unsigned/SELoader${EFI_ARCH}.efi
-    install -m 0600 ${B}/Bin/Hash2DxeCrypto.efi ${DEPLOYDIR}/efi-unsigned/
-    install -m 0600 ${B}/Bin/Pkcs7VerifyDxe.efi ${DEPLOYDIR}/efi-unsigned/
+    install -m 0600 "${B}/Src/Efi/SELoader.efi" \
+        "${DEPLOYDIR}/efi-unsigned/SELoader${EFI_ARCH}.efi"
+    install -m 0600 "${B}/Bin/Hash2DxeCrypto.efi" "${DEPLOYDIR}/efi-unsigned"
+    install -m 0600 "${B}/Bin/Pkcs7VerifyDxe.efi" "${DEPLOYDIR}/efi-unsigned"
 
     # Deploy the signed images
     if [ x"${UEFI_SB}" = x"1" -a x"${MOK_SB}" != x"1" ]; then
@@ -84,11 +87,11 @@ do_deploy() {
     else
         SEL_NAME=SELoader
     fi
-    install -m 0600 ${D}${EFI_TARGET}/${SEL_NAME}${EFI_ARCH}.efi \
-        ${DEPLOYDIR}/${SEL_NAME}${EFI_ARCH}.efi
-    install -m 0600 ${D}${EFI_TARGET}/Hash2DxeCrypto.efi \
-        ${DEPLOYDIR}/Hash2DxeCrypto.efi
-    install -m 0600 ${D}${EFI_TARGET}/Pkcs7VerifyDxe.efi \
-        ${DEPLOYDIR}/Pkcs7VerifyDxe.efi
+    install -m 0600 "${D}${EFI_TARGET}/${SEL_NAME}${EFI_ARCH}.efi" \
+        "${DEPLOYDIR}/${SEL_NAME}${EFI_ARCH}.efi"
+    install -m 0600 "${D}${EFI_TARGET}/Hash2DxeCrypto.efi" \
+        "${DEPLOYDIR}/Hash2DxeCrypto.efi"
+    install -m 0600 "${D}${EFI_TARGET}/Pkcs7VerifyDxe.efi" \
+        "${DEPLOYDIR}/Pkcs7VerifyDxe.efi"
 }
 addtask deploy after do_install before do_build

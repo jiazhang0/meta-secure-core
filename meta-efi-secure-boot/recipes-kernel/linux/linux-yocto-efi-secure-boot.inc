@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
 
-efi_secure_boot_sccs = " \
+efi_secure_boot_sccs = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', \
                          'cfg/efi-ext.scc', '', d)} \
 "
