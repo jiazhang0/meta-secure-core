@@ -1,7 +1,7 @@
-From 1f03018aa0b7df2eab576d410ec88e8cf66b06e0 Mon Sep 17 00:00:00 2001
+From 8cfbeee2979f0049bf018f207afc01b55d1a7bcd Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
-Date: Wed, 21 Sep 2016 11:25:14 +0800
-Subject: [PATCH 06/11] Prevent from removing intermediate .efi
+Date: Fri, 30 Jun 2017 16:59:34 +0800
+Subject: [PATCH] Prevent from removing intermediate .efi
 
 Upstream-Status: Pending
 
@@ -16,18 +16,18 @@ Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/Makefile b/Makefile
-index efab050..7c71993 100644
+index 0497e4d..19e1b4f 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -100,6 +100,8 @@ MOK_SOURCES = MokManager.c shim.h include/console.h PasswordCrypt.c PasswordCryp
- FALLBACK_OBJS = fallback.o
- FALLBACK_SRCS = fallback.c
+@@ -108,6 +108,8 @@ ifneq ($(origin ENABLE_HTTPBOOT), undefined)
+ 	SOURCES += httpboot.c httpboot.h
+ endif
  
 +.PRECIOUS: $(MMNAME).efi $(FBNAME).efi
 +
- ifneq ($(origin ENABLE_HTTPBOOT), undefined)
- 	OBJS += httpboot.o
- 	SOURCES += httpboot.c httpboot.h
+ all: $(TARGET)
+ 
+ shim.crt shim.key:
 -- 
-2.11.0
+2.7.5
 

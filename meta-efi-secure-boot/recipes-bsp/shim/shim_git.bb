@@ -28,6 +28,7 @@ SRC_URI = "\
     file://0010-Makefile-do-not-sign-the-efi-file.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
+    file://0013-httpboot-fix-OVMF-crash.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
@@ -35,7 +36,7 @@ SRC_URI_append_x86-64 = "\
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
 
-SRCREV = "55c65546e46a78edbe41e88cb4ccbd2522e09625"
+SRCREV = "919c17a45fe722dcc2b9bdaba538c738f97f88cd"
 
 S = "${WORKDIR}/git"
 
@@ -57,7 +58,6 @@ EXTRA_OEMAKE = "\
 	AR=${AR} \
 	${@'VENDOR_CERT_FILE=${WORKDIR}/vendor_cert.cer' if d.getVar('MOK_SB', True) == '1' else ''} \
 	${@'VENDOR_DBX_FILE=${WORKDIR}/vendor_dbx.esl' if uks_signing_model(d) == 'user' else ''} \
-	ENABLE_HTTPBOOT=1 \
 "
 
 PARALLEL_MAKE = ""
