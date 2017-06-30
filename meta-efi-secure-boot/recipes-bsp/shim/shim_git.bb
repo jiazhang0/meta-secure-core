@@ -1,47 +1,45 @@
 SUMMARY = "shim is a trivial EFI application."
-DESCRIPTION = "shim is a trivial EFI application that, when run, attempts to open and \
-execute another application. It will initially attempt to do this via the \
-standard EFI LoadImage() and StartImage() calls. If these fail (because secure \
-boot is enabled and the binary is not signed with an appropriate key, for \
-instance) it will then validate the binary against a built-in certificate. If \
-this succeeds and if the binary or signing key are not blacklisted then shim \
-will relocate and execute the binary."
+DESCRIPTION = "shim is a trivial EFI application that, when run, \
+attempts to open and execute another application. It will initially \
+attempt to do this via the standard EFI LoadImage() and StartImage() \
+calls. If these fail (because secure boot is enabled and the binary \
+is not signed with an appropriate key, for instance) it will then \
+validate the binary against a built-in certificate. If this succeeds \
+and if the binary or signing key are not blacklisted then shim will \
+relocate and execute the binary."
 HOMEPAGE = "https://github.com/rhinstaller/shim.git"
 SECTION = "bootloaders"
-
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=b92e63892681ee4e8d27e7a7e87ef2bc"
-PR = "r0"
 
-COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
+DEPENDS += "\
+    gnu-efi openssl util-linux-native openssl-native \
+"
 
-inherit deploy user-key-store
+PV = "12+git${SRCPV}"
 
 SRC_URI = "\
-	git://github.com/rhinstaller/shim.git \
-	file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch \
-	file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
-	file://0006-Prevent-from-removing-intermediate-.efi.patch \
-	file://0007-Use-sbsign-to-sign-MokManager-and-fallback.patch \
-	file://0008-Fix-the-world-build-failure-due-to-the-missing-rule-.patch \
-	file://0010-Makefile-do-not-sign-the-efi-file.patch \
-	file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
-	file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
+    git://github.com/rhinstaller/shim.git \
+    file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch \
+    file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
+    file://0006-Prevent-from-removing-intermediate-.efi.patch \
+    file://0007-Use-sbsign-to-sign-MokManager-and-fallback.patch \
+    file://0008-Fix-the-world-build-failure-due-to-the-missing-rule-.patch \
+    file://0010-Makefile-do-not-sign-the-efi-file.patch \
+    file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
+    file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
 "
 SRC_URI_append_x86-64 = "\
-       ${@bb.utils.contains('DISTRO_FEATURES', 'msft', 'file://shim${EFI_ARCH}.efi.signed file://LICENSE' if uks_signing_model(d) == 'sample' else '', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
+                         'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
+                         if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
 
 SRCREV = "55c65546e46a78edbe41e88cb4ccbd2522e09625"
-PV = "12+git${SRCPV}"
 
 S = "${WORKDIR}/git"
-DEPENDS += "\
-    gnu-efi nss openssl util-linux-native openssl-native nss-native \
-"
 
-EFI_ARCH_x86 = "ia32"
-EFI_ARCH_x86-64 = "x64"
+inherit deploy user-key-store
 
 EXTRA_OEMAKE = "\
 	CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -63,11 +61,15 @@ EXTRA_OEMAKE = "\
 "
 
 PARALLEL_MAKE = ""
+COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 
 EFI_TARGET = "/boot/efi/EFI/BOOT"
 FILES_${PN} += "${EFI_TARGET}"
 
 MSFT = "${@bb.utils.contains('DISTRO_FEATURES', 'msft', '1', '0', d)}"
+
+EFI_ARCH_x86 = "ia32"
+EFI_ARCH_x86-64 = "x64"
 
 # Prepare the signing certificate and keys
 python do_prepare_signing_keys() {
