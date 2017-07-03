@@ -86,9 +86,10 @@ ca_sign() {
         openssl x509 -req -in "$key_dir/$key_name.csr" \
             -CA "$ca_cert" \
             -CAform "$ca_cert_form" \
-	    -CAkey "$ca_key_dir/$ca_key_name.key" \
+            -CAkey "$ca_key_dir/$ca_key_name.key" \
             -set_serial 1 -days 3650 \
-	    -out "$key_dir/$key_name.crt"
+            -extfile openssl.cnf -extensions v3_req \
+            -out "$key_dir/$key_name.crt"
 
         rm -f "$key_dir/$key_name.csr"
     fi
