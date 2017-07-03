@@ -17,15 +17,15 @@ user-keys
 │   └── x509_ima.key
 ├── mok_sb_keys
 │   ├── shim_cert.key
-│   ├── shim_cert.pem
+│   ├── shim_cert.crt
 │   ├── vendor_cert.key
-│   └── vendor_cert.pem
+│   └── vendor_cert.crt
 └── uefi_sb_keys
     ├── DB.key
     ├── KEK.key
-    ├── KEK.pem
+    ├── KEK.crt
     ├── PK.key
-    └── PK.pem
+    └── PK.crt
 ```
 If the user plans to create the user keys by self, please consider to
 define the necessary variables mentioned below in local.conf, or construct

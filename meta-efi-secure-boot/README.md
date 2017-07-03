@@ -77,27 +77,27 @@ public.**
 The sample keys used for UEFI Secure Boot are centrally placed under
 meta-signing-key/files/uefi_sb_keys/.
 
-- PK.pem  
+- PK.crt  
   The X509 certificate enrolled to UEFI BIOS, used to update/delete PK/KEK.
 
 - PK.key  
-  The private key corresponding to PK.pem, used to sign the EFI signature
+  The private key corresponding to PK.crt, used to sign the EFI signature
   list for PK/KEK enrollment.
 
-- KEK.pem  
+- KEK.crt  
   The X509 certificate enrolled to UEFI BIOS, used to update/delete
   DB/DBX.
 
 - KEK.key  
-  The private key corresponding to KEK.pem, used to sign the EFI signature
+  The private key corresponding to KEK.crt, used to sign the EFI signature
   list for DB/DBX enrollment.
 
-- DB.pem  
+- DB.crt  
   The X509 certificate enrolled to UEFI BIOS, used to verify the images
   directly loaded by UEFI BIOS.
 
 - DB.key  
-  The private key corresponding to DB.pem, used to sign the images directly
+  The private key corresponding to DB.crt, used to sign the images directly
   loaded by UEFI BIOS.
 
 - DBX  
@@ -108,21 +108,21 @@ meta-signing-key/files/uefi_sb_keys/.
 The sample keys used for MOK Secure Boot are centrally placed under
 `meta-signing-key/files/mok_sb_keys/`.
 
-- shim_cert.pem  
+- shim_cert.crt  
   The X509 certificate embedded in shim, used to verify the images either
   directly or indirectly loaded by shim.
 
 - shim_cert.key  
-  The private key corresponding to shim_cert.pem, used to sign the images
+  The private key corresponding to shim_cert.crt, used to sign the images
   either directly or indirectly loaded by shim.
 
-- vendor_cert.pem  
-  Used in the same way as shim_cert.pem. In addition, vendor certificate
+- vendor_cert.crt  
+  Used in the same way as shim_cert.crt. In addition, vendor certificate
   is the switch to enable shim verification protocol, which facilitates
   the verification for the SELoader.
 
 - vendor_cert.key  
-  The private key corresponding to vendor_cert.pem, Same fuction as
+  The private key corresponding to vendor_cert.crt, Same fuction as
   shim_cert.key.
 
 - vendor_dbx  
@@ -341,10 +341,10 @@ the database of shim.
 where `<cert.cer>` is the MOK certificate corresponding to the private key used
 to sign either grub or kernel.
 
-To convert a PEM, for exmaple, the shim_cert.pem, to a DER formatted X509
+To convert a PEM, for exmaple, the shim_cert.crt, to a DER formatted X509
 certificate, type the command:
 ```
-$ openssl x509 -in shim_cert.pem -inform PEM -out shim_cert.cer -outform DER
+$ openssl x509 -in shim_cert.crt -inform PEM -out shim_cert.cer -outform DER
 ```
 
 ##### List the enrollment requests

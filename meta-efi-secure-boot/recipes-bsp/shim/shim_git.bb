@@ -84,13 +84,13 @@ python do_prepare_signing_keys() {
 
     import shutil
 
-    shutil.copyfile(dir + 'shim_cert.pem', d.getVar('S', True) + '/shim.crt')
-    pem2der(dir + 'vendor_cert.pem', d.getVar('WORKDIR', True) + '/vendor_cert.cer', d)
+    shutil.copyfile(dir + 'shim_cert.crt', d.getVar('S', True) + '/shim.pem')
+    pem2der(dir + 'vendor_cert.crt', d.getVar('WORKDIR', True) + '/vendor_cert.cer', d)
 
     # Replace the shim certificate with EV certificate for speeding up
     # the progress of MSFT signing.
     if d.expand('${MSFT}') == "1" and uks_signing_model(d) == "sample":
-        shutil.copyfile(d.expand('${EV_CERT}'), d.expand('${S}/shim.crt'))
+        shutil.copyfile(d.expand('${EV_CERT}'), d.expand('${S}/shim.pem'))
 }
 addtask prepare_signing_keys after do_configure before do_compile
 

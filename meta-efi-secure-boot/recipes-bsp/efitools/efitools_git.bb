@@ -44,7 +44,7 @@ python do_prepare_signing_keys() {
     import shutil
 
     for _ in ('PK', 'KEK', 'DB'):
-        shutil.copyfile(dir + _ + '.pem', d.expand('${S}/') + _ + '.crt')
+        shutil.copyfile(dir + _ + '.crt', d.expand('${S}/') + _ + '.crt')
         shutil.copyfile(dir + _ + '.key', d.expand('${S}/') + _ + '.key')
 
     # Make sure LockDown.efi contains the DB and KEK from Microsoft.
