@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 
 ROOT_MOUNT="/rootfs"
 MOUNT="/bin/mount"
@@ -10,19 +10,19 @@ ROOT_DELAY="0"
 # Copied from initramfs-framework. The core of this script probably should be
 # turned into initramfs-framework modules to reduce duplication.
 udev_daemon() {
-	OPTIONS="/sbin/udev/udevd /sbin/udevd /lib/udev/udevd /lib/systemd/systemd-udevd"
+    PROGS="/sbin/udev/udevd /sbin/udevd /lib/udev/udevd /lib/systemd/systemd-udevd"
 
-	for o in $OPTIONS; do
-		if [ -x "$o" ]; then
-			echo $o
-			return 0
-		fi
-	done
+    for o in $PROGS; do
+        if [ -x "$o" ]; then
+            echo "$o"
+            return 0
+        fi
+    done
 
-	return 1
+    return 1
 }
 
-_UDEV_DAEMON=`udev_daemon`
+_UDEV_DAEMON="`udev_daemon`"
 
 early_setup() {
     mkdir -p /proc
@@ -30,10 +30,6 @@ early_setup() {
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
     mount -t devtmpfs none /dev
-
-    # support modular kernel
-#    modprobe isofs
-#    modprobe raid0
 
     mkdir -p /run
     mkdir -p /var/run
@@ -47,16 +43,19 @@ early_setup() {
 }
 
 read_args() {
-    [ -z "$CMDLINE" ] && CMDLINE=`cat /proc/cmdline`
+    [ -z "$CMDLINE" ] && CMDLINE="`cat /proc/cmdline`"
     for arg in $CMDLINE; do
         optarg=`expr "x$arg" : 'x[^=]*=\(.*\)'`
-        case $arg in
+        case "$arg" in
             root=*)
-                ROOT_DEVICE=$optarg ;;
+                ROOT_DEVICE="$optarg"
+		;;
             rootdelay=*)
-                ROOT_DELAY=$optarg ;;
+                ROOT_DELAY="$optarg"
+		;;
             init=*)
-                INIT=$optarg ;;
+                INIT="$optarg"
+		;;
         esac
     done
 }
@@ -67,10 +66,6 @@ fatal() {
     exec sh
 }
 
-
-
-#######################################
-
 early_setup
 
 read_args
@@ -78,21 +73,22 @@ read_args
 [ -z "$CONSOLE" ] && CONSOLE="/dev/console"
 [ -z "$INIT" ] && INIT="/sbin/init"
 
-
 udevadm settle --timeout=3
 killall "${_UDEV_DAEMON##*/}" 2>/dev/null
 
-mkdir -p $ROOT_MOUNT/
+mkdir -p "$ROOT_MOUNT"
 
-sleep ${ROOT_DELAY}
+sleep "$ROOT_DELAY"
 
 try_to_mount_rootfs() {
     local mount_flags="rw,noatime,iversion"
 
-    mount -o $mount_flags "${ROOT_DEVICE}" "${ROOT_MOUNT}" 2>/dev/null && return 0
+    mount -o "$mount_flags" "$ROOT_DEVICE" "$ROOT_MOUNT" \
+        2>/dev/null && return 0
 
     [ -x /init.cryptfs ] &&
-        /init.cryptfs "${ROOT_MOUNT}" "${ROOT_DEVICE}" $mount_flags "OVERCROOTFS" && return 0
+        /init.cryptfs "$ROOT_MOUNT" "$ROOT_DEVICE" \
+            "$mount_flags" OVERCROOTFS && return 0
 
     return 1
 }
@@ -105,12 +101,12 @@ done
 
 # Move the mount points of some filesystems over to
 # the corresponding directories under the real root filesystem.
-for dir in `cat /proc/mounts | grep -v rootfs | awk '{print $2}'` ; do
-    mkdir -p  ${ROOT_MOUNT}/${dir##*/}
-    mount -nv --move $dir ${ROOT_MOUNT}/${dir##*/}
+for dir in `cat /proc/mounts | grep -v rootfs | awk '{ print $2 }'` ; do
+    mkdir -p  $ROOT_MOUNT/${dir##*/}
+    mount -nv --move $dir $ROOT_MOUNT/${dir##*/}
 done
 
-cd $ROOT_MOUNT
+cd "$ROOT_MOUNT"
 
 # If we pass args to bash, it will assume they are text files
 # to source and run.
@@ -123,7 +119,7 @@ fi
 # The IMA policy may enforce appraising the executable and verifying the
 # signature stored in xattr. However, ramfs doesn't support xattr, and all
 # other initializations must *NOT* be placed after IMA initialization!
-[ -x /init.ima ] && /init.ima $ROOT_MOUNT && {
+[ -x /init.ima ] && /init.ima "$ROOT_MOUNT" && {
     # switch_root is an exception. We call it in the real rootfs and it
     # should be already signed properly.
     switch_root="usr/sbin/switch_root.static"
@@ -131,5 +127,5 @@ fi
     switch_root="switch_root"
 }
 
-exec $switch_root $ROOT_MOUNT $INIT $CMDLINE ||
+exec "$switch_root" "$ROOT_MOUNT" "$INIT" "$CMDLINE" ||
     fatal "Couldn't switch_root, dropping to shell"
