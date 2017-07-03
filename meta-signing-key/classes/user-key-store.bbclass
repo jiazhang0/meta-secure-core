@@ -63,8 +63,8 @@ def check_uefi_sb_user_keys(d):
             vprint("%s.key is unavailable" % _, d)
             return False
 
-        if not os.path.exists(dir + _ + '.pem'):
-            vprint("%s.pem is unavailable" % _, d)
+        if not os.path.exists(dir + _ + '.crt'):
+            vprint("%s.crt is unavailable" % _, d)
             return False
 
 def uefi_sb_sign(input, output, d):
@@ -72,7 +72,7 @@ def uefi_sb_sign(input, output, d):
         return
 
     _ = uefi_sb_keys_dir(d)
-    sign_efi_image(_ + 'DB.key', _ + 'DB.pem', input, output, d)
+    sign_efi_image(_ + 'DB.key', _ + 'DB.crt', input, output, d)
 
 def mok_sb_keys_dir(d):
     if d.getVar('MOK_SB', True) != '1':
@@ -87,11 +87,11 @@ def sb_sign(input, output, d):
 
     if uks_signing_model(d) in ('sample', 'user'):
         # Deal with MOK_SB firstly, as MOK_SB implies UEFI_SB == 1.
-        # On this scenario, bootloader is verified by shim_cert.pem
+        # On this scenario, bootloader is verified by shim_cert.crt
         if d.getVar('MOK_SB', True) == '1':
             mok_sb_sign(input, output, d)
         # UEFI_SB is defined, but MOK_SB is not defined
-        # On this scenario, shim is not used, and DB.pem is used to
+        # On this scenario, shim is not used, and DB.crt is used to
         # verify bootloader directly.
         else:
             uefi_sb_sign(input, output, d)
@@ -106,8 +106,8 @@ def check_mok_sb_user_keys(d):
             vprint("%s.key is unavailable" % _, d)
             return False
 
-        if not os.path.exists(dir + _ + '.pem'):
-            vprint("%s.pem is unavailable" % _, d)
+        if not os.path.exists(dir + _ + '.crt'):
+            vprint("%s.crt is unavailable" % _, d)
             return False
 
 def mok_sb_sign(input, output, d):
@@ -115,7 +115,7 @@ def mok_sb_sign(input, output, d):
         return
 
     _ = mok_sb_keys_dir(d)
-    sign_efi_image(_ + 'vendor_cert.key', _ + 'vendor_cert.pem', input, output, d)
+    sign_efi_image(_ + 'vendor_cert.key', _ + 'vendor_cert.crt', input, output, d)
 
 def sel_sign(key, cert, input, d):
     import bb.process
@@ -137,11 +137,11 @@ def uks_sel_sign(input, d):
     if d.getVar('MOK_SB', True) == '1':
         _ = mok_sb_keys_dir(d)
         key = _ + 'vendor_cert.key'
-        cert = _ + 'vendor_cert.pem'
+        cert = _ + 'vendor_cert.crt'
     else:
         _ = uefi_sb_keys_dir(d)
         key = _ + 'DB.key'
-        cert = _ + 'DB.pem'
+        cert = _ + 'DB.crt'
 
     sel_sign(key, cert, input, d)
 
@@ -150,7 +150,7 @@ def check_ima_user_keys(d):
 
     for _ in ('key', 'der'):
         if not os.path.exists(dir + 'x509_ima.' + _):
-            vprint("%s.pem is unavailable" % _, d)
+            vprint("%s.crt is unavailable" % _, d)
             return False
 
 def check_system_trusted_keys(d):
@@ -161,8 +161,8 @@ def check_system_trusted_keys(d):
         vprint("%s.key is unavailable" % _, d)
         return False
 
-    if not os.path.exists(dir + _ + '.pem'):
-        vprint("%s.pem is unavailable" % _, d)
+    if not os.path.exists(dir + _ + '.der'):
+        vprint("%s.der is unavailable" % _, d)
         return False
 
 # Convert the PEM to DER format.
@@ -185,10 +185,10 @@ __pem2esl() {
 
 # Blacklist the sample DB, shim_cert, vendor_cert by default.
 __create_default_mok_sb_blacklist() {
-    __pem2esl "${SAMPLE_MOK_SB_KEYS_DIR}/shim_cert.pem" \
+    __pem2esl "${SAMPLE_MOK_SB_KEYS_DIR}/shim_cert.crt" \
         "${TMPDIR}/sample_shim_cert.esl"
 
-    __pem2esl "${SAMPLE_MOK_SB_KEYS_DIR}/vendor_cert.pem" \
+    __pem2esl "${SAMPLE_MOK_SB_KEYS_DIR}/vendor_cert.crt" \
         "${TMPDIR}/sample_vendor_cert.esl"
 
     # Cascade the sample DB, shim_cert and vendor_cert to
@@ -198,7 +198,7 @@ __create_default_mok_sb_blacklist() {
 }
 
 __create_default_uefi_sb_blacklist() {
-    __pem2esl "${SAMPLE_UEFI_SB_KEYS_DIR}/DB.pem" \
+    __pem2esl "${SAMPLE_UEFI_SB_KEYS_DIR}/DB.crt" \
         "${TMPDIR}/sample_DB.esl"
 
     cat "${TMPDIR}/sample_DB.esl" > "${TMPDIR}/blacklist.esl"
@@ -283,70 +283,6 @@ def create_uefi_dbx(d):
     shutil.copyfile(src, dst)
 
     return dst
-
-create_uefi_sb_user_keys() {
-    local deploy_dir="${DEPLOY_DIR_IMAGE}/user-keys/uefi_sb_keys"
-
-    install -d "$deploy_dir"
-
-    # PK is self-signed.
-    "${STAGING_BINDIR_NATIVE}/openssl" req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 \
-        -subj "/CN=PK Certificate for $USER@`hostname`/" \
-        -keyout "$deploy_dir/PK.key" \
-        -out "$deploy_dir/PK.pem"
-
-    # KEK is signed by PK. 
-    "${STAGING_BINDIR_NATIVE}/openssl" req -new -newkey rsa:2048 \
-        -sha256 -nodes \
-        -subj "/CN=KEK Certificate for $USER@`hostname`" \
-        -keyout "$deploy_dir/KEK.key" \
-        -out "${TMPDIR}/KEK.csr"
-
-    "${STAGING_BINDIR_NATIVE}/openssl" x509 -req -in "${TMPDIR}/KEK.csr" \
-        -CA "$deploy_dir/PK.pem" -CAkey "$deploy_dir/PK.key" \
-        -set_serial 1 -days 3650 -out "$deploy_dir/KEK.pem"
-
-    # DB is signed by KEK.
-    "${STAGING_BINDIR_NATIVE}/openssl" req -new -newkey rsa:2048 \
-        -sha256 -nodes \
-        -subj "/CN=DB Certificate for $USER@`hostname`" \
-        -keyout "$deploy_dir/DB.key" \ 
-        -out "${TMPDIR}/DB.csr"
-
-    "${STAGING_BINDIR_NATIVE}/openssl" x509 -req -in "${TMPDIR}/DB.csr" \
-        -CA "$deploy_dir/KEK.pem" -CAkey "$deploy_dir/KEK.key" \
-        -set_serial 1 -days 3650 -out "$deploy_dir/DB.pem"
-}
-
-create_mok_sb_user_keys() {
-    local deploy_dir="${DEPLOY_DIR_IMAGE}/user-keys/mok_sb_keys"
-
-    install -d "$deploy_dir"
-
-    "${STAGING_BINDIR_NATIVE}/openssl" req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 -subj "/CN=Shim Certificate for $USER@`hostname`/" \
-        -keyout "$deploy_dir/shim_cert.key" -out "$deploy_dir/shim_cert.pem"
-
-    "${STAGING_BINDIR_NATIVE}/openssl" req -new -x509 -newkey rsa:2048 \
-        -sha256 -nodes -days 3650 -subj "/CN=Vendor Certificate for $USER@`hostname`/" \
-        -keyout "$deploy_dir/vendor_cert.key" -out "$deploy_dir/vendor_cert.pem" \
-}
-
-create_ima_user_keys() {
-    local deploy_dir="${DEPLOY_DIR_IMAGE}/user-keys/ima_keys"
-
-    install -d "$deploy_dir"
-
-    "${STAGING_BINDIR_NATIVE}/openssl" genrsa -out "$deploy_dir/ima_privkey.pem" 2048
-
-    "${STAGING_BINDIR_NATIVE}/openssl" rsa -in "$deploy_dir/ima_privkey.pem" -pubout \
-        -out "$deploy_dir/ima_pubkey.pem"
-}
-
-def create_user_keys(name, d):
-    vprint('Creating the user keys for %s ...' % name, d)
-    bb.build.exec_func('create_' + name.lower() + '_user_keys', d)
 
 deploy_uefi_sb_keys() {
     local deploy_dir="${DEPLOY_KEYS_DIR}/uefi_sb_keys"
