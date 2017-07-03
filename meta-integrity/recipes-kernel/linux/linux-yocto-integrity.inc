@@ -11,9 +11,10 @@ SRC_URI += "\
 "
 
 do_configure_append() {
-    if [ -f "${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.pem" ]; then
-        openssl x509 -in "${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.pem" \
-            -outform DER -out "${B}/system_trusted_cert.x509"
+    cert="${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.der"
+
+    if [ -f "$cert" ]; then
+        install -m 0644 "$cert" "${B}/system_trusted_cert.x509"
     else
         true
     fi

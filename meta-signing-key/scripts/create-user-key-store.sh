@@ -47,6 +47,13 @@ MOK_SB_KEYS_DIR="$KEYS_DIR/mok_sb_keys"
 SYSTEM_KEYS_DIR="$KEYS_DIR/system_trusted_keys"
 IMA_KEYS_DIR="$KEYS_DIR/ima_keys"
 
+pem2der() {
+    local src="$1"
+    local dst="${src/.crt/.der}"
+
+    openssl x509 -in "$src" -outform DER -out "$dst"
+}
+
 ca_sign() {
     local key_dir="$1"
     local key_name="$2"
@@ -68,8 +75,17 @@ ca_sign() {
             -keyout "$key_dir/$key_name.key" \
             -out "$key_dir/$key_name.csr"
 
+        local ca_cert="$ca_key_dir/$ca_key_name.crt"
+        local ca_cert_form="PEM"
+
+        [ ! -s "$ca_cert" ] && {
+            ca_cert="$ca_key_dir/$ca_key_name.der"
+            ca_cert_form="DER"
+        }
+
         openssl x509 -req -in "$key_dir/$key_name.csr" \
-            -CA "$ca_key_dir/$ca_key_name.crt" \
+            -CA "$ca_cert" \
+            -CAform "$ca_cert_form" \
 	    -CAkey "$ca_key_dir/$ca_key_name.key" \
             -set_serial 1 -days 3650 \
 	    -out "$key_dir/$key_name.crt"
@@ -109,6 +125,9 @@ create_system_user_key() {
 
     ca_sign "$key_dir" system_trusted_key "$key_dir" system_trusted_key \
         "/CN=System Trusted Certificate for $USER@`hostname`/"
+
+    pem2der "$key_dir/system_trusted_key.crt"
+    rm -f "$key_dir/system_trusted_key.crt"
 }
 
 create_ima_user_key() {
@@ -118,6 +137,9 @@ create_ima_user_key() {
 
     ca_sign "$key_dir" x509_ima "$SYSTEM_KEYS_DIR" system_trusted_key \
         "/CN=IMA Trusted Certificate for $USER@`hostname`/"
+
+    pem2der "$key_dir/x509_ima.crt"
+    rm -f "$key_dir/x509_ima.crt"
 }
 
 create_user_keys() {

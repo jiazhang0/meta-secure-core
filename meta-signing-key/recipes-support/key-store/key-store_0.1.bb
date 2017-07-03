@@ -29,10 +29,10 @@ RPM_KEY_DIR = "${sysconfdir}/pki/rpm-gpg"
 SYSTEM_PRIV_KEY = "${KEY_DIR}/system_trusted_key.key"
 
 # For ${PN}-ima-privkey
-IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.pem"
+IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.crt"
 
 # For ${PN}-system-trusted-cert
-SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.pem"
+SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.der"
 FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 
@@ -83,7 +83,7 @@ do_install() {
     install -d "${D}${KEY_DIR}"
 
     key_dir="${@uks_system_trusted_keys_dir(d)}"
-    install -m 0644 "$key_dir/system_trusted_key.pem" "${D}${SYSTEM_CERT}"
+    install -m 0644 "$key_dir/system_trusted_key.der" "${D}${SYSTEM_CERT}"
 
     if [ "${@uks_signing_model(d)}" = "sample" ]; then
         install -m 0400 "$key_dir/system_trusted_key.key" "${D}${SYSTEM_PRIV_KEY}"
