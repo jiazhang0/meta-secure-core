@@ -4,23 +4,11 @@ LIC_FILES_CHKSUM = "\
     file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420 \
 "
 
-inherit user-key-store
-
 S = "${WORKDIR}"
 
+inherit user-key-store
+
 ALLOW_EMPTY_${PN} = "1"
-
-PACKAGES =+ "\
-    ${PN}-system-trusted-cert \
-    ${PN}-ima-cert \
-"
-
-# Note any private key is not available if user key signing model used.
-PACKAGES_DYNAMIC += "\
-    ${PN}-ima-privkey \
-    ${PN}-system-trusted-privkey \
-    ${PN}-rpm-pubkey \
-"
 
 KEY_DIR = "${sysconfdir}/keys"
 # For RPM verification
@@ -117,6 +105,18 @@ pkg_postinst_${PN}-rpm-pubkey() {
         done
     fi
 }
+
+PACKAGES =+ "\
+    ${PN}-system-trusted-cert \
+    ${PN}-ima-cert \
+"
+
+# Note any private key is not available if user key signing model used.
+PACKAGES_DYNAMIC += "\
+    ${PN}-ima-privkey \
+    ${PN}-system-trusted-privkey \
+    ${PN}-rpm-pubkey \
+"
 
 FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"

@@ -1,5 +1,3 @@
-PACKAGES =+ "${PN}-switch_root.static"
-
 CFLAGS_remove += "-pie -fpie"
 
 do_compile_append_class-target() {
@@ -9,8 +7,11 @@ do_compile_append_class-target() {
 }
 
 do_install_append_class-target() {
-    install -d ${D}${sbindir}
-    install -m 0700 ${B}/switch_root.static ${D}${sbindir}/switch_root.static
+    install -d "${D}${sbindir}"
+    install -m 0700 "${B}/switch_root.static" \
+        "${D}${sbindir}/switch_root.static"
 }
+
+PACKAGES =+ "${PN}-switch_root.static"
 
 FILES_${PN}-switch_root.static = "${sbindir}/switch_root.static"
