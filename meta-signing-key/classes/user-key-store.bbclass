@@ -161,8 +161,8 @@ def check_system_trusted_keys(d):
         vprint("%s.key is unavailable" % _, d)
         return False
 
-    if not os.path.exists(dir + _ + '.der'):
-        vprint("%s.der is unavailable" % _, d)
+    if not os.path.exists(dir + _ + '.crt'):
+        vprint("%s.crt is unavailable" % _, d)
         return False
 
 # Convert the PEM to DER format.

@@ -1,7 +1,8 @@
 DESCRIPTION = "Key store for key installation"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d690 \
-                    file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
+LIC_FILES_CHKSUM = "\
+    file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420 \
+"
 
 inherit user-key-store
 
@@ -9,17 +10,17 @@ S = "${WORKDIR}"
 
 ALLOW_EMPTY_${PN} = "1"
 
-PACKAGES =+ " \
-             ${PN}-system-trusted-cert \
-             ${PN}-ima-cert \
-            "
+PACKAGES =+ "\
+    ${PN}-system-trusted-cert \
+    ${PN}-ima-cert \
+"
 
 # Note any private key is not available if user key signing model used.
-PACKAGES_DYNAMIC += " \
-                     ${PN}-ima-privkey \
-                     ${PN}-system-trusted-privkey \
-                     ${PN}-rpm-pubkey \
-                    "
+PACKAGES_DYNAMIC += "\
+    ${PN}-ima-privkey \
+    ${PN}-system-trusted-privkey \
+    ${PN}-rpm-pubkey \
+"
 
 KEY_DIR = "${sysconfdir}/keys"
 # For RPM verification
@@ -32,14 +33,10 @@ SYSTEM_PRIV_KEY = "${KEY_DIR}/system_trusted_key.key"
 IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.crt"
 
 # For ${PN}-system-trusted-cert
-SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.der"
-FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
-CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
 
 # For ${PN}-ima-cert
 IMA_CERT = "${KEY_DIR}/x509_evm.der"
-FILES_${PN}-ima-cert = "${IMA_CERT}"
-CONFFILES_${PN}-ima-cert = "${IMA_CERT}"
 
 python () {
     if uks_signing_model(d) != "sample":
@@ -83,7 +80,7 @@ do_install() {
     install -d "${D}${KEY_DIR}"
 
     key_dir="${@uks_system_trusted_keys_dir(d)}"
-    install -m 0644 "$key_dir/system_trusted_key.der" "${D}${SYSTEM_CERT}"
+    install -m 0644 "$key_dir/system_trusted_key.crt" "${D}${SYSTEM_CERT}"
 
     if [ "${@uks_signing_model(d)}" = "sample" ]; then
         install -m 0400 "$key_dir/system_trusted_key.key" "${D}${SYSTEM_PRIV_KEY}"
@@ -120,3 +117,9 @@ pkg_postinst_${PN}-rpm-pubkey() {
         done
     fi
 }
+
+FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+
+FILES_${PN}-ima-cert = "${IMA_CERT}"
+CONFFILES_${PN}-ima-cert = "${IMA_CERT}"

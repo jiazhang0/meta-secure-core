@@ -1,6 +1,10 @@
 #!/bin/bash
 
-KEYS_DIR="`pwd`/user-keys"
+_S="${BASH_SOURCE[0]}"
+_D=`dirname "$_S"`
+ROOT_DIR="`cd "$_D" && pwd`"
+
+KEYS_DIR="$ROOT_DIR/user-keys"
 
 function show_help()
 {
@@ -88,7 +92,7 @@ ca_sign() {
             -CAform "$ca_cert_form" \
             -CAkey "$ca_key_dir/$ca_key_name.key" \
             -set_serial 1 -days 3650 \
-            -extfile openssl.cnf -extensions v3_req \
+            -extfile "$ROOT_DIR/openssl.cnf" -extensions v3_req \
             -out "$key_dir/$key_name.crt"
 
         rm -f "$key_dir/$key_name.csr"
@@ -126,9 +130,6 @@ create_system_user_key() {
 
     ca_sign "$key_dir" system_trusted_key "$key_dir" system_trusted_key \
         "/CN=System Trusted Certificate for $USER@`hostname`/"
-
-    pem2der "$key_dir/system_trusted_key.crt"
-    rm -f "$key_dir/system_trusted_key.crt"
 }
 
 create_ima_user_key() {
