@@ -2,11 +2,6 @@ DESCRIPTION = "Linux Integrity Measurement Architecture (IMA) subsystem for init
 
 include packagegroup-ima.inc
 
-RDEPENDS_${PN} += " \
-    util-linux-mount \
-    util-linux-umount \
-    gawk \
-    ima-policy \
-    key-store-ima-cert \
+RDEPENDS_${PN} += "\
     initrdscripts-ima \
 "
