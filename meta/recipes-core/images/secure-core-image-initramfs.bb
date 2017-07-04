@@ -13,7 +13,7 @@ ROOTFS_BOOTSTRAP_INSTALL_append += "\
 "
 
 PACKAGE_INSTALL = "\
-    initramfs-secure-core \
+    initrdscripts-secure-core \
     ${VIRTUAL-RUNTIME_base-utils} \
     base-passwd \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
