@@ -5,7 +5,6 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 ROOT_MOUNT="/rootfs"
 MOUNT="/bin/mount"
 UMOUNT="/bin/umount"
-ROOT_DELAY="0"
 
 # Copied from initramfs-framework. The core of this script probably should be
 # turned into initramfs-framework modules to reduce duplication.
@@ -25,21 +24,13 @@ udev_daemon() {
 _UDEV_DAEMON="`udev_daemon`"
 
 early_setup() {
-    mkdir -p /proc
-    mkdir -p /sys
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
     mount -t devtmpfs none /dev
-
-    mkdir -p /run
-    mkdir -p /var/run
+    mount -t tmpfs none /run
 
     $_UDEV_DAEMON --daemon
     udevadm trigger --action=add
-
-    if [ -x /sbin/mdadm ]; then
-	/sbin/mdadm -v --assemble --scan --auto=md
-    fi
 }
 
 read_args() {
@@ -78,8 +69,6 @@ killall "${_UDEV_DAEMON##*/}" 2>/dev/null
 
 mkdir -p "$ROOT_MOUNT"
 
-sleep "$ROOT_DELAY"
-
 try_to_mount_rootfs() {
     local mount_flags="rw,noatime,iversion"
 
@@ -103,7 +92,7 @@ done
 # the corresponding directories under the real root filesystem.
 for dir in `cat /proc/mounts | grep -v rootfs | awk '{ print $2 }'` ; do
     mkdir -p  $ROOT_MOUNT/${dir##*/}
-    mount -nv --move $dir $ROOT_MOUNT/${dir##*/}
+    mount -nv --move "$dir" $ROOT_MOUNT/${dir##*/}
 done
 
 cd "$ROOT_MOUNT"

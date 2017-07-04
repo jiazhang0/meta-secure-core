@@ -15,7 +15,7 @@ do_install() {
 
 FILES_${PN} = "/init /dev"
 
-RDEPENDS_${PN} = "\
+RDEPENDS_${PN} += "\
     bash \
     kmod \
     sed \
@@ -23,6 +23,5 @@ RDEPENDS_${PN} = "\
     coreutils \
     util-linux \
     gawk \
-    mdadm \
     udev \
 "
