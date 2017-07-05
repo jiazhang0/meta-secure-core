@@ -19,7 +19,7 @@ PV = "0.6.0+git${SRCPV}"
 SRC_URI = "\
     git://github.com/WindRiver-OpenSourceLabs/cryptfs-tpm2.git \
 "
-SRCREV = "5ee0580eb94dc9cb6629b6b5e6de0a3a2eef2b64"
+SRCREV = "55ffac41a08c49c0d202bd82bd8afe27d5b0f2ba"
 
 S = "${WORKDIR}/git"
 
@@ -54,4 +54,8 @@ FILES_${PN}-initramfs = "\
     /init.cryptfs \
 "
 
-RDEPENDS_${PN} += "libtss2 libtctidevice libtctisocket"
+RDEPENDS_${PN} += "\
+    libtss2 \
+    libtctidevice \
+    libtctisocket \
+"
