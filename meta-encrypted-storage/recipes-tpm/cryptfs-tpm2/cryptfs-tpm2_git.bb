@@ -19,7 +19,7 @@ PV = "0.6.0+git${SRCPV}"
 SRC_URI = "\
     git://github.com/WindRiver-OpenSourceLabs/cryptfs-tpm2.git \
 "
-SRCREV = "55ffac41a08c49c0d202bd82bd8afe27d5b0f2ba"
+SRCREV = "4f6a7a34cb7b0c0afd6c5f96c3de5b677a256cc5"
 
 S = "${WORKDIR}/git"
 
@@ -41,8 +41,8 @@ PARALLEL_MAKE = ""
 do_install() {
     oe_runmake install DESTDIR="${D}"
 
-    if [ x"${@bb.utils.contains('DISTRO_FEATURES', 'encrypted-storage', '1', '0', d)}" = x"1" ]; then
-        install -m 0500 ${S}/script/init.cryptfs ${D}
+    if [ "${@bb.utils.contains('DISTRO_FEATURES', 'encrypted-storage', '1', '0', d)}" = "1" ]; then
+        install -m 0500 "${S}/scripts/init.cryptfs" "${D}"
     fi
 }
 
@@ -54,8 +54,59 @@ FILES_${PN}-initramfs = "\
     /init.cryptfs \
 "
 
+# Install the minimal stuffs only, and don't care how the external
+# environment is configured.
+
+# For luks-setup.sh
+# @bash: bash
+# @coreutils: echo, printf, cat, rm
+# @grep: grep
+# @procps: pkill, pgrep
+# @cryptsetup: cryptsetup
+# @tpm2.0-tools: tpm2_*
+# @tpm2-abrmd: optional
 RDEPENDS_${PN} += "\
     libtss2 \
     libtctidevice \
     libtctisocket \
+    bash \
+    coreutils \
+    grep \
+    procps \
+    cryptsetup \
+"
+
+RDEPENDS_${PN} = "\
+    tpm2.0-tools \
+"
+
+# For init.cryptfs
+# @bash: bash
+# @coreutils: echo, printf, cat, sleep, mkdir, seq, rm, rmdir, mknod, cut
+# @grep: grep
+# @gawk: awk
+# @sed: sed
+# @kmod: depmod, modprobe
+# @cryptsetup: cryptsetup
+# @cryptfs-tpm2: cryptfs-tpm2
+# @net-tools: ifconfig
+# @util-linux: mount, umount, blkid
+RDEPENDS_${PN}-initramfs = "\
+    bash \
+    coreutils \
+    grep \
+    gawk \
+    sed \
+    kmod \
+    cryptsetup \
+    cryptfs-tpm2 \
+    net-tools \
+    util-linux-mount \
+    util-linux-umount \
+    util-linux-blkid \
+"
+
+RRECOMMENDS_${PN}-initramfs = "\
+    kernel-module-tpm-crb \
+    kernel-module-tpm-tis \
 "

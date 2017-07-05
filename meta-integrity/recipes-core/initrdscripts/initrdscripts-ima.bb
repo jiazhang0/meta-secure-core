@@ -23,7 +23,6 @@ FILES_${PN} += "\
 # Install the minimal stuffs only, and don't care how the external
 # environment is configured.
 
-# @bash: sh
 # @coreutils: echo, printf
 # @grep: grep
 # @gawk: awk
