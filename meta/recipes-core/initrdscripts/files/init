@@ -4,7 +4,6 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 ROOTFS_MOUNT="/rootfs"
 INIT="/sbin/init"
 
-mkdir /proc /sys /run
 mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t devtmpfs none /dev
