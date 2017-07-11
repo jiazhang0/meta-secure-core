@@ -40,3 +40,10 @@ RDEPENDS_${PN} += "\
     gawk \
     eudev \
 "
+
+# @initrdscripts-ima: init.ima
+# @cryptfs-tpm2-initramfs: init.cryptfs
+RRECOMMENDS_${PN} += "\
+    initrdscripts-ima \
+    cryptfs-tpm2-initramfs \
+"
