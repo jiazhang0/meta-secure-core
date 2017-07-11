@@ -13,6 +13,8 @@ PV = "0.3.0+git${SRCPV}"
 
 inherit autotools pkgconfig
 
+COMPATIBLE_HOST = '(i.86|x86_64|arm|aarch64).*-linux'
+
 DEPENDS += "openssl efivar"
 RDEPENDS_${PN} += "openssl efivar"
 
