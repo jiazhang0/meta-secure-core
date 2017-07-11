@@ -77,7 +77,7 @@ partition.
 In runtime, for example, create LUKS partition on /dev/sdb1 with the
 name "my_luks_part":
 ```
-# luks-setup.sh -d /dev/sdb1 -n my_luks_name -e
+# luks-setup.sh -d /dev/sdb1 -n my_luks_part -e
 ```
 Note: if TPM is detected, the passphrase will be generated automatically.
 
