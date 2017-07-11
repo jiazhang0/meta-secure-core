@@ -358,7 +358,7 @@ def set_keys_dir(name, d):
     if d.getVar(name + '_KEYS_DIR', True) == d.getVar('SAMPLE_' + name + '_KEYS_DIR', True):
         d.setVar(name + '_KEYS_DIR', d.getVar('DEPLOY_DIR_IMAGE', True) + '/user-keys/' + name.lower() + '_keys')
 
-python () {
+python check_deploy_keys() {
     # XXX: the user key for rpm signing is necessary but not required.
     for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED'):
         if d.getVar(_, True) != "1":
