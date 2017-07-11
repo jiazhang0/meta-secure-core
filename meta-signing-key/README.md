@@ -38,19 +38,16 @@ The vital definitions include:
   Prohibit using the sample keys for signing the images.
 
 - `UEFI_SB_KEYS_DIR := "<path>"`  
-  Point to the location of user keys used for UEFI secure boot. If not defined,
-  the user keys for UEFI secure boot will be automatically generated.
+  Point to the location of user keys used for UEFI secure boot.
 
 - `MOK_SB_KEYS_DIR := "<path>"`  
   Point to the location of user keys used for MOK secure boot. Note that
   MOK secure boot is on top of UEFI secure boot so creating the user keys
   for MOK secure boot only will still introduce the security risk in your
-  product. If not defined, the user keys for MOK secure boot will be
-  automatically generated.
+  product.
 
 - `IMA_KEYS_DIR := "<path>"`  
-  Point to the location of user keys used for IMA appraisal. If not defined,
-  the user keys for IMA appraisal will be automatically generated.
+  Point to the location of user keys used for IMA appraisal.
 
 - `USER_KEY_SHOW_VERBOSE = "1"`  
   Optional. Used to enable the verbose output for debugging purpose.
@@ -70,4 +67,3 @@ For the details about UEFI secure boot and MOK secure boot, please refer
 to meta-efi-secure-boot/README.md.
 
 ### Reference
-[meta-efi-secure-boot](https://github.com/jiazhang0/meta-efi-secure-boot)
