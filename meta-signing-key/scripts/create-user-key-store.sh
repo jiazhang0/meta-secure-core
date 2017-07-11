@@ -64,6 +64,7 @@ ca_sign() {
     local ca_key_dir="$3"
     local ca_key_name="$4"
     local subject="$5"
+    local encrypted="$6"
 
     # Self signing ?
     if [ "$key_name" = "$ca_key_name" ]; then
@@ -73,11 +74,21 @@ ca_sign() {
             -keyout "$key_dir/$key_name.key" \
             -out "$key_dir/$key_name.crt"
     else
-        openssl req -new -newkey rsa:2048 \
-            -sha256 -nodes \
-            -subj "$subject" \
-            -keyout "$key_dir/$key_name.key" \
-            -out "$key_dir/$key_name.csr"
+        if [ -z "$encrypted" ]; then
+            openssl req -new -newkey rsa:2048 \
+                -sha256 -nodes \
+                -subj "$subject" \
+                -keyout "$key_dir/$key_name.key" \
+                -out "$key_dir/$key_name.csr"
+        else
+            # Prompt user to type the password
+            openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048
+
+            openssl req -new -sha256 \
+                -subj "$subject" \
+                -key "$key_dir/$key_name.key" \
+                -out "$key_dir/$key_name.csr"
+        fi
 
         local ca_cert="$ca_key_dir/$ca_key_name.crt"
         local ca_cert_form="PEM"
@@ -105,11 +116,11 @@ create_uefi_sb_user_keys() {
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
     ca_sign "$key_dir" PK "$key_dir" PK \
-        "/CN=PK Certificate for $USER@`hostname`/"
+        "/CN=PK Certificate/"
     ca_sign "$key_dir" KEK "$key_dir" PK \
-        "/CN=KEK Certificate for $USER@`hostname`"
+        "/CN=KEK Certificate"
     ca_sign "$key_dir" DB "$key_dir" KEK \
-        "/CN=DB Certificate for $USER@`hostname`"
+        "/CN=DB Certificate"
 }
 
 create_mok_sb_user_keys() {
@@ -118,9 +129,9 @@ create_mok_sb_user_keys() {
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
     ca_sign "$key_dir" shim_cert "$key_dir" shim_cert \
-        "/CN=Shim Certificate for $USER@`hostname`/"
+        "/CN=Shim Certificate/"
     ca_sign "$key_dir" vendor_cert "$key_dir" vendor_cert \
-        "/CN=Vendor Certificate for $USER@`hostname`/"
+        "/CN=Vendor Certificate/"
 }
 
 create_system_user_key() {
@@ -129,7 +140,7 @@ create_system_user_key() {
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
     ca_sign "$key_dir" system_trusted_key "$key_dir" system_trusted_key \
-        "/CN=System Trusted Certificate for $USER@`hostname`/"
+        "/CN=System Trusted Certificate/"
 }
 
 create_ima_user_key() {
@@ -138,7 +149,7 @@ create_ima_user_key() {
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
     ca_sign "$key_dir" x509_ima "$SYSTEM_KEYS_DIR" system_trusted_key \
-        "/CN=IMA Trusted Certificate for $USER@`hostname`/"
+        "/CN=IMA Trusted Certificate/" "enc"
 
     pem2der "$key_dir/x509_ima.crt"
     rm -f "$key_dir/x509_ima.crt"
