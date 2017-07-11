@@ -96,9 +96,9 @@ pkg_postinst_${PN}-rpm-pubkey() {
 
         # XXX: only import the new key
         for keyfile in `ls $keydir/RPM-GPG-KEY-*`; do
-            [ ! -f "$keyfile" ] && continue
+            [ -s "$keyfile" ] || continue
 
-            ! rpm --import "$keyfile" && {
+            rpm --import "$keyfile" || {
                 echo "Unable to import the public key $keyfile"
                 exit 1
             }
