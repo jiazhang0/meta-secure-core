@@ -21,7 +21,7 @@ SRC_URI_append_mips = " file://keyutils-remove-m32-m64.patch"
 SRC_URI_append_mips64 = " file://keyutils-remove-m32-m64.patch"
 SRC_URI_append_x86 = " file://keyutils_fix_x86_cflags.patch"
 SRC_URI_append_x86-64 = " file://keyutils_fix_x86-64_cflags.patch"
-SRC_URI_append_powerpc = "file://keyutils-fix-powerpc-cflags.patch"
+SRC_URI_append_powerpc = "file://keyutils-remove-m32-m64.patch"
 
 S = "${WORKDIR}/git"
 
