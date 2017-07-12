@@ -15,10 +15,8 @@ SRC_URI += "\
     file://chainloader-handle-the-unauthenticated-image-by-shim.patch \
     file://chainloader-Don-t-check-empty-section-in-file-like-..patch \
     file://chainloader-Actually-find-the-relocations-correctly-.patch \
+    file://efi-chainloader-implemented-for-32-bit.patch \
     file://Grub-get-and-set-efi-variables.patch \
-    file://Fix-32-bit-build-failures.patch;apply=0 \
-    file://Work-around-the-failure-of-ExitBootServices.patch;apply=0 \
-    file://serial-redirect-control-x-fix.patch;apply=0 \
     file://mok2verify-support-to-verify-non-PE-file-with-PKCS-7.patch;apply=0 \
     file://grub-efi.cfg \
     file://boot-menu.inc \
