@@ -69,6 +69,7 @@ python do_prepare_signing_keys() {
         os.utime(d.expand('${S}/DBX.esl'), (time_stamp, time_stamp))
 }
 addtask prepare_signing_keys after do_configure before do_compile
+do_prepare_signing_keys[prefuncs] += "check_deploy_keys"
 
 do_install_append() {
     install -d ${D}${EFI_BOOT_PATH}

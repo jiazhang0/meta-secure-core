@@ -7,11 +7,6 @@ S = "${WORKDIR}"
 
 ALLOW_EMPTY_${PN} = "1"
 
-# Check and deploy keys to ${DEPLOY_DIR_IMAGE}
-inherit user-key-store
-
-do_install[postfuncs] += "check_deploy_keys"
-
 RDEPENDS_${PN} = "\
     ima-evm-utils \
 "

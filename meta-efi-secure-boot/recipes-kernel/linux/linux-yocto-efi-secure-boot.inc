@@ -37,6 +37,7 @@ fakeroot python do_sign() {
 # Make sure the kernel image has been signed before kernel_do_deploy()
 # which prepares the kernel image for creating usb/iso.
 addtask sign after do_install before do_package do_populate_sysroot do_deploy
+do_sign[prefuncs] += "check_deploy_keys"
 
 fakeroot python do_sign_bundled_kernel() {
     import re

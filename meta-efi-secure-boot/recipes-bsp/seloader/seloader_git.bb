@@ -58,6 +58,7 @@ python do_sign() {
             d.expand('${B}/Bin/Pkcs7VerifyDxe.efi.signed'), d)
 }
 addtask sign after do_compile before do_install
+do_sign[prefuncs] += "check_deploy_keys"
 
 do_install() {
     install -d ${D}${EFI_TARGET}

@@ -17,6 +17,7 @@ fakeroot python do_sign() {
     uks_sel_sign(initramfs, d)
 }
 addtask sign after do_install before do_deploy do_package
+do_sign[prefuncs] += "check_deploy_keys"
 
 do_deploy() {
     initramfs=""

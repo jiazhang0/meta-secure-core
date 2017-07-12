@@ -94,6 +94,7 @@ python do_prepare_signing_keys() {
         shutil.copyfile(d.expand('${EV_CERT}'), d.expand('${S}/shim.pem'))
 }
 addtask prepare_signing_keys after do_configure before do_compile
+do_prepare_signing_keys[prefuncs] += "check_deploy_keys"
 
 python do_sign() {
     # The pre-signed shim binary will override the one built from the

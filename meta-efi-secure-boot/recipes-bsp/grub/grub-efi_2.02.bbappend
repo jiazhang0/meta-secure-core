@@ -126,6 +126,7 @@ fakeroot python do_sign_class-target() {
 fakeroot python do_sign() {
 }
 addtask sign after do_install before do_deploy do_package
+do_sign[prefuncs] += "check_deploy_keys"
 
 # Override the do_deploy() in oe-core.
 do_deploy_class-target() {

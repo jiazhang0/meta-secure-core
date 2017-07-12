@@ -82,6 +82,8 @@ do_install() {
     fi
 }
 
+do_install[prefuncs] += "check_deploy_keys"
+
 SYSROOT_PREPROCESS_FUNCS += "key_store_sysroot_preprocess"
 
 key_store_sysroot_preprocess() {
