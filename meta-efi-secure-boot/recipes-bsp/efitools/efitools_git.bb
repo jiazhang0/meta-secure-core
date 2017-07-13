@@ -1,5 +1,8 @@
 require efitools.inc
 
+# The generated native binaries are used during native and target build
+DEPENDS += "${BPN}-native gnu-efi openssl"
+
 SRC_URI_append += "\
     file://LockDown-enable-the-enrollment-for-DBX.patch \
     file://LockDown-show-the-error-message-with-3-sec-timeout.patch \
@@ -12,13 +15,6 @@ SRC_URI_append += "\
 COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 
 inherit user-key-store deploy
-
-# The generated native binaries are used during native and target build
-DEPENDS += "${BPN}-native gnu-efi openssl"
-
-RDEPENDS_${PN}_append += "\
-    parted mtools coreutils util-linux openssl libcrypto \
-"
 
 EXTRA_OEMAKE_append += "\
     INCDIR_PREFIX='${STAGING_DIR_TARGET}' \
@@ -82,3 +78,7 @@ do_deploy() {
     install -m 0600 ${D}${EFI_BOOT_PATH}/LockDown.efi "${DEPLOYDIR}"
 }
 addtask deploy after do_install before do_build
+
+RDEPENDS_${PN}_append += "\
+    parted mtools coreutils util-linux openssl libcrypto \
+"

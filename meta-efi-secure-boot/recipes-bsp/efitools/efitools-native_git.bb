@@ -1,8 +1,8 @@
 require efitools.inc
 
-inherit native
-
 DEPENDS_append = " gnu-efi-native"
+
+inherit native
 
 EXTRA_OEMAKE_append = "\
     INCDIR_PREFIX='${STAGING_DIR_NATIVE}' \
