@@ -26,6 +26,36 @@ Options:
 EOF
 }
 
+print_critical() {
+    printf "\033[1;35m"
+    echo "$@"
+    printf "\033[0m"
+}
+
+print_error() {
+    printf "\033[1;31m"
+    echo "$@"
+    printf "\033[0m"
+}
+
+print_warning() {
+    printf "\033[1;33m"
+    echo "$@"
+    printf "\033[0m"
+}
+
+print_info() {
+    printf "\033[1;32m"
+    echo "$@"
+    printf "\033[0m"
+}
+
+print_verbose() {
+    printf "\033[1;36m"
+    echo "$@"
+    printf "\033[0m"
+}
+
 while [ $# -gt 0 ]; do
     opt=$1
     case $opt in
@@ -50,6 +80,7 @@ UEFI_SB_KEYS_DIR="$KEYS_DIR/uefi_sb_keys"
 MOK_SB_KEYS_DIR="$KEYS_DIR/mok_sb_keys"
 SYSTEM_KEYS_DIR="$KEYS_DIR/system_trusted_keys"
 IMA_KEYS_DIR="$KEYS_DIR/ima_keys"
+RPM_KEYS_DIR="$KEYS_DIR/rpm_keys"
 
 pem2der() {
     local src="$1"
@@ -155,6 +186,31 @@ create_ima_user_key() {
     rm -f "$key_dir/x509_ima.crt"
 }
 
+create_rpm_user_key() {
+    local key_dir="$RPM_KEYS_DIR"
+    local gpg=""
+
+    [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
+
+   gpg --batch --gen-key gen_rpm_keyring
+
+   gpg="gpg --no-default-keyring --secret-keyring \
+        ./rpm_keyring.sec --keyring ./rpm_keyring.pub"
+
+   $gpg --list-secret-keys
+
+   print_error "Please type passwd to modify the passphrase, and type quit to exit"
+
+   $gpg --edit-key "RPM Signing Certificate"
+
+   $gpg --export --armor "RPM Signing Certificate" \
+       > "$key_dir/RPM-GPG-KEY-SecureCore"
+   $gpg --export-secret-keys --armor "RPM Signing Certificate" \
+       > "$key_dir/RPM-GPG-PRIVKEY-SecureCore"
+
+   rm -f ./rpm_keyring.sec ./rpm_keyring.pub
+}
+
 create_user_keys() {
     echo "Creating the user keys for UEFI Secure Boot"
     create_uefi_sb_user_keys
@@ -167,6 +223,9 @@ create_user_keys() {
 
     echo "Creating the user key for IMA appraisal"
     create_ima_user_key
+
+    echo "Creating the user key for RPM"
+    create_rpm_user_key
 }
 
 create_user_keys
