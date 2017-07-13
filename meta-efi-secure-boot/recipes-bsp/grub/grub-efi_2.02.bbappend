@@ -17,7 +17,7 @@ SRC_URI += "\
     file://chainloader-Actually-find-the-relocations-correctly-.patch \
     file://efi-chainloader-implemented-for-32-bit.patch \
     file://Grub-get-and-set-efi-variables.patch \
-    file://mok2verify-support-to-verify-non-PE-file-with-PKCS-7.patch;apply=0 \
+    file://mok2verify-support-to-verify-non-PE-file-with-PKCS-7.patch \
     file://grub-efi.cfg \
     file://boot-menu.inc \
     ${EXTRA_SRC_URI} \
@@ -25,8 +25,8 @@ SRC_URI += "\
 
 EFI_BOOT_PATH = "/boot/efi/EFI/BOOT"
 
-# TODO: re-add mok2verify when refreshed
-GRUB_BUILDIN_append += " chain ${@'efivar password_pbkdf2' if d.getVar('UEFI_SB', True) == '1' else ''}"
+GRUB_BUILDIN_append += " chain ${@'efivar mok2verify password_pbkdf2' \
+                                  if d.getVar('UEFI_SB', True) == '1' else ''}"
 
 # For efi_call_foo and efi_shim_exit
 CFLAGS_append = " -fno-toplevel-reorder"
