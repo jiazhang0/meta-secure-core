@@ -8,7 +8,10 @@ created by RNG engine in TPM. In order to avoid saving the \
 context file, the created passphrase and primary key are always \
 persistent in TPM. \
 "
+AUTHOR = "Jia Zhang"
+HOMEPAGE = "https://github.com/WindRiver-OpenSourceLabs/cryptfs-tpm2"
 SECTION = "devel"
+
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=89c8ce1346a3dfe75379e84f3ba9d641"
 
