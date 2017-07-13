@@ -8,7 +8,7 @@ layout of a signature format, and signlet only cares how to construct the \
 signing request. \
 "
 AUTHOR = "Jia Zhang"
-HOMEPAGE = "https://github.com/jiazhang0/libsign.git"
+HOMEPAGE = "https://github.com/jiazhang0/libsign"
 SECTION = "devel"
 
 LICENSE = "BSD-3-Clause"
