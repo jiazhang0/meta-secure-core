@@ -13,29 +13,30 @@ The SELoader publishes MOK2 Verify Protocol which provides a flexible \
 interface to allow the bootloader to verify the file, file buffer or \
 memory buffer without knowing the file format. \
 "
+AUTHOR = "Jia Zhang"
 HOMEPAGE = "https://github.com/jiazhang0/SELoader.git"
 SECTION = "bootloaders"
 
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d9bf404642f21afb4ad89f95d7bc91ee"
-PR = "r0"
-SRC_URI = "\
-    git://github.com/jiazhang0/SELoader.git \
-"
-SRCREV = "e6c6cbe6405f01d58f9e9cbb0115a12ae49454a0"
-PV = "0.4.5+git${SRCPV}"
 
-COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
-
-inherit deploy user-key-store
-
-S = "${WORKDIR}/git"
 DEPENDS += "\
     gnu-efi sbsigntool-native \
 "
 
-EFI_ARCH_x86 = "ia32"
-EFI_ARCH_x86-64 = "x64"
+PV = "0.4.5+git${SRCPV}"
+
+SRC_URI = "\
+    git://github.com/jiazhang0/SELoader.git \
+"
+SRCREV = "ec08c7f2325c80e87a120e81c133ff88488715d1"
+
+S = "${WORKDIR}/git"
+
+COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
+PARALLEL_MAKE = ""
+
+inherit deploy user-key-store
 
 EXTRA_OEMAKE = "\
     CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -44,10 +45,10 @@ EXTRA_OEMAKE = "\
     LIB_GCC="`${CC} -print-libgcc-file-name`" \
 "
 
-PARALLEL_MAKE = ""
+EFI_ARCH_x86 = "ia32"
+EFI_ARCH_x86-64 = "x64"
 
 EFI_TARGET = "/boot/efi/EFI/BOOT"
-FILES_${PN} += "${EFI_TARGET}"
 
 python do_sign() {
     sb_sign(d.expand('${B}/Src/Efi/SELoader.efi'), \
@@ -96,3 +97,5 @@ do_deploy() {
         "${DEPLOYDIR}/Pkcs7VerifyDxe.efi"
 }
 addtask deploy after do_install before do_build
+
+FILES_${PN} += "${EFI_TARGET}"

@@ -7,19 +7,21 @@ Each signaturelet only concerns about the details about how to construct the \
 layout of a signature format, and signlet only cares how to construct the \
 signing request. \
 "
+AUTHOR = "Jia Zhang"
+HOMEPAGE = "https://github.com/jiazhang0/libsign.git"
 SECTION = "devel"
+
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=d9bf404642f21afb4ad89f95d7bc91ee"
+
+DEPENDS += "openssl"
+
+PV = "0.3.2+git${SRCPV}"
 
 SRC_URI = " \
     git://github.com/jiazhang0/libsign.git \
 "
-SRCREV = "dfab84b4235a36bb395bc6663e50578bb2f9edca"
-PV = "0.3.2+git${SRCPV}"
-
-DEPENDS += "openssl"
-RDEPENDS_${PN}_class-target += "libcrypto"
-RDEPENDS_${PN}_class-native += "openssl"
+SRCREV = "0e8005f1c546ef25d834084f5cd85d386cf7cd1d"
 
 PARALLEL_MAKE = ""
 
@@ -44,5 +46,8 @@ do_install() {
 FILES_${PN} += " \
     ${libdir}/signaturelet \
 "
+
+RDEPENDS_${PN}_class-target += "libcrypto"
+RDEPENDS_${PN}_class-native += "openssl"
 
 BBCLASSEXTEND = "native"
