@@ -1,0 +1,25 @@
+From 26cae3941f68c96e44d8126fea330ef7f0327913 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Thu, 8 Jun 2017 12:42:00 +0300
+Subject: [PATCH] Fix %% -> $$ thinko/typo in file signing error message
+
+---
+ rpmsign.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpmsign.c b/rpmsign.c
+index de6f79384..66ab8e5eb 100644
+--- a/rpmsign.c
++++ b/rpmsign.c
+@@ -75,7 +75,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
+     if (signfiles) {
+ 	key = rpmExpand("%{?_file_signing_key}", NULL);
+ 	if (rstreq(key, "")) {
+-	    fprintf(stderr, _("You must set \"$$_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
++	    fprintf(stderr, _("You must set \"%%_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
+ 	    goto exit;
+ 	}
+ 
+-- 
+2.11.0
+
