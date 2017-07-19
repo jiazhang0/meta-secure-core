@@ -1,9 +1,5 @@
-#DEPENDS += "gnupg-native"
-
 #RPM_GPG_NAME ?= "SecureCore Sample RPM Signing Key"
 #RPM_GPG_PASSPHRASE ?= "password"
-RPM_GPG_NAME ?= "testkey"
-RPM_GPG_PASSPHRASE ?= "123456"
 RPM_GPG_BACKEND ?= "local"
 # SHA-256 is used for the file checksum digest.
 RPM_FILE_CHECKSUM_DIGEST ?= "8"
