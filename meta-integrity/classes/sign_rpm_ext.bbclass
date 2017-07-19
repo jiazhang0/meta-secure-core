@@ -8,7 +8,7 @@ RPM_GPG_BACKEND ?= "local"
 # SHA-256 is used for the file checksum digest.
 RPM_FILE_CHECKSUM_DIGEST ?= "8"
 
-RPM_SIGN_FILES = "1"
+RPM_SIGN_FILES = "${@bb.utils.contains('DISTRO_FEATURES', 'ima', '1', '0', d)}"
 RPM_FSK_PATH ?= "${@uks_ima_keys_dir(d) + 'x509_ima.key'}"
 RPM_FSK_PASSWORD ?= "password"
 
