@@ -49,7 +49,6 @@ other layers needed. e.g.:
     /path/to/yocto/meta \
     /path/to/yocto/meta-poky \
     /path/to/yocto/meta-yocto-bsp \
-    /path/to/yocto/meta-meta-secure-core \
     /path/to/yocto/meta-meta-secure-core/meta \
     /path/to/yocto/meta-meta-secure-core/meta-signing-key \
     /path/to/yocto/meta-meta-secure-core/meta-tpm \
@@ -61,7 +60,6 @@ other layers needed. e.g.:
 
 or run bitbake-layers to add the meta-secure-core and its sub-layers:
 
-    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core
     $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta
     $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-signing-key
     $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-tpm
