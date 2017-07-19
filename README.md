@@ -66,7 +66,7 @@ updated hash if the file is modified) but refuse to load it if it doesn't. This
 provides some protection against offline tampering of the files.
 
 #### RPM signing
-This feature provides the integrity verification for the RPM5 package.
+This feature provides the integrity verification for the RPM package.
 
 ### Building the meta-secure-core layer
 This layer should be added to the bblayers.conf file. To enable certain
