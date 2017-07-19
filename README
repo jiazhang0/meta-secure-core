@@ -30,13 +30,12 @@ Table of Contents
 =================
 
   I. Adding the meta-secure-core layer to your build
- II. Misc
+ II. Configure meta-secure-core
+III. Build meta-secure-core
 
 
 I. Adding the meta-secure-core layer to your build
-=================================================
-
---- replace with specific instructions for the meta-secure-core layer ---
+==================================================
 
 In order to use this layer, you need to make the build system aware of
 it.
@@ -51,10 +50,48 @@ other layers needed. e.g.:
     /path/to/yocto/meta-poky \
     /path/to/yocto/meta-yocto-bsp \
     /path/to/yocto/meta-meta-secure-core \
+    /path/to/yocto/meta-meta-secure-core/meta \
+    /path/to/yocto/meta-meta-secure-core/meta-signing-key \
+    /path/to/yocto/meta-meta-secure-core/meta-tpm \
+    /path/to/yocto/meta-meta-secure-core/meta-tpm2 \
+    /path/to/yocto/meta-meta-secure-core/meta-efi-secure-boot \
+    /path/to/yocto/meta-meta-secure-core/meta-integrity \
+    /path/to/yocto/meta-meta-secure-core/meta-encrypted-storage \
     "
 
+or run bitbake-layers to add the meta-secure-core and its sub-layers:
 
-II. Misc
-========
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-signing-key
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-tpm
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-tpm2
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-efi-secure-boot
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-integrity
+    $ bitbake-layers add-layer /path/to/yocto/meta-secure-core/meta-encrypted-storage
 
---- replace with specific information about the meta-secure-core layer ---
+II. Configure meta-secure-core
+==============================
+
+The full features in meta-secure-core can be configured with these definitions
+in local.conf:
+
+INITRAMFS_IMAGE = "secure-core-image-initramfs"
+DISTRO_FEATURES_NATIVE_append += " ima tpm tpm2 efi-secure-boot encrypted-storage"
+DISTRO_FEATURES_append += " ima tpm tpm2 efi-secure-boot encrypted-storage"
+SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
+    packagegroup-efi-secure-boot \
+    packagegroup-tpm \
+    packagegroup-tpm2 \
+    packagegroup-ima \
+    packagegroup-encrypted-storage \
+"
+DEBUG_FLAGS_forcevariable = ""
+
+III. Build meta-secure-core
+===========================
+
+The meta-secure-core provides an image called secure-core-image. Run the
+following command to build it.
+
+    $ bitbake secure-core-image
