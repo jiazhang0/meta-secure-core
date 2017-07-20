@@ -1,1 +1,1 @@
-include linux-yocto-tpm2.inc
+require linux-yocto-tpm2.inc
