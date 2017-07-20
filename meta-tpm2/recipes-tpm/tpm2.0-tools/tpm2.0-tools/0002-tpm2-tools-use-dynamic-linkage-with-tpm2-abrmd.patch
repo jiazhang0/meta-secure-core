@@ -1,32 +1,18 @@
-From 9aee7b2bc400a336f0a938ce80eba51707662612 Mon Sep 17 00:00:00 2001
+From b328bb108cc926274ca20cc722d8d8ad91f19d60 Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
-Date: Mon, 19 Jun 2017 13:52:53 +0800
-Subject: [PATCH 1/2] tpm2-tools: use dynamic linkage with tpm2-abrmd
+Date: Thu, 20 Jul 2017 15:19:51 +0800
+Subject: [PATCH] tpm2-tools: use dynamic linkage with tpm2-abrmd
 
 tpm2-abrmd has huge dependencies and they are not necessary to be involved
 in initramfs.
 
 Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
 ---
- Makefile.am        |  2 +-
- lib/context-util.c | 22 ++++++++++++++++++++--
- 2 files changed, 21 insertions(+), 3 deletions(-)
+ lib/context-util.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index a3c43f8..68ba044 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -38,7 +38,7 @@ LIB_COMMON := lib/libcommon.a
- AM_CFLAGS    := $(INCLUDE_DIRS) $(TPM20_TSS_CFLAGS) $(EXTRA_CFLAGS) $(TCTI_TABRMD_CFLAGS)
- AM_LDFLAGS   := $(EXTRA_LDFLAGS)
- 
--LDADD = $(LIB_COMMON) $(TPM20_TSS_LIBS) $(TCTI_SOCK_LIBS) $(TCTI_DEV_LIBS) $(TCTI_TABRMD_LIBS)
-+LDADD = $(LIB_COMMON) $(TPM20_TSS_LIBS) $(TCTI_SOCK_LIBS) $(TCTI_DEV_LIBS) $(TCTI_TABRMD_LIBS) -ldl
- 
- sbin_PROGRAMS = \
-     tools/tpm2_create \
 diff --git a/lib/context-util.c b/lib/context-util.c
-index 7de22ac..2ef181d 100644
+index 7de22ac..9814548 100644
 --- a/lib/context-util.c
 +++ b/lib/context-util.c
 @@ -38,6 +38,7 @@
@@ -37,7 +23,7 @@ index 7de22ac..2ef181d 100644
  #include <tcti/tcti-tabrmd.h>
  #endif
  
-@@ -134,10 +135,27 @@ TSS2_TCTI_CONTEXT*
+@@ -134,10 +135,26 @@ TSS2_TCTI_CONTEXT*
  tcti_tabrmd_init (void)
  {
      TSS2_TCTI_CONTEXT *tcti_ctx;
@@ -53,9 +39,8 @@ index 7de22ac..2ef181d 100644
 -    rc = tss2_tcti_tabrmd_init(NULL, &size);
 +    tabrmd_handle = dlopen("libtcti-tabrmd.so.0", RTLD_LAZY);
 +    if (!tabrmd_handle) {
-+	fprintf (stderr,
-+		 "Unable to find out the tabrmd tcti library\n");
-+	return NULL;
++       LOG_ERR ("Unable to find out the tabrmd tcti library");
++       return NULL;
 +    }
 +
 +    init = dlsym(tabrmd_handle, "tss2_tcti_tabrmd_init");
@@ -66,7 +51,7 @@ index 7de22ac..2ef181d 100644
      if (rc != TSS2_RC_SUCCESS) {
          LOG_ERR ("Failed to get size for TABRMD TCTI context: 0x%" PRIx32, rc);
          return NULL;
-@@ -148,7 +166,7 @@ tcti_tabrmd_init (void)
+@@ -148,7 +165,7 @@ tcti_tabrmd_init (void)
                   strerror (errno));
          return NULL;
      }
