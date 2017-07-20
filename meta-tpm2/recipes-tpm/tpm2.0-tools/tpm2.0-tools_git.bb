@@ -10,16 +10,13 @@ DEPENDS += "tpm2.0-tss tpm2-abrmd openssl curl autoconf-archive pkgconfig"
 PV = "2.1.0+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/01org/tpm2.0-tools.git;branch=master;name=tpm2.0-tools;destsuffix=tpm2.0-tools \
-    file://ax_check_compile_flag.m4 \
-    file://ax_check_preproc_flag.m4 \
-    file://ax_check_link_flag.m4 \
+    git://github.com/01org/tpm2.0-tools.git \
     file://0001-Fix-build-failure-with-glib-2.0.patch \
     file://0002-tpm2-tools-use-dynamic-linkage-with-tpm2-abrmd.patch \
 "
 SRCREV = "97306d6dc1fc5f3142c50efe3189bd46ff35b5a0"
 
-S = "${WORKDIR}/${BPN}"
+S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
@@ -35,11 +32,6 @@ EXTRA_OEMAKE += "\
 "
 
 do_configure_prepend() {
-    mkdir -p "${S}/m4"
-    cp "${WORKDIR}/ax_check_compile_flag.m4" "${S}/m4"
-    cp "${WORKDIR}/ax_check_preproc_flag.m4" "${S}/m4"
-    cp "${WORKDIR}/ax_check_link_flag.m4" "${S}/m4"
-
     # execute the bootstrap script
     currentdir="$(pwd)"
     cd "${S}"
