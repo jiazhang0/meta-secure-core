@@ -18,12 +18,6 @@ S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig systemd
 
-INHERIT += "extrausers"
-EXTRA_USERS_PARAMS = "\
-    useradd -p '' tss; \
-    groupadd tss; \
-"
-
 do_configure_prepend() {
     # execute the bootstrap script
     currentdir="$(pwd)"
