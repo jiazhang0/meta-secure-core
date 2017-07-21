@@ -100,7 +100,7 @@ FILES_libtspi-staticdev = "\
     ${libdir}/*.la \
     ${libdir}/*.a \
 "
-FILES_${PN}-dbg = "\
+FILES_${PN}-dbg += "\
     ${sbindir}/.debug \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/tcs \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/tcsd \
