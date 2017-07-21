@@ -15,6 +15,7 @@ SRC_URI = "\
     file://0002-libtpm-support-env-TPM_SRK_PW.patch \
     file://0003-Fix-not-building-libtpm.la.patch \
     file://0003-tpm-openssl-tpm-engine-parse-an-encrypted-tpm-SRK-pa.patch \
+    file://0004-tpm-openssl-tpm-engine-change-variable-c-type-from-c.patch \
 "
 SRCREV = "bbc2b1af809f20686e0d3553a62f0175742c0d60"
 
