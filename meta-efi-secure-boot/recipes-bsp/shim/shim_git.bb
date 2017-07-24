@@ -9,6 +9,7 @@ and if the binary or signing key are not blacklisted then shim will \
 relocate and execute the binary."
 HOMEPAGE = "https://github.com/rhinstaller/shim.git"
 SECTION = "bootloaders"
+
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=b92e63892681ee4e8d27e7a7e87ef2bc"
 
@@ -28,15 +29,13 @@ SRC_URI = "\
     file://0010-Makefile-do-not-sign-the-efi-file.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
-    file://0013-httpboot-fix-OVMF-crash.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
                          'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
-
-SRCREV = "919c17a45fe722dcc2b9bdaba538c738f97f88cd"
+SRCREV = "7d745e49c02146bae75027d53f24c04175f6e848"
 
 S = "${WORKDIR}/git"
 
