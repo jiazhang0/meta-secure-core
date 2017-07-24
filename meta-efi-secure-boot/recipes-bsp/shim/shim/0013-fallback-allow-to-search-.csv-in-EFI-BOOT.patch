@@ -1,0 +1,27 @@
+From d008d75860433bc640aaf1c2dabe5742912bdac4 Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Mon, 24 Jul 2017 15:15:33 +0800
+Subject: [PATCH] fallback: allow to search .csv in \EFI\BOOT
+
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ fallback.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/fallback.c b/fallback.c
+index 5e4a396..8c408fd 100644
+--- a/fallback.c
++++ b/fallback.c
+@@ -729,8 +729,7 @@ find_boot_options(EFI_HANDLE device)
+ 			continue;
+ 		}
+ 		if (!StrCmp(fi->FileName, L".") ||
+-				!StrCmp(fi->FileName, L"..") ||
+-				!StrCaseCmp(fi->FileName, L"BOOT")) {
++				!StrCmp(fi->FileName, L"..")) {
+ 			FreePool(buffer);
+ 			buffer = NULL;
+ 			continue;
+-- 
+2.7.5
+

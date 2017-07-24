@@ -21,6 +21,8 @@ PV = "12+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/rhinstaller/shim.git \
+    file://bootx64.csv \
+    file://bootia32.csv \
     file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
@@ -29,6 +31,7 @@ SRC_URI = "\
     file://0010-Makefile-do-not-sign-the-efi-file.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
+    file://0013-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
@@ -42,29 +45,31 @@ S = "${WORKDIR}/git"
 inherit deploy user-key-store
 
 EXTRA_OEMAKE = "\
-	CROSS_COMPILE="${TARGET_PREFIX}" \
-	LIB_GCC="`${CC} -print-libgcc-file-name`" \
-	LIB_PATH="${STAGING_LIBDIR}" \
-	EFI_PATH="${STAGING_LIBDIR}" \
-	EFI_INCLUDE="${STAGING_INCDIR}/efi" \
-	RELEASE="_${DISTRO}_${DISTRO_VERSION}" \
-	DEFAULT_LOADER=\\\\\\SELoader${EFI_ARCH}.efi \
-	OPENSSL=${STAGING_BINDIR_NATIVE}/openssl \
-	HEXDUMP=${STAGING_BINDIR_NATIVE}/hexdump \
-	PK12UTIL=${STAGING_BINDIR_NATIVE}/pk12util \
-	CERTUTIL=${STAGING_BINDIR_NATIVE}/certutil \
-	SBSIGN=${STAGING_BINDIR_NATIVE}/sbsign \
-	AR=${AR} \
-	${@'VENDOR_CERT_FILE=${WORKDIR}/vendor_cert.cer' if d.getVar('MOK_SB', True) == '1' else ''} \
-	${@'VENDOR_DBX_FILE=${WORKDIR}/vendor_dbx.esl' if uks_signing_model(d) == 'user' else ''} \
-	ENABLE_HTTPBOOT=1 \
+    CROSS_COMPILE="${TARGET_PREFIX}" \
+    LIB_GCC="`${CC} -print-libgcc-file-name`" \
+    LIB_PATH="${STAGING_LIBDIR}" \
+    EFI_PATH="${STAGING_LIBDIR}" \
+    EFI_INCLUDE="${STAGING_INCDIR}/efi" \
+    RELEASE="_${DISTRO}_${DISTRO_VERSION}" \
+    DEFAULT_LOADER=\\\\\\SELoader${EFI_ARCH}.efi \
+    OPENSSL=${STAGING_BINDIR_NATIVE}/openssl \
+    HEXDUMP=${STAGING_BINDIR_NATIVE}/hexdump \
+    PK12UTIL=${STAGING_BINDIR_NATIVE}/pk12util \
+    CERTUTIL=${STAGING_BINDIR_NATIVE}/certutil \
+    SBSIGN=${STAGING_BINDIR_NATIVE}/sbsign \
+    AR=${AR} \
+    ${@'VENDOR_CERT_FILE=${WORKDIR}/vendor_cert.cer' \
+       if d.getVar('MOK_SB', True) == '1' else ''} \
+    ${@'VENDOR_DBX_FILE=${WORKDIR}/vendor_dbx.esl' \
+       if uks_signing_model(d) == 'user' else ''} \
+    ENABLE_HTTPBOOT=1 \
+    OVERRIDE_SECURITY_POLICY=1 \
 "
 
 PARALLEL_MAKE = ""
 COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 
 EFI_TARGET = "/boot/efi/EFI/BOOT"
-FILES_${PN} += "${EFI_TARGET}"
 
 MSFT = "${@bb.utils.contains('DISTRO_FEATURES', 'msft', '1', '0', d)}"
 
@@ -115,27 +120,40 @@ python do_sign() {
 addtask sign after do_compile before do_install
 
 do_install() {
-    install -d ${D}${EFI_TARGET}
+    install -d "${D}${EFI_TARGET}"
 
     local shim_dst="${D}${EFI_TARGET}/boot${EFI_ARCH}.efi"
     local mm_dst="${D}${EFI_TARGET}/mm${EFI_ARCH}.efi"
+    local fb_dst="${D}${EFI_TARGET}/fb${EFI_ARCH}.efi"
     if [ x"${UEFI_SB}" = x"1" ]; then
-        install -m 0600 ${B}/shim${EFI_ARCH}.efi.signed $shim_dst
-        install -m 0600 ${B}/mm${EFI_ARCH}.efi.signed $mm_dst
+        install -m 0600 "${B}/shim${EFI_ARCH}.efi.signed" "$shim_dst"
+        install -m 0600 "${B}/mm${EFI_ARCH}.efi.signed" "$mm_dst"
+        install -m 0600 "${B}/fb${EFI_ARCH}.efi.signed" "$fb_dst"
     else
-        install -m 0600 ${B}/shim${EFI_ARCH}.efi $shim_dst
-        install -m 0600 ${B}/mm${EFI_ARCH}.efi $mm_dst
+        install -m 0600 "${B}/shim${EFI_ARCH}.efi" "$shim_dst"
+        install -m 0600 "${B}/mm${EFI_ARCH}.efi" "$mm_dst"
+        install -m 0600 "${B}/fb${EFI_ARCH}.efi" "$fb_dst"
     fi
+
+    install -m 0600 "${WORKDIR}/boot${EFI_ARCH}.csv" "${D}${EFI_TARGET}"
 }
 
 # Install the unsigned images for manual signing
 do_deploy() {
     install -d ${DEPLOYDIR}/efi-unsigned
 
-    install -m 0600 ${B}/shim${EFI_ARCH}.efi ${DEPLOYDIR}/efi-unsigned/boot${EFI_ARCH}.efi
-    install -m 0600 ${B}/mm${EFI_ARCH}.efi ${DEPLOYDIR}/efi-unsigned/mm${EFI_ARCH}.efi
+    install -m 0600 "${B}/shim${EFI_ARCH}.efi" \
+        "${DEPLOYDIR}/efi-unsigned/boot${EFI_ARCH}.efi"
+    install -m 0600 "${B}/mm${EFI_ARCH}.efi" \
+        "${DEPLOYDIR}/efi-unsigned/mm${EFI_ARCH}.efi"
+    install -m 0600 "${B}/fb${EFI_ARCH}.efi" \
+        "${DEPLOYDIR}/efi-unsigned/fb${EFI_ARCH}.efi"
 
     install -m 0600 "${D}${EFI_TARGET}/boot${EFI_ARCH}.efi" "${DEPLOYDIR}"
     install -m 0600 "${D}${EFI_TARGET}/mm${EFI_ARCH}.efi" "${DEPLOYDIR}"
+    install -m 0600 "${D}${EFI_TARGET}/fb${EFI_ARCH}.efi" "${DEPLOYDIR}"
+    install -m 0600 "${D}${EFI_TARGET}/boot${EFI_ARCH}.csv" "${DEPLOYDIR}"
 }
 addtask deploy after do_install before do_build
+
+FILES_${PN} += "${EFI_TARGET}"
