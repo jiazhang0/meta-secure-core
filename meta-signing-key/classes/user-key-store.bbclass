@@ -10,7 +10,7 @@ USER_KEY_SHOW_VERBOSE = "1"
 UEFI_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
 MOK_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
-SYSTEM_TRUSTED = '1'
+SYSTEM_TRUSTED = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
 
 def vprint(str, d):
     if d.getVar('USER_KEY_SHOW_VERBOSE', True) == '1':
