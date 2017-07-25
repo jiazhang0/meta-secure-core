@@ -374,3 +374,5 @@ python check_deploy_keys() {
 
         deploy_keys(_, d)
 }
+
+check_deploy_keys[lockfiles] = "${TMPDIR}/check_deploy_keys.lock"
