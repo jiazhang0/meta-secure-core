@@ -26,7 +26,7 @@ ROOT_DIR="${1}"
 SECURITYFS_DIR="${ROOT_DIR}/sys/kernel/security"
 
 # The policy files are always placed in initramfs
-IMA_POLICY=/etc/ima_policy
+IMA_POLICY=/etc/ima/ima_policy
 
 SECURITYFS_MOUNTED=0
 
