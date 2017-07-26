@@ -25,7 +25,6 @@ FILES_${PN} = "\
 # Install the minimal stuffs only, and don't care how the external
 # environment is configured.
 
-# @sysvinit: init
 # @coreutils: echo, cat, sleep, switch_root, expr, mkdir
 # @util-linux: mount
 # @grep: grep
@@ -33,7 +32,6 @@ FILES_${PN} = "\
 # @eudev: udevd, udevadm
 # @procps: pkill
 RDEPENDS_${PN} += "\
-    sysvinit \
     coreutils \
     util-linux-mount \
     grep \
