@@ -29,14 +29,13 @@ FILES_${PN} = "\
 # @util-linux: mount
 # @grep: grep
 # @gawk: awk
-# @eudev: udevd, udevadm
-# @procps: pkill
+# @eudev or udev: udevd, udevadm
 RDEPENDS_${PN} += "\
     coreutils \
     util-linux-mount \
     grep \
     gawk \
-    eudev \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'udev', 'eudev', d)} \
 "
 
 # @initrdscripts-ima: init.ima
