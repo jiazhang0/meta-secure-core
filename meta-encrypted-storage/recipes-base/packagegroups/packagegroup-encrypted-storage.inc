@@ -6,3 +6,7 @@ LIC_FILES_CHKSUM = "\
 ALLOW_EMPTY_${PN} = "1"
 
 S = "${WORKDIR}"
+
+RDEPENDS_${PN} += "\
+    cryptfs-tpm2 \
+"
