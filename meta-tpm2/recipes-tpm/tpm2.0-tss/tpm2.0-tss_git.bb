@@ -16,7 +16,7 @@ SRCREV = "3fb91634e61c97a0ae732bc5c298b188c23376cf"
 
 S = "${WORKDIR}/git"
 
-inherit autotools pkgconfig systemd
+inherit autotools pkgconfig
 
 do_configure_prepend() {
     # execute the bootstrap script
