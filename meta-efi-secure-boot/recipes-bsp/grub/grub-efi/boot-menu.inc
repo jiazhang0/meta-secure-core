@@ -5,9 +5,11 @@
 menuentry "Sample EFI boot" --unrestricted {
     savedefault
     set fallback=1
-    chainloader /bzImage root=/dev/sda2 ro rootwait initrd=/initrd
+    linux /bzImage root=/dev/sda2 ro rootwait
+    initrd /initrd
 }
 
 menuentry "Sample EFI boot (Recovery)" --unrestricted {
-    chainloader /bzImage_bakup root=/dev/sda2 ro rootwait initrd=/initrd_bakup
+    linux /bzImage_bakup root=/dev/sda2 ro rootwait
+    initrd /initrd_bakup
 }
