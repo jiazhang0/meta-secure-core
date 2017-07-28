@@ -71,13 +71,7 @@ do_install_append_class-target() {
     # IMA rules.
     [ x"${IMA}" = x"1" -a x"${@bb.utils.contains('DISTRO_FEATURES', 'encrypted-storage', '1', '0', d)}" != x"1" ] && {
         ! grep -q "ima_policy=tcb" "$menu" &&
-            sed -i 's/^\s*chainloader\s\+.*bzImage.*/& ima_policy=tcb/g' "$menu"
-    }
-
-    [ x"${UEFI_SB}" = x"1" ] && {
-        # Don't allow to load the detached initramfs if the bundled kernel used.
-        [ x"${INITRAMFS_IMAGE_BUNDLE}" = x"1" ] &&
-            sed -i 's/\(^\s*chainloader\s\+.*bzImage.*\)\s\+initrd=[^[:space:]]*\(.*\)/\1\2/g' "$menu"
+            sed -i 's/^\s*linux\s\+.*bzImage.*/& ima_policy=tcb/g' "$menu"
     }
 
     # Install the stacked grub configs.
