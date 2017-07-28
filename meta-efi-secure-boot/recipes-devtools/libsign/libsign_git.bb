@@ -1,5 +1,5 @@
 SUMMARY = "A generic signing tool framework"
-DESCRIPTION = " \
+DESCRIPTION = "\
 This project targets to provide a generic signing framework. This framework \
 separates the signing request and signing process and correspondingly forms \
 the so-called signlet and signaturelet. \
@@ -18,7 +18,7 @@ DEPENDS += "openssl"
 
 PV = "0.3.2+git${SRCPV}"
 
-SRC_URI = " \
+SRC_URI = "\
     git://github.com/jiazhang0/libsign.git \
 "
 SRCREV = "0e8005f1c546ef25d834084f5cd85d386cf7cd1d"
@@ -27,7 +27,7 @@ PARALLEL_MAKE = ""
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = " \
+EXTRA_OEMAKE = "\
     CC="${CC}" \
     bindir="${STAGING_BINDIR}" \
     libdir="${STAGING_LIBDIR}" \
@@ -43,7 +43,7 @@ do_install() {
     oe_runmake install DESTDIR="${D}"
 }
 
-FILES_${PN} += " \
+FILES_${PN} += "\
     ${libdir}/signaturelet \
 "
 

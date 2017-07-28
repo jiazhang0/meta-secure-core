@@ -131,7 +131,7 @@ do_deploy_class-target() {
 
 FILES_${PN} += "/boot/efi"
 
-CONFFILES_${PN} += " \
+CONFFILES_${PN} += "\
     ${EFI_BOOT_PATH}/grub.cfg \
     ${EFI_BOOT_PATH}/grubenv \
     ${EFI_BOOT_PATH}/boot-menu.inc \

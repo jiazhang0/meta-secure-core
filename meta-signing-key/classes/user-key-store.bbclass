@@ -1,4 +1,4 @@
-DEPENDS_append_class-target += " \
+DEPENDS_append_class-target += "\
     sbsigntool-native \
     libsign-native \
     openssl-native \
