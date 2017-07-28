@@ -15,7 +15,6 @@ SRC_URI += "\
 "
 
 PACKAGECONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'ima', 'imaevm', '', d)}"
-PACKAGECONFIG[imaevm] = "--with-imaevm,,ima-evm-utils"
 
 # IMA signing support is provided by RPM plugin.
 EXTRA_OECONF_remove += "\
