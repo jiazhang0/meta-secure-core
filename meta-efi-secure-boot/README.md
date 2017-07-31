@@ -36,11 +36,11 @@ A complete boot flow looks like as following:
 - UEFI firmware boot manager (UEFI Secure Boot enabled) ->
   - shim (verified by a DB certificate) ->
     - fallback (verified by a shim-managed certificate) ->
-      - SELoader (verified by a shim-managed certificate) ->
-        - grub (verified by a shim-managed certificate) ->
-          - grub.cfg (verified by a shim-managed certificate)
-          - kernel (verified by a shim-managed certificate)
-          - initramfs (verified by a shim-managed certificate)
+      - SELoader (ditto) ->
+        - grub (ditto) ->
+          - grub.cfg (ditto)
+          - kernel (ditto)
+          - initramfs (ditto)
 
 ### Quick Start For The First Boot
 - Deploy the rootfs
