@@ -32,6 +32,7 @@ SRC_URI = "\
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
     file://0013-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
+    file://0014-fallback-don-t-set-the-csv-entry-as-the-first-boot-b.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
