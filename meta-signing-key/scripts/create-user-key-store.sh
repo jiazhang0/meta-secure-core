@@ -148,9 +148,9 @@ create_uefi_sb_user_keys() {
 
     ca_sign "$key_dir" PK "$key_dir" PK \
         "/CN=PK Certificate/"
-    ca_sign "$key_dir" KEK "$key_dir" PK \
+    ca_sign "$key_dir" KEK "$key_dir" KEK \
         "/CN=KEK Certificate"
-    ca_sign "$key_dir" DB "$key_dir" KEK \
+    ca_sign "$key_dir" DB "$key_dir" DB \
         "/CN=DB Certificate"
 }
 
