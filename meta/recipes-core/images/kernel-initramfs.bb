@@ -3,6 +3,8 @@ DESCRIPTION = "This package includes the initramfs for the kernel boot. \
 "
 LICENSE = "MIT"
 
+DEFAULT_PREFERENCE = "-1"
+
 DEPENDS = "virtual/kernel"
 
 PROVIDES = "virtual/kernel-initramfs"
