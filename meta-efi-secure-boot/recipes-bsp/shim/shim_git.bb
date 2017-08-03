@@ -39,7 +39,7 @@ SRC_URI_append_x86-64 = "\
                          'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
-SRCREV = "7d745e49c02146bae75027d53f24c04175f6e848"
+SRCREV = "a8f3dc82be8e16d24ceab416c1b0af897c083f56"
 
 S = "${WORKDIR}/git"
 
