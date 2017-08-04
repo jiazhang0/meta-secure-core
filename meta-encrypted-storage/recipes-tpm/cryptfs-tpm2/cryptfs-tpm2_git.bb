@@ -77,9 +77,6 @@ RDEPENDS_${PN} += "\
     grep \
     procps \
     cryptsetup \
-"
-
-RDEPENDS_${PN} = "\
     tpm2.0-tools \
 "
 
@@ -94,7 +91,7 @@ RDEPENDS_${PN} = "\
 # @cryptfs-tpm2: cryptfs-tpm2
 # @net-tools: ifconfig
 # @util-linux: mount, umount, blkid
-RDEPENDS_${PN}-initramfs = "\
+RDEPENDS_${PN}-initramfs += "\
     bash \
     coreutils \
     grep \
@@ -109,7 +106,7 @@ RDEPENDS_${PN}-initramfs = "\
     util-linux-blkid \
 "
 
-RRECOMMENDS_${PN}-initramfs = "\
+RRECOMMENDS_${PN}-initramfs += "\
     kernel-module-tpm-crb \
     kernel-module-tpm-tis \
 "
