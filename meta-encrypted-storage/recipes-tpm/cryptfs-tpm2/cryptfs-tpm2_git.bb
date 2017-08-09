@@ -22,7 +22,7 @@ PV = "0.6.0+git${SRCPV}"
 SRC_URI = "\
     git://github.com/WindRiver-OpenSourceLabs/cryptfs-tpm2.git \
 "
-SRCREV = "bbe22db48c06eafc60e950535f9aed7a90eb1ade"
+SRCREV = "eebf1c561b459c04e519326344f91182ecbba334"
 
 S = "${WORKDIR}/git"
 
