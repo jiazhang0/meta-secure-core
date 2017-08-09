@@ -38,7 +38,7 @@ try_to_mount_rootfs() {
 
     [ -x /init.cryptfs ] &&
         /init.cryptfs "$ROOTFS_MOUNT" "$ROOTFS_DEV" \
-            "$mount_flags" OVERCROOTFS && return 0
+            "$mount_flags" && return 0
 
     return 1
 }
