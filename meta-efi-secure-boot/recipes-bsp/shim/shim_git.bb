@@ -23,7 +23,7 @@ SRC_URI = "\
     git://github.com/rhinstaller/shim.git \
     file://bootx64.csv \
     file://bootia32.csv \
-    file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch \
+    file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch;apply=0 \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
     file://0007-Use-sbsign-to-sign-MokManager-and-fallback.patch \
@@ -39,7 +39,7 @@ SRC_URI_append_x86-64 = "\
                          'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
-SRCREV = "a8f3dc82be8e16d24ceab416c1b0af897c083f56"
+SRCREV = "631265b7e9c447412d423ffed1b39dfd706054cd"
 
 S = "${WORKDIR}/git"
 
