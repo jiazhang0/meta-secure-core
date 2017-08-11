@@ -187,28 +187,50 @@ create_ima_user_key() {
 }
 
 create_rpm_user_key() {
+    local gpg_ver=`gpg --version | head -1 | awk '{ print $3 }' | awk -F. '{ print $1 }'`
+
+    if [ x"$gpg_ver" != x"1" ]; then
+        echo "gpg version 2 is not supported"
+	exit 1
+    fi
+
     local key_dir="$RPM_KEYS_DIR"
-    local gpg=""
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-   gpg --batch --gen-key gen_rpm_keyring
+    local gpg_key_name="SecureCore"
+    local priv_key="$key_dir/RPM-GPG-PRIVKEY-$gpg_key_name"
+    local pub_key="$key_dir/RPM-GPG-KEY-$gpg_key_name"
 
-   gpg="gpg --no-default-keyring --secret-keyring \
-        ./rpm_keyring.sec --keyring ./rpm_keyring.pub"
+    cat >"$key_dir/gen_rpm_keyring" <<EOF
+Key-Type: RSA
+Key-Length: 2048
+Name-Real: $gpg_key_name
+Name-Comment: RPM Signing Certificate
+Name-Email: $gpg_key_name@foo.com
+Expire-Date: 0
+%pubring $pub_key.pub
+%secring $priv_key.sec
+%commit
+%echo RPM keyring $gpg_key_name created
+EOF
 
-   $gpg --list-secret-keys
+    gpg --batch --gen-key "$key_dir/gen_rpm_keyring"
 
-   print_error "Please type passwd to modify the passphrase, and type quit to exit"
+    gpg="gpg --no-default-keyring --secret-keyring \
+        $priv_key.sec --keyring $pub_key.pub"
 
-   $gpg --edit-key "RPM Signing Certificate"
+    $gpg --list-secret-keys
 
-   $gpg --export --armor "RPM Signing Certificate" \
-       > "$key_dir/RPM-GPG-KEY-SecureCore"
-   $gpg --export-secret-keys --armor "RPM Signing Certificate" \
-       > "$key_dir/RPM-GPG-PRIVKEY-SecureCore"
+    print_error "Please type passwd to modify the passphrase, and type quit to exit"
 
-   rm -f ./rpm_keyring.sec ./rpm_keyring.pub
+    $gpg --edit-key "$gpg_key_name"
+
+    $gpg --export --armor "$gpg_key_name" > "$pub_key"
+    $gpg --export-secret-keys --armor "$gpg_key_name" > "$priv_key"
+
+    rm -f "$key_dir/gen_rpm_keyring"
+    rm -f "$priv_key.sec" "$pub_key.pub"
 }
 
 create_user_keys() {

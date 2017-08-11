@@ -1,8 +1,0 @@
-Key-Type: RSA
-Key-Length: 2048
-Name-Real: RPM Signing Certificate
-Expire-Date: 0
-%pubring rpm_keyring.pub
-%secring rpm_keyring.sec
-%commit
-%echo RPM keyring created
