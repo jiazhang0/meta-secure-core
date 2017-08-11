@@ -1,7 +1,7 @@
-From d008d75860433bc640aaf1c2dabe5742912bdac4 Mon Sep 17 00:00:00 2001
+From 8990fdd360bc5db39e33e3a15c447bed0c1ca46e Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Mon, 24 Jul 2017 15:15:33 +0800
-Subject: [PATCH] fallback: allow to search .csv in \EFI\BOOT
+Subject: [PATCH 3/5] fallback: allow to search .csv in \EFI\BOOT
 
 Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/fallback.c b/fallback.c
-index 5e4a396..8c408fd 100644
+index 423b3ee..b55755b 100644
 --- a/fallback.c
 +++ b/fallback.c
-@@ -729,8 +729,7 @@ find_boot_options(EFI_HANDLE device)
+@@ -874,8 +874,7 @@ find_boot_options(EFI_HANDLE device)
  			continue;
  		}
  		if (!StrCmp(fi->FileName, L".") ||

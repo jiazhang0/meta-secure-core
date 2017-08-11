@@ -31,8 +31,11 @@ SRC_URI = "\
     file://0010-Makefile-do-not-sign-the-efi-file.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
-    file://0013-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
-    file://0014-fallback-don-t-set-the-csv-entry-as-the-first-boot-b.patch \
+    file://0013-fallback-fix-double-free-of-dp.patch \
+    file://0014-fallback-work-around-the-issue-of-boot-option-creati.patch \
+    file://0015-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
+    file://0016-fallback-don-t-set-the-csv-entry-as-the-first-boot-b.patch \
+    file://0017-fallback-always-try-to-boot-the-option-recorded-in-c.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \

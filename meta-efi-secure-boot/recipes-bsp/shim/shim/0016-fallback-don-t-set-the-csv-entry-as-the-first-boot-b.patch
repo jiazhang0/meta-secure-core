@@ -1,19 +1,19 @@
-From 9f6d9f6b7f88b9d15dd2f25ae7f16b68a980922a Mon Sep 17 00:00:00 2001
+From b992209b060f7916de20a5926788a751f1c6636f Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Tue, 1 Aug 2017 10:25:45 +0800
-Subject: [PATCH] fallback: don't set the csv entry as the first boot by
+Subject: [PATCH 4/5] fallback: don't set the csv entry as the first boot by
  default
 
 Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
 ---
- fallback.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fallback.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/fallback.c b/fallback.c
-index 8c408fd..c39f280 100644
+index b55755b..2794cc1 100644
 --- a/fallback.c
 +++ b/fallback.c
-@@ -138,6 +138,11 @@ make_full_path(CHAR16 *dirname, CHAR16 *filename, CHAR16 **out, UINT64 *outlen)
+@@ -199,6 +199,11 @@ make_full_path(CHAR16 *dirname, CHAR16 *filename, CHAR16 **out, UINT64 *outlen)
  CHAR16 *bootorder = NULL;
  int nbootorder = 0;
  
@@ -25,7 +25,7 @@ index 8c408fd..c39f280 100644
  EFI_DEVICE_PATH *first_new_option = NULL;
  VOID *first_new_option_args = NULL;
  UINTN first_new_option_size = 0;
-@@ -199,6 +204,9 @@ add_boot_option(EFI_DEVICE_PATH *hddp, EFI_DEVICE_PATH *fulldp,
+@@ -260,6 +265,9 @@ add_boot_option(EFI_DEVICE_PATH *hddp, EFI_DEVICE_PATH *fulldp,
  				return rc;
  			}
  
@@ -35,7 +35,7 @@ index 8c408fd..c39f280 100644
  			CHAR16 *newbootorder = AllocateZeroPool(sizeof (CHAR16)
  							* (nbootorder + 1));
  			if (!newbootorder)
-@@ -414,7 +422,7 @@ add_to_boot_list(EFI_FILE_HANDLE fh, CHAR16 *dirname, CHAR16 *filename, CHAR16 *
+@@ -569,7 +577,7 @@ add_to_boot_list(CHAR16 *dirname, CHAR16 *filename, CHAR16 *label, CHAR16 *argum
  	rc = find_boot_option(dp, full_device_path, fullpath, label, arguments, &option);
  	if (EFI_ERROR(rc)) {
  		add_boot_option(dp, full_device_path, fullpath, label, arguments);
@@ -44,6 +44,15 @@ index 8c408fd..c39f280 100644
  		CHAR16 *newbootorder;
  		newbootorder = AllocateZeroPool(sizeof (CHAR16) * nbootorder);
  		if (!newbootorder)
+@@ -899,7 +907,7 @@ find_boot_options(EFI_HANDLE device)
+ 
+ 	} while (1);
+ 
+-	if (rc == EFI_SUCCESS && nbootorder > 0)
++	if (run_as_first_boot && rc == EFI_SUCCESS && nbootorder > 0)
+ 		rc = update_boot_order();
+ 
+ 	uefi_call_wrapper(fh2->Close, 1, fh2);
 -- 
 2.7.5
 
