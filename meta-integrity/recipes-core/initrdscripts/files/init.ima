@@ -3,7 +3,7 @@
 # Initramfs script for IMA initialzation
 #
 # This script is a halper used to load the external
-# IMA policy and public keys used to verify the IMA
+# IMA policy and certificate used to verify the IMA
 # signature.
 #
 # Copyright (c) 2017, Jia Zhang <lans.zhang2008@gmail.com>
@@ -15,7 +15,7 @@
 # 0 - IMA initialiazation complete
 # 1 - Kernel doesn't support securityfs
 # 2 - Kernel doesn't support IMA
-# 3 - There is no public key to load
+# 3 - There is no IMA certificate to load
 # 4 - There is no IMA policy file defined
 # 5 - Unable to load IMA policy file
 
@@ -72,7 +72,7 @@ trap_handler() {
 trap "trap_handler $?" SIGINT EXIT
 
 if grep -q "ima_appraise=off" "${ROOT_DIR}/proc/cmdline"; then
-    print_info "Skip to load the public key and IMA policy"
+    print_info "Skip to load the IMA certificate and policy"
     exit 0
 fi
 
@@ -97,25 +97,33 @@ fi
 
 keyring_id=0x`grep '\skeyring\s*\.ima: ' "${ROOT_DIR}/proc/keys" | awk '{ print $1 }'`
 
-for key in ${ROOT_DIR}/etc/keys/x509_evm*.crt; do
-    [ ! -s "$key" ] && continue
+# The trusted IMA certificate /etc/keys/x509_evm.der in initramfs was
+# automatically loaded by kernel already. Here is the opportunity to load
+# a custom IMA certificate from the real rootfs.
+for cert in ${ROOT_DIR}/etc/keys/x509_evm*.crt; do
+    [ ! -s "$cert" ] && continue
 
-    if ! evmctl import "$key" "$keyring_id" >"${ROOT_DIR}/dev/null"; then
-        print_critical "Unable to load the public key $key for IMA appraisal"
+    if ! evmctl import "$cert" "$keyring_id" >"${ROOT_DIR}/dev/null"; then
+        print_critical "Unable to load the custom IMA certificate $cert for IMA appraisal"
     else
-        print_verbose "The external public key $key loaded for IMA appraisal"
+        print_verbose "The custom IMA certificate $cert loaded for IMA appraisal"
     fi
 done
 
 # Attempt to load the default policy.
-[ ! -f "${IMA_POLICY}" ] && IMA_POLICY="${IMA_POLICY}.default"
+[ ! -s "${IMA_POLICY}" ] && IMA_POLICY="${IMA_POLICY}.default"
 
-[ ! -f "${IMA_POLICY}" ] && {
+[ ! -s "${IMA_POLICY}" ] && {
     print_warning "No IMA policy file defined"
     exit 4
 }
 
 echo "${IMA_POLICY}" > "$securityfs_dir/ima/policy" && {
+    # Attempt to load IMA policies from the real rootfs.
+    for policy in ${ROOT_DIR}/etc/ima/ima_policy*; do
+        echo "$policy" > "$securityfs_dir/ima/policy"
+    done
+
     exit 0
 } || {
     print_critical "Unable to load the IMA policy ${IMA_POLICY}"
