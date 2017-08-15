@@ -23,5 +23,6 @@ appraise func=MODULE_CHECK euid=0 appraise_type=imasig
 
 appraise func=FIRMWARE_CHECK euid=0 appraise_type=imasig
 
-# Enforce the coming policy write to be verified by IMA appraisal
+# Enforce the subsequent policy file write to be verified by a trusted IMA
+# certificate.
 appraise func=POLICY_CHECK euid=0 appraise_type=imasig
