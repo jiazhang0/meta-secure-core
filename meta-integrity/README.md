@@ -22,40 +22,9 @@ files and applications to be loaded if the hashes match (and will save the
 updated hash if the file is modified) but refuse to load it if it doesn't. This
 provides some protection against offline tampering of the files.
 
-NOTE: Extended file system attribute is required for IMA appraisal, but not
-all file systems can support it. Typically, the pseudo file systems, such as
-sysfs, proc, tmpfs and ramfs, certain disk-based file systems, such as FAT,
-and network file systems, such as NFS, don't support extended attribute,
-meaning IMA appraisal is not available with them.
+By default, the following constraint conditions are applied by design of this
+layer:
 
-##### Dependency
-- meta-tpm
-  This layer provides the kernel configurations for TPM 1.x enablement.
-
-- meta-tpm2
-  This layer provides the kernel configurations for TPM 2.0 enablement.
-
-##### Use The External IMA Policy
-initramfs is a good place to run some IMA initializations, such as loading
-the IMA policy, as well as the public keys used to verify IMA signatures.
-
-###### The default external IMA policy
-The default external IMA policy enforces appraising all the executable, shared
-library, kernel modules and firmwares with the digital signature in the
-effective root identity (euid=0). Hence, the opportunity of loading the default
-external IMA policy occurs at the end of initramfs initializations, just before
-switch_root.
-
-Instead of running switch_root directly from initramfs, a statically linked
-switch_root from the real rootfs is called and it must be already signed
-properly. Otherwise, switch_root will fail to mount the real rootfs and kernel
-panic will happen due to this failure.
-
-The default external IMA policy is located at `/etc/ima_policy.default` in
-initramfs. If a custom external IMA policy file exists, the default external
-IMA policy file won't be used any more.
-
-The default external IMA policy enables the following constraint conditions:
 - Appraise the files for exec'd (the executables), files mmap'd for exec
   (shared libraries), kernel modules and firmwares in effective root identity
   (euid=0).
@@ -71,10 +40,49 @@ The default external IMA policy enables the following constraint conditions:
   modules and firmwares.
 - Allow to run the updated executables, shared libraries, kernel modules and
   firmwares during RPM installation.
-- Note the different behaviors when executing a script.
-  e.g, launching a python script with "./test.py" is allowed only when test.py
-  is signed, and launching a python script with "python test.py" is always
-  allowed as long as the python interpreter is signed.
+- Enforce the subsequent policy file write to be verified by a trusted IMA
+  certificate.
+
+NOTE:
+- The different behaviors when executing a script, e.g, launching a python
+script with "./test.py" is allowed only when test.py is signed, and launching
+a python script with "python test.py" is always allowed as long as the python
+interpreter is signed.
+- Extended file system attribute is required for IMA appraisal, but not
+all file systems can support it. Typically, the pseudo file systems, such as
+sysfs, proc, tmpfs and ramfs, certain disk-based file systems, such as FAT,
+and network file systems, such as NFS, don't support extended attribute,
+meaning IMA appraisal is not available with them.
+
+##### Dependency
+- meta-tpm  
+  This layer provides the kernel configurations and TSS for TPM 1.x enablement.
+
+- meta-tpm2  
+  This layer provides the kernel configurations and TSS for TPM 2.0 enablement.
+
+##### Use The External IMA Policy
+initramfs is a good place to run some IMA initializations, such as loading
+the IMA policy, as well as the trusted IMA certificate used to verify IMA
+signatures.
+
+###### The default external IMA policy
+The default external IMA policy enforces appraising all the executable, shared
+library, kernel modules and firmwares with the digital signature in the
+effective root identity (euid=0). Hence, the opportunity of loading the default
+external IMA policy occurs at the end of initramfs initializations, just before
+switch_root.
+
+Instead of running switch_root directly from initramfs, a statically linked
+switch_root from the real rootfs is launched and it must be already signed
+properly. Otherwise, switch_root will fail to mount the real rootfs and kernel
+panic will happen due to this failure.
+
+The default external IMA policy is located at `/etc/ima_policy.default` in
+initramfs. If a custom external IMA policy file exists at `/etc/ima_policy`,
+the default external IMA policy file won't be used. In addition, the IMA
+policies signed by the trusted IMA certificate in the real rootfs is also
+attempted to be loaded if any.
 
 ###### The custom external IMA policy
 If the default external IMA policy cannot meet the protection requirement, it
