@@ -1,0 +1,49 @@
+From c5d321ded2020441b0d064e03b7b07358d3f71da Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Tue, 15 Aug 2017 10:55:40 +0800
+Subject: [PATCH] Fix the deprecated ASN1_STRING_data()
+
+Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+---
+ src/idc.c       | 4 ++--
+ src/sbkeysync.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/idc.c b/src/idc.c
+index 236cefd..8feaa11 100644
+--- a/src/idc.c
++++ b/src/idc.c
+@@ -238,7 +238,7 @@ struct idc *IDC_get(PKCS7 *p7, BIO *bio)
+ 
+ 	/* extract the idc from the signed PKCS7 'other' data */
+ 	str = p7->d.sign->contents->d.other->value.asn1_string;
+-	idcbuf = buf = ASN1_STRING_data(str);
++	idcbuf = buf = (const unsigned char *)ASN1_STRING_get0_data(str);
+ 	idc = d2i_IDC(NULL, &buf, ASN1_STRING_length(str));
+ 
+ 	/* If we were passed a BIO, write the idc data, minus type and length,
+@@ -289,7 +289,7 @@ int IDC_check_hash(struct idc *idc, struct image *image)
+ 	}
+ 
+ 	/* check hash against the one we calculated from the image */
+-	buf = ASN1_STRING_data(str);
++	buf = (const unsigned char *)ASN1_STRING_get0_data(str);
+ 	if (memcmp(buf, sha, sizeof(sha))) {
+ 		fprintf(stderr, "Hash doesn't match image\n");
+ 		fprintf(stderr, " got:       %s\n", sha256_str(buf));
+diff --git a/src/sbkeysync.c b/src/sbkeysync.c
+index a63d3b8..ef028ef 100644
+--- a/src/sbkeysync.c
++++ b/src/sbkeysync.c
+@@ -210,7 +210,7 @@ static int x509_key_parse(struct key *key, uint8_t *data, size_t len)
+ 	serial = x509->cert_info->serialNumber;
+ 
+ 	key->id_len = ASN1_STRING_length(serial);
+-	key->id = talloc_memdup(key, ASN1_STRING_data(serial), key->id_len);
++	key->id = talloc_memdup(key, ASN1_STRING_get0_data(serial), key->id_len);
+ 
+ 	key->description = talloc_array(key, char, description_len);
+ 	X509_NAME_oneline(x509->cert_info->subject,
+-- 
+2.7.5
+
