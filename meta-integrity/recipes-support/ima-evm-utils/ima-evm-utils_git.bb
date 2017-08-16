@@ -9,6 +9,7 @@ SRC_URI = "\
     git://git.code.sf.net/p/linux-ima/ima-evm-utils \
     file://0001-Don-t-build-man-pages.patch \
     file://0001-Install-evmctl-to-sbindir-rather-than-bindir.patch \
+    file://Fix-the-build-failure-with-openssl-1.1.x.patch \
 "
 SRCREV = "3e2a67bdb0673581a97506262e62db098efef6d7"
 
