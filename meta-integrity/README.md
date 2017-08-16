@@ -55,10 +55,10 @@ and network file systems, such as NFS, don't support extended attribute,
 meaning IMA appraisal is not available with them.
 
 ##### Dependency
-- meta-tpm  
+- [meta-tpm](https://github.com/jiazhang0/meta-secure-core/tree/master/meta-tpm)  
   This layer provides the kernel configurations and TSS for TPM 1.x enablement.
 
-- meta-tpm2  
+- [meta-tpm2](https://github.com/jiazhang0/meta-secure-core/tree/master/meta-tpm2)  
   This layer provides the kernel configurations and TSS for TPM 2.0 enablement.
 
 ##### Use The External IMA Policy
