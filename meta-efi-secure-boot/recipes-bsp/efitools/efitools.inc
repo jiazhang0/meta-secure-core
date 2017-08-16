@@ -28,6 +28,8 @@ SRC_URI = "\
     file://Don-t-build-PreLoader.efi.patch \
     file://Reuse-xxdi.pl.patch \
     file://Add-static-keyword-for-IsValidVariableHeader.patch \
+    file://Dynamically-load-openssl.cnf-for-openssl-1.0.x-and-1.patch \
+    file://cert-to-efi-hash-list-support-to-build-with-openssl-.patch \
 "
 SRCREV = "0649468475d20d8ca5634433c4912467cef3ce93"
 
@@ -40,6 +42,7 @@ inherit perlnative
 EXTRA_OEMAKE = "\
     HELP2MAN='${STAGING_BINDIR_NATIVE}/help2man' \
     OPENSSL='${STAGING_BINDIR_NATIVE}/openssl' \
+    OPENSSL_CFG=' -config ${STAGING_LIBDIR_NATIVE}/ssl-1.1/openssl.cnf' \
     SBSIGN='${STAGING_BINDIR_NATIVE}/sbsign' \
     OPENSSL_LIB='${STAGING_LIBDIR}' \
     NM='${NM}' AR='${AR}' \
