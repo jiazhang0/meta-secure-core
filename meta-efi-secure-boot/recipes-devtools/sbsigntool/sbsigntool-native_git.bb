@@ -19,7 +19,7 @@ SRC_URI = "\
     file://Fix-for-multi-sign.patch \
     file://sbsign-add-x-option-to-avoid-overwrite-existing-sign.patch \
     file://image-fix-the-segment-fault-caused-by-the-uninitiali.patch \
-    file://Fix-the-deprecated-ASN1_STRING_data.patch \
+    file://Fix-the-deprecated-ASN1_STRING_data-in-openssl-1.1.0.patch \
     file://Update-OpenSSL-API-usage-to-support-OpenSSL-1.1.patch \
 "
 SRCREV="951ee95a301674c046f55330cd7460e1314deff2"
