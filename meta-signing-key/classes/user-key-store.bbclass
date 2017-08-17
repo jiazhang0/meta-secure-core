@@ -11,6 +11,7 @@ UEFI_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", 
 MOK_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
 SYSTEM_TRUSTED = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
+RPM = '1'
 
 def vprint(str, d):
     if d.getVar('USER_KEY_SHOW_VERBOSE', True) == '1':
@@ -32,6 +33,7 @@ def uks_rpm_keys_dir(d):
     if uks_signing_model(d) != 'sample':
         return ''
 
+    set_keys_dir('RPM', d)
     return d.getVar('RPM_KEYS_DIR', True) + '/'
 
 def sign_efi_image(key, cert, input, output, d):
@@ -163,6 +165,19 @@ def check_system_trusted_keys(d):
 
     if not os.path.exists(dir + _ + '.crt'):
         vprint("%s.crt is unavailable" % _, d)
+        return False
+
+def check_rpm_keys(d):
+    dir = uks_rpm_keys_dir(d)
+
+    _ = dir + 'RPM-GPG-PRIVKEY-' + d.getVar('RPM_GPG_NAME', True)
+    if not os.path.exists(_):
+        vprint("%s is unavailable" % _, d)
+        return False
+
+    _ = dir + 'RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True)
+    if not os.path.exists(_):
+        vprint("%s is unavailable" % _, d)
         return False
 
 # Convert the PEM to DER format.
@@ -338,6 +353,8 @@ def sanity_check_user_keys(name, may_exit, d):
         _ = check_ima_user_keys(d)
     elif name == 'SYSTEM_TRUSTED':
         _ = check_system_trusted_keys(d)
+    elif name == 'RPM':
+        _ = check_rpm_keys(d)
     else:
         _ = False
         may_exit = True
@@ -359,8 +376,7 @@ def set_keys_dir(name, d):
         d.setVar(name + '_KEYS_DIR', d.getVar('DEPLOY_DIR_IMAGE', True) + '/user-keys/' + name.lower() + '_keys')
 
 python check_deploy_keys() {
-    # XXX: the user key for rpm signing is necessary but not required.
-    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED'):
+    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED', 'RPM'):
         if d.getVar(_, True) != "1":
             continue
 
