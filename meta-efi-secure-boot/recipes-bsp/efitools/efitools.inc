@@ -42,10 +42,9 @@ inherit perlnative
 EXTRA_OEMAKE = "\
     HELP2MAN='${STAGING_BINDIR_NATIVE}/help2man' \
     OPENSSL='${STAGING_BINDIR_NATIVE}/openssl' \
-    OPENSSL_CFG=' -config ${STAGING_LIBDIR_NATIVE}/ssl-1.1/openssl.cnf' \
     SBSIGN='${STAGING_BINDIR_NATIVE}/sbsign' \
-    OPENSSL_LIB='${STAGING_LIBDIR}' \
     NM='${NM}' AR='${AR}' \
+    OPENSSL_LIB='${STAGING_LIBDIR_NATIVE}' \
 "
 EXTRA_OEMAKE_append_x86 += " ARCH=ia32"
 EXTRA_OEMAKE_append_x86-64 += " ARCH=x86_64"
