@@ -1,20 +1,22 @@
-From cd9fbf5dc00733f8e46966e67be85ff6f9d36e6e Mon Sep 17 00:00:00 2001
+From e7bb7c7683a3e3bd8f8731b8990a3978dce81501 Mon Sep 17 00:00:00 2001
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Date: Fri, 10 Apr 2015 18:38:23 -0400
+Date: Fri, 18 Aug 2017 03:27:30 +0000
 Subject: [PATCH] grub: enable serial console by default
 
+Port this patch from grub-2.00 to grub-efi-2.02.
 Have grub go to the serial console and the default VGA console.
 
 Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Guojian Zhou <guojian.zhou@windriver.com>
 ---
  util/grub.d/00_header.in | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git a/util/grub.d/00_header.in b/util/grub.d/00_header.in
-index 765bfdcd30e3..86b260a2c380 100644
+index 93a9023..02ec1c7 100644
 --- a/util/grub.d/00_header.in
 +++ b/util/grub.d/00_header.in
-@@ -27,6 +27,10 @@ grub_lang=`echo $LANG | cut -d . -f 1`
+@@ -25,6 +25,10 @@ grub_lang=`echo $LANG | cut -d . -f 1`
  export TEXTDOMAIN=@PACKAGE@
  export TEXTDOMAINDIR="@localedir@"
  
@@ -22,9 +24,9 @@ index 765bfdcd30e3..86b260a2c380 100644
 +export GRUB_TERMINAL_OUTPUT="console serial"
 +export GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"
 +
- . "@datadir@/@PACKAGE@/grub-mkconfig_lib"
+ . "$pkgdatadir/grub-mkconfig_lib"
  
  # Do this as early as possible, since other commands might depend on it.
 -- 
-2.3.1
+2.7.4
 
