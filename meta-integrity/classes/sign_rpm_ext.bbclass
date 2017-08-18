@@ -15,3 +15,18 @@ RPM_FSK_PATH ?= "${@uks_ima_keys_dir(d) + 'x509_ima.key'}"
 RPM_FSK_PASSWORD ?= "password"
 
 inherit sign_rpm user-key-store
+
+python () {
+    gpg_path = d.getVar('GPG_PATH', True)
+    if not gpg_path:
+        gpg_path = d.getVar('DEPLOY_DIR_IMAGE', True) + '/.gnupg'
+
+        if not os.path.exists(gpg_path):
+            cmd = ' '.join(('mkdir -p', gpg_path))
+            status, output = oe.utils.getstatusoutput(cmd)
+            if status:
+                raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
+                                          (gpg_path, output))
+
+        d.setVar('GPG_PATH', gpg_path)
+}
