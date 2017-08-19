@@ -1,8 +1,6 @@
 # RPM_GPG_NAME and RPM_GPG_PASSPHRASE must be configured in your build
 # environment. By default, the values for the sample keys are configured
 # in meta-signing-key.
-RPM_GPG_NAME ?= "SecureCore"
-RPM_GPG_PASSPHRASE ?= "SecureCore"
 
 RPM_GPG_BACKEND ?= "local"
 # SHA-256 is used for the file checksum digest.
@@ -17,6 +15,9 @@ RPM_FSK_PASSWORD ?= "password"
 inherit sign_rpm user-key-store
 
 python () {
+    if d.getVar('RPM_SIGN_FILES', True) != '1':
+        return
+
     gpg_path = d.getVar('GPG_PATH', True)
     if not gpg_path:
         gpg_path = d.getVar('DEPLOY_DIR_IMAGE', True) + '/.gnupg'
