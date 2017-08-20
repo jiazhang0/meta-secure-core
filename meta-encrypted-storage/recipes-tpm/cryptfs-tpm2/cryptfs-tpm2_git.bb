@@ -44,7 +44,7 @@ PARALLEL_MAKE = ""
 do_install() {
     oe_runmake install DESTDIR="${D}"
 
-    if [ "${@bb.utils.contains('DISTRO_FEATURES', 'encrypted-storage', '1', '0', d)}" = "1" ]; then
+    if [ "${@bb.utils.contains('DISTRO_FEATURES', 'luks', '1', '0', d)}" = "1" ]; then
         install -m 0500 "${S}/scripts/init.cryptfs" "${D}"
     fi
 }

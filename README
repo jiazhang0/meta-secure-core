@@ -75,14 +75,14 @@ The full features in meta-secure-core can be configured with these definitions
 in local.conf:
 
 INITRAMFS_IMAGE = "secure-core-image-initramfs"
-DISTRO_FEATURES_NATIVE_append += " ima tpm tpm2 efi-secure-boot encrypted-storage"
-DISTRO_FEATURES_append += " ima tpm tpm2 efi-secure-boot encrypted-storage"
+DISTRO_FEATURES_NATIVE_append += " ima tpm tpm2 efi-secure-boot luks"
+DISTRO_FEATURES_append += " ima tpm tpm2 efi-secure-boot luks"
 SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
     packagegroup-efi-secure-boot \
     packagegroup-tpm \
     packagegroup-tpm2 \
     packagegroup-ima \
-    packagegroup-encrypted-storage \
+    packagegroup-luks \
 "
 DEBUG_FLAGS_forcevariable = ""
 

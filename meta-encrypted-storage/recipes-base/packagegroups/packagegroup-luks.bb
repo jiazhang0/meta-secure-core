@@ -1,6 +1,6 @@
-DESCRIPTION = "The packages used for encrypted storage."
+DESCRIPTION = "The packages used for LUKS."
 
-require packagegroup-encrypted-storage.inc
+require packagegroup-luks.inc
 
 # Install the minimal stuffs only for the linux rootfs.
 # The common packages shared between initramfs and rootfs

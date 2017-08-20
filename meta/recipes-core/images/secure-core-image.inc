@@ -10,8 +10,8 @@ SECURE_CORE_IMAGE_EXTRA_INSTALL_append += "\
                          "packagegroup-tpm2", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "ima", \
                          "packagegroup-ima", "", d)} \
-    ${@bb.utils.contains("DISTRO_FEATURES", "encrypted-storage", \
-                         "packagegroup-encrypted-storage", "", d)} \
+    ${@bb.utils.contains("DISTRO_FEATURES", "luks", \
+                         "packagegroup-luks", "", d)} \
 "
 
 IMAGE_INSTALL = "\

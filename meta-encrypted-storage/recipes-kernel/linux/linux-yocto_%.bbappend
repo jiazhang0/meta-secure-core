@@ -1,1 +1,1 @@
-include linux-yocto-encrypted-storage.inc
+include linux-yocto-luks.inc

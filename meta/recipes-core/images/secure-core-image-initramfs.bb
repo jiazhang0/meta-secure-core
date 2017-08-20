@@ -8,8 +8,8 @@ ROOTFS_BOOTSTRAP_INSTALL_append += "\
                          "packagegroup-tpm2-initramfs", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "ima", \
                          "packagegroup-ima-initramfs", "", d)} \
-    ${@bb.utils.contains("DISTRO_FEATURES", "encrypted-storage", \
-                         "packagegroup-encrypted-storage-initramfs", "", d)} \
+    ${@bb.utils.contains("DISTRO_FEATURES", "luks", \
+                         "packagegroup-luks-initramfs", "", d)} \
 "
 
 PACKAGE_INSTALL = "\

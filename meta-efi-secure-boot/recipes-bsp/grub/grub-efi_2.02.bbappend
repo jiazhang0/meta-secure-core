@@ -65,11 +65,10 @@ do_install_append_class-native() {
 do_install_append_class-target() {
     local menu="${WORKDIR}/boot-menu.inc"
 
-    # Enable the default IMA rules if IMA is enabled and encrypted-storage is
-    # disabled. This is because unseal operation will fail when any PCR is
-    # extended due to updating the aggregate integrity value by the default
-    # IMA rules.
-    [ x"${IMA}" = x"1" -a x"${@bb.utils.contains('DISTRO_FEATURES', 'encrypted-storage', '1', '0', d)}" != x"1" ] && {
+    # Enable the default IMA rules if IMA is enabled and luks is disabled.
+    # This is because unseal operation will fail when any PCR is extended
+    # due to updating the aggregate integrity value by the default IMA rules.
+    [ x"${IMA}" = x"1" -a x"${@bb.utils.contains('DISTRO_FEATURES', 'luks', '1', '0', d)}" != x"1" ] && {
         ! grep -q "ima_policy=tcb" "$menu" &&
             sed -i 's/^\s*linux\s\+.*bzImage.*/& ima_policy=tcb/g' "$menu"
     }

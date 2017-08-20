@@ -170,9 +170,9 @@ The following best practices should be applied with using IMA.
 
 - The default IMA rules provides the ability of measuring the boot components
   and calculating the aggregate integrity value for attesting. However, this
-  function conflicts with encrypted-storage feature which employs PCR policy
-  session to retrieve the passphrase in a safe way. If both of them are
-  enabled, the default IMA rules will be not used.
+  function conflicts with the luks feature which employs PCR policy session to
+  retrieve the passphrase in a safe way. If both of them are enabled, the
+  default IMA rules will be not used.
 
 ### Reference
 [Official IMA wiki page](https://sourceforge.net/p/linux-ima/wiki/Home/)
