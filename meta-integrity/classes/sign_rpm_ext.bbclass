@@ -17,7 +17,7 @@ python () {
         d.setVar('GPG_PATH', gpg_path)
 
     if not os.path.exists(gpg_path):
-        status, output = oe.utils.getstatusoutput('mkdir -p %s' % gpg_path)
+        status, output = oe.utils.getstatusoutput('mkdir -m 0700 -p %s' % gpg_path)
         if status:
             raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
                                       (gpg_path, output))
