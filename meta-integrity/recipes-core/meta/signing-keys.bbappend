@@ -5,7 +5,7 @@ python check_public_keys () {
     gpg_keyid = d.getVar('RPM_GPG_NAME', True)
 
     # Check RPM_GPG_NAME and RPM_GPG_PASSPHRASE
-    cmd = "%s --homedir %s --list-keys -a %s" % \
+    cmd = "%s --homedir %s --list-keys %s" % \
             (gpg_bin, gpg_path, gpg_keyid)
     status, output = oe.utils.getstatusoutput(cmd)
     if not status:
@@ -16,10 +16,8 @@ python check_public_keys () {
     cmd = '%s --batch --homedir %s --import %s --passphrase %s' % \
             (gpg_bin, gpg_path, gpg_key, d.getVar('RPM_GPG_PASSPHRASE', True))
     status, output = oe.utils.getstatusoutput(cmd)
-    print (cmd)
     if status:
         raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
                                   (gpg_key, output))
 }
-check_public_keys[cleandirs] = "${B}"
 do_get_public_keys[prefuncs] += "check_public_keys"
