@@ -20,4 +20,5 @@ python check_public_keys () {
         raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
                                   (gpg_key, output))
 }
+check_public_keys[lockfiles] = "${TMPDIR}/check_public_keys.lock"
 do_get_public_keys[prefuncs] += "check_public_keys"
