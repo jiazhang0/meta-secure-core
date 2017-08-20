@@ -13,7 +13,7 @@ inherit sign_rpm user-key-store
 python () {
     gpg_path = d.getVar('GPG_PATH', True)
     if not gpg_path:
-        gpg_path = d.getVar('DEPLOY_DIR_IMAGE', True) + '/.gnupg'
+        gpg_path = d.getVar('TMPDIR', True) + '/.gnupg'
         d.setVar('GPG_PATH', gpg_path)
 
     if not os.path.exists(gpg_path):
