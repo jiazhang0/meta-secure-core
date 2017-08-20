@@ -11,7 +11,7 @@ SECTION = "security/tpm"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8031b2ae48ededc9b982c08620573426"
 
-DEPENDS = "openssl"
+DEPENDS = "openssl10"
 PROVIDES = "${PACKAGES}"
 
 PV = "0.3.14+git${SRCPV}"

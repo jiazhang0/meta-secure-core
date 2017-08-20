@@ -5,7 +5,7 @@ SECTION = "security/tpm"
 LICENSE = "openssl"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=11f0ee3af475c85b907426e285c9bb52"
 
-DEPENDS += "openssl trousers"
+DEPENDS += "openssl10 trousers"
 
 PV = "0.4.2+git${SRCPV}"
 

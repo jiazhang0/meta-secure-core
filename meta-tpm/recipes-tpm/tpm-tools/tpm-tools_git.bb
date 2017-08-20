@@ -10,7 +10,7 @@ SECTION = "security/tpm"
 LICENSE = "CPL-1.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=059e8cd6165cb4c31e351f2b69388fd9"
 
-DEPENDS = "libtspi openssl"
+DEPENDS = "libtspi openssl10"
 DEPENDS_class-native = "trousers-native"
 
 PV = "1.3.9.1+git${SRCPV}"
