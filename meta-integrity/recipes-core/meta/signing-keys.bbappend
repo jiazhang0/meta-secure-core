@@ -13,8 +13,8 @@ python check_public_keys () {
 
     # Import RPM_GPG_NAME if not found
     gpg_key = uks_rpm_keys_dir(d) + 'RPM-GPG-PRIVKEY-' + gpg_keyid
-    cmd = '%s --batch --homedir %s --import %s --passphrase %s' % \
-            (gpg_bin, gpg_path, gpg_key, d.getVar('RPM_GPG_PASSPHRASE', True))
+    cmd = '%s --batch --homedir %s --passphrase %s --import %s' % \
+            (gpg_bin, gpg_path, d.getVar('RPM_GPG_PASSPHRASE', True), gpg_key)
     status, output = oe.utils.getstatusoutput(cmd)
     if status:
         raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
