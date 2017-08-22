@@ -1,6 +1,6 @@
-From 3b4fe6b2eda92c78c80a2c0c1ab5625fd0920811 Mon Sep 17 00:00:00 2001
-From: Lans Zhang <jia.zhang@windriver.com>
-Date: Thu, 3 Aug 2017 09:53:37 +0800
+From 22b58e64a0cd10456f79f146216c899a898ce037 Mon Sep 17 00:00:00 2001
+From: Jia Zhang <lans.zhang2008@gmail.com>
+Date: Tue, 22 Aug 2017 17:32:47 +0800
 Subject: [PATCH] Fix the world build failure due to the missing rule of
  generating shim.key
 
@@ -12,18 +12,18 @@ for signing. However, the commit 79c0d3ab3964ff03483277a515aaf50016bbe786
 forgets to add the rule of generating shim.key, causing the world build
 failure.
 
-Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+Signed-off-by: Jia Zhang <lans.zhang2008@gmail.com>
 ---
  Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 063578a..96bdf14 100644
+index 0ec2b0b..2fc6c90 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -125,7 +125,7 @@ FALLBACK_SRCS = $(foreach source,$(ORIG_FALLBACK_SRCS),$(TOPDIR)/$(source))
+@@ -163,7 +163,7 @@ FALLBACK_SRCS = $(foreach source,$(ORIG_FALLBACK_SRCS),$(TOPDIR)/$(source))
  
- all: $(TARGET)
+ all: $(TARGETS)
  
 -shim.crt:
 +shim.crt shim.key:
@@ -31,5 +31,5 @@ index 063578a..96bdf14 100644
  
  shim.cer: shim.crt
 -- 
-2.7.5
+2.14.1
 

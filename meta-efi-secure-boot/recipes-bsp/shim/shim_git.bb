@@ -26,13 +26,9 @@ SRC_URI = "\
     file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch;apply=0 \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
-    file://0007-Use-sbsign-to-sign-MokManager-and-fallback.patch \
     file://0008-Fix-the-world-build-failure-due-to-the-missing-rule-.patch \
-    file://0010-Makefile-do-not-sign-the-efi-file.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
-    file://0013-fallback-fix-double-free-of-dp.patch \
-    file://0014-fallback-work-around-the-issue-of-boot-option-creati.patch \
     file://0015-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
     file://0016-fallback-don-t-set-the-csv-entry-as-the-first-boot-b.patch \
     file://0017-fallback-always-try-to-boot-the-option-recorded-in-c.patch \
@@ -42,7 +38,7 @@ SRC_URI_append_x86-64 = "\
                          'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
 "
-SRCREV = "631265b7e9c447412d423ffed1b39dfd706054cd"
+SRCREV = "5202f80c32bdcab0469785e953bf9fa8dd4eaaa1"
 
 S = "${WORKDIR}/git"
 
@@ -50,6 +46,7 @@ inherit deploy user-key-store
 
 EXTRA_OEMAKE = "\
     CROSS_COMPILE="${TARGET_PREFIX}" \
+    prefix="${STAGING_DIR_HOST}/${prefix}" \
     LIB_GCC="`${CC} -print-libgcc-file-name`" \
     LIB_PATH="${STAGING_LIBDIR}" \
     EFI_PATH="${STAGING_LIBDIR}" \
@@ -68,6 +65,7 @@ EXTRA_OEMAKE = "\
        if uks_signing_model(d) == 'user' else ''} \
     ENABLE_HTTPBOOT=1 \
     OVERRIDE_SECURITY_POLICY=1 \
+    ENABLE_SBSIGN=1 \
 "
 
 PARALLEL_MAKE = ""
