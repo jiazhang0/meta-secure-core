@@ -22,3 +22,6 @@ python () {
             raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
                                       (gpg_path, output))
 }
+
+do_package_index[depends] += "signing-keys-native:do_check_public_keys"
+do_package_write_rpm[depends] += "signing-keys-native:do_check_public_keys"
