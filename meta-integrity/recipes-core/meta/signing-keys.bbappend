@@ -1,4 +1,4 @@
-python check_public_keys () {
+python do_check_public_keys () {
     gpg_path = d.getVar('GPG_PATH', True)
     gpg_bin = d.getVar('GPG_BIN', True) or \
               bb.utils.which(os.getenv('PATH'), 'gpg')
@@ -20,5 +20,9 @@ python check_public_keys () {
         raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
                                   (gpg_key, output))
 }
-check_public_keys[lockfiles] = "${TMPDIR}/check_public_keys.lock"
-do_get_public_keys[prefuncs] += "check_public_keys"
+
+addtask do_check_public_keys before do_get_public_keys
+
+do_check_public_keys[lockfiles] = "${TMPDIR}/check_public_keys.lock"
+
+BBCLASSEXTEND="native"
