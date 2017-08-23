@@ -17,6 +17,7 @@ SECURE_CORE_IMAGE_EXTRA_INSTALL_append += "\
 IMAGE_INSTALL = "\
     packagegroup-core-boot \
     kernel-initramfs \
+    dnf \
     ${SECURE_CORE_IMAGE_EXTRA_INSTALL} \
 "
 
