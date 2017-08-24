@@ -10,6 +10,32 @@ RPM_FSK_PASSWORD ?= "password"
 
 inherit sign_rpm user-key-store
 
+python check_rpm_public_key () {
+    gpg_path = d.getVar('GPG_PATH', True)
+    gpg_bin = d.getVar('GPG_BIN', True) or \
+              bb.utils.which(os.getenv('PATH'), 'gpg')
+    gpg_keyid = d.getVar('RPM_GPG_NAME', True)
+
+    # Check RPM_GPG_NAME and RPM_GPG_PASSPHRASE
+    cmd = "%s --homedir %s --list-keys %s" % \
+            (gpg_bin, gpg_path, gpg_keyid)
+    status, output = oe.utils.getstatusoutput(cmd)
+    if not status:
+        return
+
+    # Import RPM_GPG_NAME if not found
+    gpg_key = uks_rpm_keys_dir(d) + 'RPM-GPG-PRIVKEY-' + gpg_keyid
+    cmd = '%s --batch --homedir %s --passphrase %s --import %s' % \
+            (gpg_bin, gpg_path, d.getVar('RPM_GPG_PASSPHRASE', True), gpg_key)
+    status, output = oe.utils.getstatusoutput(cmd)
+    if status:
+        raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
+                                  (gpg_key, output))
+}
+check_rpm_public_key[lockfiles] = "${TMPDIR}/check_rpm_public_key.lock"
+do_package_write_rpm[prefuncs] += "check_rpm_public_key"
+check_rpm_public_key[prefuncs] += "check_deploy_keys"
+
 python () {
     gpg_path = d.getVar('GPG_PATH', True)
     if not gpg_path:
