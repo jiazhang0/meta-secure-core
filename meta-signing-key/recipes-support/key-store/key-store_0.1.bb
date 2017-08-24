@@ -27,9 +27,6 @@ SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
 IMA_CERT = "${KEY_DIR}/x509_evm.der"
 
 python () {
-    if uks_signing_model(d) != "sample":
-        return
-
     pn = d.getVar('PN', True) + '-system-trusted-privkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
     d.setVar('FILES_' + pn, d.getVar('SYSTEM_PRIV_KEY', True))
@@ -42,8 +39,8 @@ python () {
 
     pn = d.getVar('PN', True) + '-rpm-pubkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
-    d.setVar('FILES_' + pn, d.getVar(d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-*', True))
-    d.setVar('CONFFILES_' + pn, d.getVar(d.getVar('RPM_KEY_DIR', True) + 'RPM-GPG-KEY-*', True))
+    d.setVar('FILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
+    d.setVar('CONFFILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
     d.appendVar('RDEPENDS_' + pn, ' rpm')
 }
 
@@ -70,14 +67,14 @@ do_install() {
     key_dir="${@uks_system_trusted_keys_dir(d)}"
     install -m 0644 "$key_dir/system_trusted_key.crt" "${D}${SYSTEM_CERT}"
 
-    if [ "${@uks_signing_model(d)}" = "sample" ]; then
+    if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
         install -m 0400 "$key_dir/system_trusted_key.key" "${D}${SYSTEM_PRIV_KEY}"
     fi
 
     key_dir="${@uks_ima_keys_dir(d)}"
     install -m 0644 "$key_dir/x509_ima.der" "${D}${IMA_CERT}"
 
-    if [ "${@uks_signing_model(d)}" = "sample" ]; then
+    if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
         install -m 0400 "$key_dir/x509_ima.key" "${D}${IMA_PRIV_KEY}"
     fi
 }
