@@ -12,6 +12,8 @@ SECURE_CORE_IMAGE_EXTRA_INSTALL_append += "\
                          "packagegroup-ima", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "luks", \
                          "packagegroup-luks", "", d)} \
+    ${@bb.utils.contains("DISTRO_FEATURES", "ids", \
+                         "packagegroup-ids", "", d)} \
 "
 
 IMAGE_INSTALL = "\
