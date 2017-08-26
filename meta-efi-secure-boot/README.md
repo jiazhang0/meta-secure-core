@@ -115,11 +115,13 @@ The sample keys used for MOK Secure Boot are centrally placed under
 
 - shim_cert.crt  
   The X509 certificate embedded in shim, used to verify the images either
-  directly or indirectly loaded by shim.
+  directly or indirectly loaded by shim. Currently, this certificate is
+  not used by default.
 
 - shim_cert.key  
   The private key corresponding to shim_cert.crt, used to sign the images
-  either directly or indirectly loaded by shim.
+  either directly or indirectly loaded by shim. Currently, this certificate
+  is not used by default.
 
 - vendor_cert.crt  
   Act as the same way as shim_cert.crt. In addition, vendor certificate
