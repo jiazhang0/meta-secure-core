@@ -5,6 +5,8 @@ _D=`dirname "$_S"`
 ROOT_DIR="`cd "$_D" && pwd`"
 
 KEYS_DIR="$ROOT_DIR/user-keys"
+GPG_KEYNAME=
+GPG_EMAIL=
 
 function show_help()
 {
@@ -19,6 +21,14 @@ Options:
  -d <dir>
     Set the path to save the generated user keys.
     Default: `pwd`/user-keys
+
+ -n <gpg key name>
+    Set the gpg's key name
+    Default: SecureCore
+
+ -m <gpg key ower's email address>
+    Set the ower's email address of the gpg key
+    Default: SecureCore@foo.com
 
  -h|--help
     Show this help information.
@@ -61,6 +71,12 @@ while [ $# -gt 0 ]; do
     case $opt in
         -d)
             shift && KEYS_DIR="$1"
+            ;;
+        -n)
+            shift && GPG_KEYNAME="$1"
+            ;;
+        -m)
+            shift && GPG_EMAIL="$1"
             ;;
         -h|--help)
             show_help `basename $0`
@@ -193,6 +209,16 @@ create_rpm_user_key() {
     [ ! -d "$key_dir" ] && mkdir -m 0700 -p "$key_dir"
 
     local gpg_key_name="SecureCore"
+    local gpg_email="SecureCore@foo.com"
+
+    if [ ! -z $GPG_KEYNAME ]; then
+	    gpg_key_name=$GPG_KEYNAME
+    fi
+
+    if [ ! -z $GPG_EMAIL ]; then
+	    gpg_email=$GPG_EMAIL
+    fi
+
     local priv_key="$key_dir/RPM-GPG-PRIVKEY-$gpg_key_name"
     local pub_key="$key_dir/RPM-GPG-KEY-$gpg_key_name"
 
@@ -214,7 +240,7 @@ Key-Type: RSA
 Key-Length: 2048
 Name-Real: $gpg_key_name
 Name-Comment: RPM Signing Certificate
-Name-Email: $gpg_key_name@foo.com
+Name-Email: $gpg_email
 Expire-Date: 0
 %pubring $pub_key.pub
 %secring $priv_key.sec
