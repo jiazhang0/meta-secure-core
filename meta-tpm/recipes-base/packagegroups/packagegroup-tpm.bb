@@ -9,6 +9,7 @@ inherit packagegroup
 RDEPENDS_${PN} = "\
     trousers \
     tpm-tools \
+    tpm-quote-tools \
     openssl-tpm-engine \
     rng-tools \
 "
