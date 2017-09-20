@@ -23,7 +23,7 @@ do_configure_prepend() {
     currentdir="$(pwd)"
     cd "${S}"
     ACLOCAL="aclocal --system-acdir=${STAGING_DATADIR}/aclocal" \
-        ./bootstrap --force
+        ./bootstrap
     cd "${currentdir}"
 }
 
