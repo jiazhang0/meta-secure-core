@@ -1,1 +1,1 @@
-RDEPENDS_${PN} += "lvm2"
+RDEPENDS_${PN} += "lvm2 lvm2-udevrules"
