@@ -41,6 +41,6 @@ RDEPENDS_${PN} += "\
 # @initrdscripts-ima: init.ima
 # @cryptfs-tpm2-initramfs: init.cryptfs
 RRECOMMENDS_${PN} += "\
-    initrdscripts-ima \
-    cryptfs-tpm2-initramfs \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'ima', 'initrdscripts-ima', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'luks', 'cryptfs-tpm2-initramfs', '', d)} \
 "
