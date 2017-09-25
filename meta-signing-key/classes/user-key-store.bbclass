@@ -325,6 +325,16 @@ deploy_ima_keys() {
     fi
 }
 
+deploy_rpm_keys() {
+    local deploy_dir="${DEPLOY_KEYS_DIR}/rpm_keys"
+
+    if [ x"${RPM_KEYS_DIR}" != x"$deploy_dir" ]; then
+        install -d "$deploy_dir"
+
+        cp -af "${RPM_KEYS_DIR}"/* "$deploy_dir"
+    fi
+}
+
 deploy_system_trusted_keys() {
     local deploy_dir="${DEPLOY_KEYS_DIR}/system_trusted_keys"
 
