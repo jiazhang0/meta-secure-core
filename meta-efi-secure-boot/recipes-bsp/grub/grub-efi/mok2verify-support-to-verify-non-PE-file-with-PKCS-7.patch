@@ -322,7 +322,7 @@ index 0000000..3865661
 +      else
 +	{
 +	  grub_printf ("failed to verify file %s (err: 0x%lx)\n",
-+		       path, status);
++		       path, (long)status);
 +
 +	  return grub_error (GRUB_ERR_ACCESS_DENIED, "the file %s is not verified",
 +			     path);
