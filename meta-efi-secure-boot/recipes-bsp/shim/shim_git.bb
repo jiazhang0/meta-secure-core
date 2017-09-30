@@ -64,9 +64,10 @@ EXTRA_OEMAKE = "\
     ${@'VENDOR_DBX_FILE=${WORKDIR}/vendor_dbx.esl' \
        if uks_signing_model(d) == 'user' else ''} \
     ENABLE_HTTPBOOT=1 \
-    OVERRIDE_SECURITY_POLICY=1 \
     ENABLE_SBSIGN=1 \
 "
+
+EXTRA_OEMAKE_append_x86-64 = " OVERRIDE_SECURITY_POLICY=1"
 
 PARALLEL_MAKE = ""
 COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
