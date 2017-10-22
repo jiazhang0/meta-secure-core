@@ -10,12 +10,8 @@ chainloader the next stage bootloader with the integrity check using the
 shim-managed certificates corresponding to another set of trusted keys, which
 may be different than the trusted keys used by UEFI Secure Boot.
 
-fallback is the second-stage bootloader used to by-pass the Red Hat shim
-signing review. It is designed to read a .csv file and will create a boot
-option in BIOS boot manager for the first boot entry in .csv.
-
-This layer introduces the SELoader as the third-stage bootloader and eventually
-chainliader to the fourth-stage bootloader "grub". With the extension provided
+This layer introduces the SELoader as the second-stage bootloader and eventually
+chainliader to the third-stage bootloader "grub". With the extension provided
 by SELoader, grub configuration files, kernel (even without EFI stub support)
 and initrd can be authenticated. This capability is not available in the shim
 bootloader.
@@ -35,12 +31,11 @@ A complete boot flow looks like as following:
 
 - UEFI firmware boot manager (UEFI Secure Boot enabled) ->
   - shim (verified by a DB certificate) ->
-    - fallback (verified by a shim-managed certificate) ->
-      - SELoader (ditto) ->
-        - grub (ditto) ->
-          - grub.cfg (ditto)
-          - kernel (ditto)
-          - initramfs (ditto)
+    - SELoader (ditto) ->
+      - grub (ditto) ->
+        - grub.cfg (ditto)
+        - kernel (ditto)
+        - initramfs (ditto)
 
 ### Quick Start For The First Boot
 - Deploy the rootfs

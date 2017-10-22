@@ -21,17 +21,12 @@ PV = "12+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/rhinstaller/shim.git \
-    file://bootx64.csv \
-    file://bootia32.csv \
     file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch;apply=0 \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
     file://0008-Fix-the-world-build-failure-due-to-the-missing-rule-.patch \
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
-    file://0015-fallback-allow-to-search-.csv-in-EFI-BOOT.patch \
-    file://0016-fallback-don-t-set-the-csv-entry-as-the-first-boot-b.patch \
-    file://0017-fallback-always-try-to-boot-the-option-recorded-in-c.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
@@ -118,7 +113,6 @@ python do_sign() {
             edss_sign_efi_image(d.expand('${S}/shim${EFI_ARCH}.efi'), dst, d)
 
     sb_sign(d.expand('${S}/mm${EFI_ARCH}.efi'), d.expand('${B}/mm${EFI_ARCH}.efi.signed'), d)
-    sb_sign(d.expand('${S}/fb${EFI_ARCH}.efi'), d.expand('${B}/fb${EFI_ARCH}.efi.signed'), d)
 }
 addtask sign after do_compile before do_install
 
@@ -127,18 +121,13 @@ do_install() {
 
     local shim_dst="${D}${EFI_TARGET}/boot${EFI_ARCH}.efi"
     local mm_dst="${D}${EFI_TARGET}/mm${EFI_ARCH}.efi"
-    local fb_dst="${D}${EFI_TARGET}/fb${EFI_ARCH}.efi"
     if [ x"${UEFI_SB}" = x"1" ]; then
         install -m 0600 "${B}/shim${EFI_ARCH}.efi.signed" "$shim_dst"
         install -m 0600 "${B}/mm${EFI_ARCH}.efi.signed" "$mm_dst"
-        install -m 0600 "${B}/fb${EFI_ARCH}.efi.signed" "$fb_dst"
     else
         install -m 0600 "${B}/shim${EFI_ARCH}.efi" "$shim_dst"
         install -m 0600 "${B}/mm${EFI_ARCH}.efi" "$mm_dst"
-        install -m 0600 "${B}/fb${EFI_ARCH}.efi" "$fb_dst"
     fi
-
-    install -m 0600 "${WORKDIR}/boot${EFI_ARCH}.csv" "${D}${EFI_TARGET}"
 }
 
 # Install the unsigned images for manual signing
@@ -149,13 +138,9 @@ do_deploy() {
         "${DEPLOYDIR}/efi-unsigned/boot${EFI_ARCH}.efi"
     install -m 0600 "${B}/mm${EFI_ARCH}.efi" \
         "${DEPLOYDIR}/efi-unsigned/mm${EFI_ARCH}.efi"
-    install -m 0600 "${B}/fb${EFI_ARCH}.efi" \
-        "${DEPLOYDIR}/efi-unsigned/fb${EFI_ARCH}.efi"
 
     install -m 0600 "${D}${EFI_TARGET}/boot${EFI_ARCH}.efi" "${DEPLOYDIR}"
     install -m 0600 "${D}${EFI_TARGET}/mm${EFI_ARCH}.efi" "${DEPLOYDIR}"
-    install -m 0600 "${D}${EFI_TARGET}/fb${EFI_ARCH}.efi" "${DEPLOYDIR}"
-    install -m 0600 "${D}${EFI_TARGET}/boot${EFI_ARCH}.csv" "${DEPLOYDIR}"
 }
 addtask deploy after do_install before do_build
 
