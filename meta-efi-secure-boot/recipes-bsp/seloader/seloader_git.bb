@@ -29,7 +29,7 @@ PV = "0.4.5+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/SELoader.git \
 "
-SRCREV = "0410016788b69eef444f275158ffb2e77d8d6719"
+SRCREV = "104531fbe736cbfc2024c0eeed821c8f9440e225"
 
 S = "${WORKDIR}/git"
 
