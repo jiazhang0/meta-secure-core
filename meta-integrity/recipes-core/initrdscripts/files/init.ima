@@ -100,7 +100,7 @@ keyring_id=0x`grep '\skeyring\s*\.ima: ' "${ROOT_DIR}/proc/keys" | awk '{ print 
 # The trusted IMA certificate /etc/keys/x509_evm.der in initramfs was
 # automatically loaded by kernel already. Here is the opportunity to load
 # a custom IMA certificate from the real rootfs.
-for cert in ${ROOT_DIR}/etc/keys/x509_evm*.crt; do
+for cert in ${ROOT_DIR}/etc/keys/x509_evm*.der; do
     [ ! -s "$cert" ] && continue
 
     if ! evmctl import "$cert" "$keyring_id" >"${ROOT_DIR}/dev/null"; then
