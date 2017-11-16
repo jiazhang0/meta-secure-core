@@ -77,6 +77,7 @@ in local.conf:
 INITRAMFS_IMAGE = "secure-core-image-initramfs"
 DISTRO_FEATURES_NATIVE_append += " ima tpm tpm2 efi-secure-boot luks"
 DISTRO_FEATURES_append += " ima tpm tpm2 efi-secure-boot luks"
+INHERIT += "sign_rpm_ext"
 SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
     packagegroup-efi-secure-boot \
     packagegroup-tpm \
