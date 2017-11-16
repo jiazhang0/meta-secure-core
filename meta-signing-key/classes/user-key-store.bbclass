@@ -2,7 +2,7 @@ DEPENDS_append_class-target += "\
     sbsigntool-native \
     libsign-native \
     openssl-native \
-    efitools-native \
+    ${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "efitools-native", "", d)} \
 "
 
 USER_KEY_SHOW_VERBOSE = "1"
