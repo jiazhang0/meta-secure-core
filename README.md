@@ -44,7 +44,7 @@ which provides transparent encryption of block devices using the kernel crypto
 API. Additionally, the utility cryptsetup is used to conveniently setup disk
 encryption based on device-mapper crypt target.
 
-#### Integrity
+#### IMA
 The Linux IMA subsystem introduces hooks within the Linux kernel to support
 measuring the integrity of files that are loaded (including application code)
 before it is executed or mmap()ed to memory. The measured value (hash) is then
@@ -64,6 +64,15 @@ application) if the hash does not match. In that case, the IMA subsystem allows
 files and applications to be loaded if the hashes match (and will save the
 updated hash if the file is modified) but refuse to load it if it doesn't. This
 provides some protection against offline tampering of the files.
+
+#### MODSIGN
+This feature provides the signature check for loading a kernel module. The
+signing key must be authenticated by a system trusted key already imported
+to the system trusted keyring.
+
+If the kernel module is not signed, or signed by a signing key not matching
+up an imported system trusted key, kernel would refuse to load such a kernel
+module.
 
 #### RPM signing
 This feature provides the integrity verification for the RPM package.
