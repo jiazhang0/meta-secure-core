@@ -17,11 +17,23 @@ RPM_KEY_DIR = "${sysconfdir}/pki/rpm-gpg"
 # For ${PN}-system-trusted-privkey
 SYSTEM_PRIV_KEY = "${KEY_DIR}/system_trusted_key.key"
 
+# For ${PN}-extra-system-trusted-privkey
+EXTRA_SYSTEM_PRIV_KEY = "${KEY_DIR}/extra_system_trusted_key.key"
+
+# For ${PN}-modsign-privkey
+MODSIGN_PRIV_KEY = "${KEY_DIR}/modsign_key.key"
+
 # For ${PN}-ima-privkey
 IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.crt"
 
 # For ${PN}-system-trusted-cert
 SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
+
+# For ${PN}-extra-system-trusted-cert
+EXTRA_SYSTEM_CERT = "${KEY_DIR}/extra_system_trusted_key.crt"
+
+# For ${PN}-modsign-cert
+MODSIGN_CERT = "${KEY_DIR}/modsign_key.crt"
 
 # For ${PN}-ima-cert
 IMA_CERT = "${KEY_DIR}/x509_evm.der"
@@ -35,7 +47,17 @@ python () {
     d.setVar('FILES_' + pn, d.getVar('SYSTEM_PRIV_KEY', True))
     d.setVar('CONFFILES_' + pn, d.getVar('SYSTEM_PRIV_KEY', True))
 
-    pn = d.getVar('PN', True) + '-ima-privkey'
+    pn = d.getVar('PN', True) + '-extra-system-trusted-privkey'
+    d.setVar('PACKAGES_prepend', pn + ' ')
+    d.setVar('FILES_' + pn, d.getVar('EXTRA_SYSTEM_PRIV_KEY', True))
+    d.setVar('CONFFILES_' + pn, d.getVar('EXTRA_SYSTEM_PRIV_KEY', True))
+
+    pn = d.getVar('PN', True) + '-modsign-privkey'
+    d.setVar('PACKAGES_prepend', pn + ' ')
+    d.setVar('FILES_' + pn, d.getVar('MODSIGN_PRIV_KEY', True))
+    d.setVar('CONFFILES_' + pn, d.getVar('MODSIGN_PRIV_KEY', True))
+
+    pn = d.getVar('PN', True) + 'ima-privkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
     d.setVar('FILES_' + pn, d.getVar('IMA_PRIV_KEY', True))
     d.setVar('CONFFILES_' + pn, d.getVar('IMA_PRIV_KEY', True))
@@ -74,6 +96,24 @@ do_install() {
         install -m 0400 "$key_dir/system_trusted_key.key" "${D}${SYSTEM_PRIV_KEY}"
     fi
 
+    key_dir="${@uks_extra_system_trusted_keys_dir(d)}"
+    install -m 0644 "$key_dir/extra_system_trusted_key.crt" \
+        "${D}${EXTRA_SYSTEM_CERT}"
+
+    if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
+        install -m 0400 "$key_dir/extra_system_trusted_key.key" \
+            "${D}${EXTRA_SYSTEM_PRIV_KEY}"
+    fi
+
+    key_dir="${@uks_modsign_keys_dir(d)}"
+    install -m 0644 "$key_dir/modsign_key.crt" \
+        "${D}${MODSIGN_CERT}"
+
+    if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
+        install -m 0400 "$key_dir/modsign_key.key" \
+            "${D}${MODSIGN_PRIV_KEY}"
+    fi
+
     key_dir="${@uks_ima_keys_dir(d)}"
     install -m 0644 "$key_dir/x509_ima.der" "${D}${IMA_CERT}"
 
@@ -108,20 +148,30 @@ pkg_postinst_${PN}-rpm-pubkey() {
     fi
 }
 
-PACKAGES =+ "\
+PACKAGES = "\
     ${PN}-system-trusted-cert \
+    ${PN}-extra-system-trusted-cert \
+    ${PN}-modsign-cert \
     ${PN}-ima-cert \
 "
 
 # Note any private key is not available if user key signing model used.
-PACKAGES_DYNAMIC += "\
-    ${PN}-ima-privkey \
+PACKAGES_DYNAMIC = "\
     ${PN}-system-trusted-privkey \
+    ${PN}-extra-system-trusted-privkey \
+    ${PN}-modsign-privkey \
+    ${PN}-ima-privkey \
     ${PN}-rpm-pubkey \
 "
 
 FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+
+FILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
+CONFFILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
+
+FILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
+CONFFILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
 
 FILES_${PN}-ima-cert = "${IMA_CERT}"
 CONFFILES_${PN}-ima-cert = "${IMA_CERT}"

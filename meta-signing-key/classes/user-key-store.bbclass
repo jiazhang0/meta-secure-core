@@ -9,8 +9,10 @@ USER_KEY_SHOW_VERBOSE = "1"
 
 UEFI_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
 MOK_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
+MODSIGN = '${@bb.utils.contains("DISTRO_FEATURES", "modsign", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
-SYSTEM_TRUSTED = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
+SYSTEM_TRUSTED = '${@"1" if d.getVar("IMA", True) or d.getVar("MODSIGN", True) else "0"}'
+EXTRA_SYSTEM_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) else "0"}'
 RPM = '1'
 
 def vprint(str, d):
@@ -23,6 +25,14 @@ def uks_signing_model(d):
 def uks_system_trusted_keys_dir(d):
     set_keys_dir('SYSTEM_TRUSTED', d)
     return d.getVar('SYSTEM_TRUSTED_KEYS_DIR', True) + '/'
+
+def uks_extra_system_trusted_keys_dir(d):
+    set_keys_dir('EXTRA_SYSTEM_TRUSTED', d)
+    return d.getVar('EXTRA_SYSTEM_TRUSTED_KEYS_DIR', True) + '/'
+
+def uks_modsign_keys_dir(d):
+    set_keys_dir('MODSIGN', d)
+    return d.getVar('MODSIGN_KEYS_DIR', True) + '/'
 
 def uks_ima_keys_dir(d):
     set_keys_dir('IMA', d)
@@ -155,6 +165,30 @@ def check_system_trusted_keys(d):
     dir = uks_system_trusted_keys_dir(d)
 
     _ = 'system_trusted_key'
+    if not os.path.exists(dir + _ + '.key'):
+        vprint("%s.key is unavailable" % _, d)
+        return False
+
+    if not os.path.exists(dir + _ + '.crt'):
+        vprint("%s.crt is unavailable" % _, d)
+        return False
+
+def check_extra_system_trusted_keys(d):
+    dir = uks_extra_system_trusted_keys_dir(d)
+
+    _ = 'extra_system_trusted_key'
+    if not os.path.exists(dir + _ + '.key'):
+        vprint("%s.key is unavailable" % _, d)
+        return False
+
+    if not os.path.exists(dir + _ + '.crt'):
+        vprint("%s.crt is unavailable" % _, d)
+        return False
+
+def check_modsign_keys(d):
+    dir = uks_modsign_keys_dir(d)
+
+    _ = 'modsign_key'
     if not os.path.exists(dir + _ + '.key'):
         vprint("%s.key is unavailable" % _, d)
         return False
@@ -345,6 +379,26 @@ deploy_system_trusted_keys() {
     fi
 }
 
+deploy_extra_system_trusted_keys() {
+    local deploy_dir="${DEPLOY_KEYS_DIR}/extra_system_trusted_keys"
+
+    if [ x"${EXTRA_SYSTEM_TRUSTED_KEYS_DIR}" != x"$deploy_dir" ]; then
+        install -d "$deploy_dir"
+
+        cp -af "${EXTRA_SYSTEM_TRUSTED_KEYS_DIR}"/* "$deploy_dir"
+    fi
+}
+
+deploy_modsign_keys() {
+    local deploy_dir="${DEPLOY_KEYS_DIR}/modsign_keys"
+
+    if [ x"${MODSIGN_KEYS_DIR}" != x"$deploy_dir" ]; then
+        install -d "$deploy_dir"
+
+        cp -af "${MODSIGN_KEYS_DIR}"/* "$deploy_dir"
+    fi
+}
+
 def deploy_keys(name, d):
     d.setVar('DEPLOY_KEYS_DIR', d.getVar('DEPLOY_DIR_IMAGE', True) + '/' + \
              d.getVar('SIGNING_MODEL', True) + '-keys')
@@ -359,6 +413,10 @@ def sanity_check_user_keys(name, may_exit, d):
         _ = check_ima_user_keys(d)
     elif name == 'SYSTEM_TRUSTED':
         _ = check_system_trusted_keys(d)
+    elif name == 'EXTRA_SYSTEM_TRUSTED':
+        _ = check_extra_system_trusted_keys(d)
+    elif name == 'MODSIGN':
+        _ = check_modsign_keys(d)
     elif name == 'RPM':
         _ = check_rpm_keys(d)
     else:
@@ -382,7 +440,7 @@ def set_keys_dir(name, d):
         d.setVar(name + '_KEYS_DIR', d.getVar('DEPLOY_DIR_IMAGE', True) + '/user-keys/' + name.lower() + '_keys')
 
 python check_deploy_keys() {
-    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED', 'RPM'):
+    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED', 'EXTRA_SYSTEM_TRUSTED', 'MODSIGN', 'RPM'):
         if d.getVar(_, True) != "1":
             continue
 
