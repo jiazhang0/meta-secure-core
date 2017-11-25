@@ -15,6 +15,8 @@ SRC_URI += "\
        if d.getVar('MODSIGN_ENABLED', True) == '1' else ''} \
 "
 
+INHIBIT_PACKAGE_STRIP = "${@'1' if d.getVar('MODSIGN_ENABLED', True) == '1' else '0'}"
+
 do_configure_prepend() {
     sys_cert="${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.crt"
     modsign_key="${STAGING_DIR_TARGET}${sysconfdir}/keys/modsign_key.key"
