@@ -75,8 +75,10 @@ The full features in meta-secure-core can be configured with these definitions
 in local.conf:
 
 INITRAMFS_IMAGE = "secure-core-image-initramfs"
-DISTRO_FEATURES_NATIVE_append += " ima tpm tpm2 efi-secure-boot luks"
-DISTRO_FEATURES_append += " ima tpm tpm2 efi-secure-boot luks"
+DISTRO_FEATURES_NATIVE_append += "systemd ima tpm tpm2 efi-secure-boot luks"
+DISTRO_FEATURES_append += "systemd ima tpm tpm2 efi-secure-boot luks modsign"
+MACHINE_FEATURES_NATIVE_append += "efi"
+MACHINE_FEATURES_append += "efi"
 INHERIT += "sign_rpm_ext"
 SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
     packagegroup-efi-secure-boot \
@@ -94,3 +96,8 @@ The meta-secure-core provides an image called secure-core-image. Run the
 following command to build it.
 
     $ bitbake secure-core-image
+
+Reference
+=========
+
+[SecureCore - a reference implementation based on meta-secure-core](https://github.com/jiazhang0/SecureCore)

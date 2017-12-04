@@ -79,4 +79,6 @@ This feature provides the integrity verification for the RPM package.
 
 ### Building the meta-secure-core layer
 This layer should be added to the bblayers.conf file. To enable certain
-feature provided by this layer, add the feature to the local.conf file. 
+feature provided by this layer, add the feature to the local.conf file.
+
+A reference implementation based on this layer is [available](https://github.com/jiazhang0/SecureCore).
