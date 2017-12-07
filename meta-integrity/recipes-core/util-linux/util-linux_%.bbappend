@@ -12,6 +12,6 @@ do_install_append_class-target() {
         "${D}${sbindir}/switch_root.static"
 }
 
-PACKAGES =+ "${PN}-switch_root.static"
+PACKAGES =+ "${PN}-switch-root.static"
 
-FILES_${PN}-switch_root.static = "${sbindir}/switch_root.static"
+FILES_${PN}-switch-root.static = "${sbindir}/switch_root.static"
