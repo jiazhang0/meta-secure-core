@@ -1,7 +1,9 @@
 CFLAGS_remove += "-pie -fpie"
 
+# We need -no-pie in case the default is to generate pie code.
+#
 do_compile_append_class-target() {
-    ${CC} ${CFLAGS} ${LDFLAGS} -static \
+    ${CC} ${CFLAGS} ${LDFLAGS} -no-pie -static \
         sys-utils/switch_root.o \
         -o switch_root.static
 }
