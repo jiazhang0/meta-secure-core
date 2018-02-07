@@ -50,8 +50,8 @@ EXTRA_OEMAKE_append_x86 += " ARCH=ia32"
 EXTRA_OEMAKE_append_x86-64 += " ARCH=x86_64"
 
 # LDFLAGS is used by LD not CC, so remove '-Wl,'
-LDFLAGS := "${@oe_filter_out('-Wl,', '${LDFLAGS}', d)}"
-BUILD_LDFLAGS := "${@oe_filter_out('-Wl,', '${BUILD_LDFLAGS}', d)}"
+LDFLAGS := "${@oe.utils.str_filter_out('-Wl,', '${LDFLAGS}', d)}"
+BUILD_LDFLAGS := "${@oe.utils.str_filter_out('-Wl,', '${BUILD_LDFLAGS}', d)}"
 
 EFI_BOOT_PATH = "/boot/efi/EFI/BOOT"
 
