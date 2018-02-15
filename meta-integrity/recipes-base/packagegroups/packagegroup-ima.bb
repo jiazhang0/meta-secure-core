@@ -9,6 +9,7 @@ DEPENDS += "\
 
 RDEPENDS_${PN} += "\
     attr \
+    ima-inspect \
     util-linux-switch-root.static \
 "
 
