@@ -8,4 +8,4 @@ SRCREV = "e912be2d2a9fdf30a9693a7fc5d6b2473990a71c"
 
 S = "${WORKDIR}/git"
 
-inherit autotools
+inherit autotools pkgconfig
