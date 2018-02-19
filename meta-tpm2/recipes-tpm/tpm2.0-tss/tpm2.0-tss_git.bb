@@ -7,12 +7,12 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=500b2e742befc3da00684d8a1d5fd9da"
 
 DEPENDS += "autoconf-archive pkgconfig"
 
-PV = "1.1.0+git${SRCPV}"
+PV = "1.3.0+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/01org/TPM2.0-TSS.git \
+    git://github.com/tpm2-software/tpm2-tss.git;branch=1.x \
 "
-SRCREV = "3fb91634e61c97a0ae732bc5c298b188c23376cf"
+SRCREV = "b1d9ece8c6bea2e3043943b2edfaebcdca330c38"
 
 S = "${WORKDIR}/git"
 
@@ -39,9 +39,6 @@ PACKAGES = "\
     libtctisocket \
     libtctisocket-dev \
     libtctisocket-staticdev \
-    libmarshal \
-    libmarshal-dev \
-    libmarshal-staticdev \
 "
 
 FILES_libtss2 = "${libdir}/libsapi.so.*"
@@ -78,15 +75,6 @@ FILES_libtctisocket-staticdev = "\
     ${libdir}/libtcti-socket.a \
     ${libdir}/libtcti-socket.la \
 "
-FILES_libmarshal = "${libdir}/libmarshal.so.*"
-FILES_libmarshal-dev = "${libdir}/libmarshal.so"
-FILES_libmarshal-staticdev = "\
-    ${libdir}/libmarshal.a \
-    ${libdir}/libmarshal.la \
-"
-
-RDEPENDS_libtss2 += "libmarshal"
-RDEPENDS_libtctidevice += "libmarshal"
 
 RRECOMMENDS_${PN} += "\
     kernel-module-tpm-crb \

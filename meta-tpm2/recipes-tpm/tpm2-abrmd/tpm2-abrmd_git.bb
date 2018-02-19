@@ -11,14 +11,14 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=500b2e742befc3da00684d8a1d5fd9da"
 
 DEPENDS += "autoconf-archive dbus glib-2.0 pkgconfig tpm2.0-tss glib-2.0-native"
 
-PV = "1.1.0+git${SRCPV}"
+PV = "1.2.0+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/01org/tpm2-abrmd.git \
+    git://github.com/tpm2-software/tpm2-abrmd \
     file://tpm2-abrmd-init.sh \
     file://tpm2-abrmd.default \
 "
-SRCREV = "1003fcfaad39f5c27f75deb678f4fba253f38a82"
+SRCREV = "59ce1008e5fa3bd5a143437b0f7390851fd25bd8"
 
 S = "${WORKDIR}/git"
 
@@ -60,8 +60,12 @@ do_install_append() {
     install -m 0644 "${WORKDIR}/tpm2-abrmd.default" "${D}${sysconfdir}/default/tpm2-abrmd"
 }
 
+FILES_${PN} += "\
+    ${libdir}/systemd \
+"
+
 RDEPENDS_${PN} += "\
-    libgcc dbus-glib libtss2 libtctidevice libtctisocket libmarshal \
+    libgcc dbus-glib libtss2 libtctidevice libtctisocket \
 "
 
 BBCLASSEXTEND = "native"

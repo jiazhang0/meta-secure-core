@@ -7,14 +7,13 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=91b7c548d73ea16537799e8060cea819"
 
 DEPENDS += "tpm2.0-tss tpm2-abrmd openssl curl autoconf-archive pkgconfig"
 
-PV = "2.1.0+git${SRCPV}"
+PV = "3.0.3+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/01org/tpm2.0-tools.git \
-    file://0001-Fix-build-failure-with-glib-2.0.patch \
-    file://0002-tpm2-tools-use-dynamic-linkage-with-tpm2-abrmd.patch \
+    git://github.com/tpm2-software/tpm2-tools.git;branch=3.X \
+    file://0001-tpm2-tools-use-dynamic-linkage-with-tpm2-abrmd.patch \
 "
-SRCREV = "97306d6dc1fc5f3142c50efe3189bd46ff35b5a0"
+SRCREV = "6b4385f098bd5d39e1cfc6cd2b038b68c960413f"
 
 S = "${WORKDIR}/git"
 
