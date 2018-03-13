@@ -20,9 +20,9 @@ DEPENDS += "tpm2.0-tss tpm2-abrmd pkgconfig-native"
 PV = "0.6.2+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/WindRiver-OpenSourceLabs/cryptfs-tpm2.git \
+    git://github.com/jiazhang0/cryptfs-tpm2.git \
 "
-SRCREV = "1a1fe2bd67b5c4a3ec0ad5dd6dbb168df38144a4"
+SRCREV = "4a3eb44436184597ce9fc207d6b7fa7ce0690c62"
 
 S = "${WORKDIR}/git"
 
