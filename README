@@ -88,6 +88,7 @@ SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
     packagegroup-luks \
 "
 DEBUG_FLAGS_forcevariable = ""
+IMAGE_INSTALL += "kernel-image-bzimage"
 
 III. Build meta-secure-core
 ===========================
