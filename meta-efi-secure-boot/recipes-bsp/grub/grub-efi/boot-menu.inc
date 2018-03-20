@@ -5,11 +5,11 @@
 menuentry "Sample EFI boot" --unrestricted {
     savedefault
     set fallback=1
-    linux /bzImage root=/dev/sda2 ro rootwait
+    linux /bzImage root=/dev/hda2 ro rootwait
     initrd /initrd
 }
 
 menuentry "Sample EFI boot (Recovery)" --unrestricted {
-    linux /bzImage_bakup root=/dev/sda2 ro rootwait
-    initrd /initrd_bakup
+    linux /bzImage_backup root=/dev/hda2 ro rootwait
+    initrd /initrd_backup
 }
