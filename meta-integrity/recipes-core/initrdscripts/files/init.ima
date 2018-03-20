@@ -123,7 +123,7 @@ echo "${IMA_POLICY}" > "$securityfs_dir/ima/policy" && {
     for policy in ${ROOT_DIR}/etc/ima/ima_policy*; do
         if [ -s "$policy" ]; then
             "${ROOT_DIR}/bin/echo.coreutils" "$policy" > "$securityfs_dir/ima/policy"
-        endif
+        fi
     done
 
     exit 0
