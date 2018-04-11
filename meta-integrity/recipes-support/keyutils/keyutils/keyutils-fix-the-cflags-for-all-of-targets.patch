@@ -1,4 +1,4 @@
-From 8a1331d4abf9a96ee65e5fb31a00c7a2e0eed7c8 Mon Sep 17 00:00:00 2001
+From 104146d812a5591738235699b02fc8ae3fc44743 Mon Sep 17 00:00:00 2001
 From: Lei Maohui <leimaohui at cn.fujitsu.com>
 Date: Mon, 17 Aug 2015 13:53:28 +0900
 Subject: [PATCH] fix the cflags for all of targets.
@@ -9,19 +9,19 @@ Signed-off-by: Lei Maohui <leimaohui at cn.fujitsu.com>
  1 file changed, 2 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index e2d7e2d..82e1a0f 100644
+index 824bbbf..d24cc44 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -64,7 +64,6 @@ BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-
- 
- LNS		:= ln -sf
+@@ -64,7 +64,6 @@ USRLIBDIR	:= $(patsubst /lib/%,/usr/lib/%,$(LIBDIR))
+ endif
+ BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-bit
  
 -ifeq ($(origin CFLAGS),undefined)
  ifeq ($(BUILDFOR),32-bit)
  CFLAGS		+= -m32
- LIBDIR		   := /usr/lib
-@@ -76,7 +75,6 @@ LIBDIR     := /usr/lib
- USRLIBDIR	:= /usr/lib
+ LIBDIR		:= /lib
+@@ -76,7 +75,6 @@ LIBDIR		:= /lib64
+ USRLIBDIR	:= /usr/lib64
  endif
  endif
 -endif
@@ -29,4 +29,5 @@ index e2d7e2d..82e1a0f 100644
  ###############################################################################
  #
 -- 
-1.8.4.2
+2.7.4
+
