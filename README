@@ -79,6 +79,7 @@ DISTRO_FEATURES_NATIVE_append += "systemd ima tpm tpm2 efi-secure-boot luks"
 DISTRO_FEATURES_append += "systemd ima tpm tpm2 efi-secure-boot luks modsign"
 MACHINE_FEATURES_NATIVE_append += "efi"
 MACHINE_FEATURES_append += "efi"
+PACKAGE_CLASSES = "package_rpm"
 INHERIT += "sign_rpm_ext"
 SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
     packagegroup-efi-secure-boot \
@@ -89,6 +90,7 @@ SECURE_CORE_IMAGE_EXTRA_INSTALL ?= "\
 "
 DEBUG_FLAGS_forcevariable = ""
 IMAGE_INSTALL += "kernel-image-bzimage"
+USER_CLASSES_remove = "image-prelink"
 
 III. Build meta-secure-core
 ===========================
