@@ -14,12 +14,18 @@ do_install() {
     # Create device nodes expected by kernel in initramfs
     # before executing /init.
     install -d "${D}/dev"
+    install -d "${D}/proc"
+    install -d "${D}/sys"
+    install -d "${D}/run"
     mknod -m 0600 "${D}/dev/console" c 5 1
 }
 
 FILES_${PN} = "\
     /init \
     /dev \
+    /proc \
+    /sys \
+    /run \
 "
 
 # Install the minimal stuffs only, and don't care how the external
