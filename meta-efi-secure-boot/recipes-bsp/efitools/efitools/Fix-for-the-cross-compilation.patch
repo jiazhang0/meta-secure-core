@@ -7,15 +7,15 @@ Upstream-Status: Pending
 
 Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
 ---
- Make.rules | 52 +++++++++++++++++++++++++++++-----------------------
- Makefile   | 14 +++++++-------
- 2 files changed, 36 insertions(+), 30 deletions(-)
+ Make.rules |   51 ++++++++++++++++++++++++++++-----------------------
+ Makefile   |   12 ++++++------
+ 2 files changed, 34 insertions(+), 29 deletions(-)
 
 diff --git a/Make.rules b/Make.rules
-index 88d5481..7e89332 100644
+index 88d5481bef6a..c794a621095b 100644
 --- a/Make.rules
 +++ b/Make.rules
-@@ -13,21 +13,27 @@ ARCH3264 =
+@@ -13,21 +13,26 @@ ARCH3264 =
  else
  $(error unknown architecture $(ARCH))
  endif
@@ -26,7 +26,7 @@ index 88d5481..7e89332 100644
 +INCDIR	   = -I$(TOPDIR)include/ -I$(INCDIR_PREFIX)/usr/include/efi -I$(INCDIR_PREFIX)/usr/include/efi/$(ARCH) -I$(INCDIR_PREFIX)/usr/include/efi/protocol
 +cppflags   = -DCONFIG_$(ARCH)
 +cflags	   = -O2 $(ARCH3264) -fpic -Wall -fshort-wchar -fno-strict-aliasing -fno-merge-constants -fno-stack-protector -ffreestanding -fno-stack-check $(CFLAGS)
-+ldflags	   = -nostdlib $(LDFLAGS)
++ldflags	   = -nostdlib
  CRTOBJ		= crt0-efi-$(ARCH).o
  CRTPATHS	= /lib /lib64 /lib/efi /lib64/efi /usr/lib /usr/lib64 /usr/lib/efi /usr/lib64/efi
 -CRTPATH		= $(shell for f in $(CRTPATHS); do if [ -e $$f/$(CRTOBJ) ]; then echo $$f; break; fi; done)
@@ -37,7 +37,6 @@ index 88d5481..7e89332 100644
  LDSCRIPT	= elf_$(ARCH)_efi.lds
 -LDFLAGS		+= -shared -Bsymbolic $(CRTOBJS) -L $(CRTPATH) -T $(LDSCRIPT)
 +ldflags		+= -shared -Bsymbolic $(CRTOBJS) -L $(CRTPATH) -T $(LDSCRIPT)
-+ldflags_openssl	= $(addprefix -L$(CRTPATH_PREFIX),$(CRTPATHS))
  LOADLIBES	= -lefi -lgnuefi $(shell $(CC) $(ARCH3264) -print-libgcc-file-name)
  FORMAT		= --target=efi-app-$(ARCH)
  OBJCOPY		= objcopy
@@ -49,7 +48,7 @@ index 88d5481..7e89332 100644
  MYGUID		= 11111111-2222-3333-4444-123456789abc
  INSTALL		= install
  BINDIR		= $(DESTDIR)/usr/bin
-@@ -36,23 +42,23 @@ EFIDIR		= $(DESTDIR)/usr/share/efitools/efi
+@@ -36,23 +41,23 @@ EFIDIR		= $(DESTDIR)/usr/share/efitools/efi
  DOCDIR		= $(DESTDIR)/usr/share/efitools
  
  # globally use EFI calling conventions (requires gcc >= 4.7)
@@ -78,7 +77,7 @@ index 88d5481..7e89332 100644
    FORMAT = -O binary
  endif
  
-@@ -61,12 +67,12 @@ endif
+@@ -61,12 +66,12 @@ endif
  		   -j .rel -j .rela -j .rel.* -j .rela.* -j .rel* -j .rela* \
  		   -j .reloc $(FORMAT) $*.so $@
  %.so: %.o
@@ -94,7 +93,7 @@ index 88d5481..7e89332 100644
  
  %.hash: %.efi hash-to-efi-sig-list
  	./hash-to-efi-sig-list $< $@
-@@ -99,28 +105,28 @@ getvar = $(shell if [ "$(1)" = "PK" -o "$(1)" = "KEK" ]; then echo $(1); else ec
+@@ -99,28 +104,28 @@ getvar = $(shell if [ "$(1)" = "PK" -o "$(1)" = "KEK" ]; then echo $(1); else ec
  	./sign-efi-sig-list -a -c PK.crt -k PK.key dbx $< $@
  
  %.o: %.c
@@ -131,7 +130,7 @@ index 88d5481..7e89332 100644
  
  ##
  # No need for KEK signing
-@@ -129,7 +135,7 @@ getvar = $(shell if [ "$(1)" = "PK" -o "$(1)" = "KEK" ]; then echo $(1); else ec
+@@ -129,7 +134,7 @@ getvar = $(shell if [ "$(1)" = "PK" -o "$(1)" = "KEK" ]; then echo $(1); else ec
  #	sbsign --key KEK.key --cert KEK.crt --output $@ $<
  
  %.a:
@@ -141,7 +140,7 @@ index 88d5481..7e89332 100644
  doc/%.1: doc/%.1.in %
  	$(HELP2MAN) --no-info -i $< -o $@ ./$*
 diff --git a/Makefile b/Makefile
-index 774ee0a..46e4620 100644
+index 774ee0aed7e9..4c3f91b5850f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -73,7 +73,7 @@ ms-%.esl: ms-%.crt cert-to-efi-sig-list
@@ -153,41 +152,44 @@ index 774ee0a..46e4620 100644
  	rm -f /tmp/tmp.hash
  
  
-@@ -88,28 +88,28 @@ HelloWorld.so: lib/lib-efi.a
+@@ -88,31 +88,31 @@ HelloWorld.so: lib/lib-efi.a
  ShimReplace.so: lib/lib-efi.a
  
  cert-to-efi-sig-list: cert-to-efi-sig-list.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  sig-list-to-certs: sig-list-to-certs.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  sign-efi-sig-list: sign-efi-sig-list.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  hash-to-efi-sig-list: hash-to-efi-sig-list.o lib/lib.a
- 	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
+-	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) lib/lib.a
  
  cert-to-efi-hash-list: cert-to-efi-hash-list.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  efi-keytool: efi-keytool.o lib/lib.a
- 	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
+-	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) lib/lib.a
  
  efi-readvar: efi-readvar.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  efi-updatevar: efi-updatevar.o lib/lib.a
 -	$(CC) $(ARCH3264) -o $@ $< -lcrypto lib/lib.a
-+	$(CC) $(ARCH3264) -o $@ $< $(ldflags_openssl) $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) -lcrypto lib/lib.a
  
  flash-var: flash-var.o lib/lib.a
- 	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
--- 
-1.9.1
-
+-	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
++	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) lib/lib.a
+ 
+ clean:
+ 	rm -f PK.* KEK.* DB.* $(EFIFILES) $(EFISIGNED) $(BINARIES) *.o *.so
