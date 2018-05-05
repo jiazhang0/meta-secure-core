@@ -31,7 +31,8 @@ fakeroot python do_sign() {
         uks_sel_sign(kernel, d)
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}'))
-        shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
+        shutil.move(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
+        os.symlink(type + d.expand('-${KERNEL_RELEASE}.p7b'), d.expand('${D}/boot/') + type + '.p7b')
 }
 
 # Make sure the kernel image has been signed before kernel_do_deploy()
@@ -99,4 +100,5 @@ python do_package_prepend() {
     for type in d.expand('${KERNEL_IMAGETYPES}').split():
         typelower = type.lower()
         d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}.p7b'))
+        d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + '.p7b')
 }
