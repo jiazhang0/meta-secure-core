@@ -35,39 +35,38 @@ do_populate_lic[depends] += "virtual/kernel:do_deploy"
 do_install() {
     [ -z "${INITRAMFS_IMAGE}" ] && exit 0
 
+    install -d "${D}/boot"
     if [ "${BUNDLE}" = "0" ]; then
-        for suffix in cpio.gz cpio.lzo cpio.lzma cpio.xz; do
+        for suffix in ${INITRAMFS_FSTYPES}; do
             img="${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.$suffix"
 
-	    if [ -s "$img" ]; then
-                install -d "${D}/boot"
-                install -m 0644 "$img" \
-                    "${D}/boot/${INITRAMFS_IMAGE}${INITRAMFS_EXT_NAME}.$suffix"
-		break
-            fi
+            install -m 0644 "$img" \
+                "${D}/boot/${INITRAMFS_IMAGE}${INITRAMFS_EXT_NAME}.$suffix"
 	done
     else
 	if [ -e "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin" ]; then
-	    install -d "${D}/boot"
             install -m 0644 "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin" \
                 "${D}/boot/${KERNEL_IMAGETYPE}-initramfs${INITRAMFS_EXT_NAME}"
 	fi
     fi
 }
 
-pkg_postinst_${PN}() {
-    if [ "${BUNDLE}" = "1" ]; then
-        update-alternatives --install "/boot/${KERNEL_IMAGETYPE}" \
-            "${KERNEL_IMAGETYPE}" "/boot/${KERNEL_IMAGETYPE}-initramfs${INITRAMFS_EXT_NAME}" \
-            50101 || true
-    fi
-}
+inherit update-alternatives
 
-pkg_prerm_${PN}() {
-    if [ "${BUNDLE}" = "1" ]; then
-        update-alternatives --remove "${KERNEL_IMAGETYPE}" \
-            "${KERNEL_IMAGETYPE}-initramfs${INITRAMFS_EXT_NAME}" || true
-    fi
+ALTERNATIVES_${PN} = ""
+
+python do_package_prepend () {
+    if d.getVar('BUNDLE') == '1':
+        d.appendVar(d.expand('ALTERNATIVE_${PN}'), ' ' + d.expand('${KERNEL_IMAGETYPE}' + '-initramfs'))
+        d.setVarFlag('ALTERNATIVE_LINK_NAME', d.expand('${KERNEL_IMAGETYPE}') + '-initramfs', d.expand('/boot/${KERNEL_IMAGETYPE}-initramfs'))
+        d.setVarFlag('ALTERNATIVE_TARGET', d.expand('${KERNEL_IMAGETYPE}') + '-initramfs', d.expand('/boot/${KERNEL_IMAGETYPE}-initramfs${INITRAMFS_EXT_NAME}'))
+        d.setVarFlag('ALTERNATIVE_PRIORITY', d.expand('${KERNEL_IMAGETYPE}') + '-initramfs', '50101')
+    else:
+        for compr in d.getVar('INITRAMFS_FSTYPES').split():
+            d.appendVar(d.expand('ALTERNATIVE_${PN}'), ' ' + d.expand('${INITRAMFS_IMAGE}'))
+            d.setVarFlag('ALTERNATIVE_LINK_NAME', d.expand('${INITRAMFS_IMAGE}'), d.expand('/boot/${INITRAMFS_IMAGE}'))
+            d.setVarFlag('ALTERNATIVE_TARGET', d.expand('${INITRAMFS_IMAGE}'), d.expand('/boot/${INITRAMFS_IMAGE}${INITRAMFS_EXT_NAME}.' + compr))
+            d.setVarFlag('ALTERNATIVE_PRIORITY', d.expand('${INITRAMFS_IMAGE}'), '50101')
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
