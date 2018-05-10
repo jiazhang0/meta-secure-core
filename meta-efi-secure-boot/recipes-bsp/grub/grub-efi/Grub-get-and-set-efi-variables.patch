@@ -1,8 +1,16 @@
+From 00baa6144f07a103676d4831b31ab88aefbf736a Mon Sep 17 00:00:00 2001
+From: Lans Zhang <jia.zhang@windriver.com>
+Date: Thu, 22 Jun 2017 15:22:01 +0800
+
 ---
  grub-core/Makefile.core.def     |    8 +
  grub-core/commands/efi/efivar.c |  238 ++++++++++++++++++++++++++++++++++++++++
  2 files changed, 246 insertions(+)
+ create mode 100644 grub-core/commands/efi/efivar.c
 
+diff --git a/grub-core/commands/efi/efivar.c b/grub-core/commands/efi/efivar.c
+new file mode 100644
+index 0000000..6aeda80
 --- /dev/null
 +++ b/grub-core/commands/efi/efivar.c
 @@ -0,0 +1,238 @@
@@ -244,9 +252,11 @@
 +  if (cmd)
 +    grub_unregister_extcmd (cmd);
 +}
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index 7ce6609..a82c1f3 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -539,6 +539,14 @@ module = {
+@@ -691,6 +691,14 @@ module = {
  };
  
  module = {
