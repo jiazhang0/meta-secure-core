@@ -24,11 +24,11 @@ Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
  2 files changed, 27 insertions(+)
 
 diff --git a/grub-core/kern/x86_64/efi/callwrap.S b/grub-core/kern/x86_64/efi/callwrap.S
-index 2df95dd..f0f1dd8 100644
+index 1337fd9..b849c2c 100644
 --- a/grub-core/kern/x86_64/efi/callwrap.S
 +++ b/grub-core/kern/x86_64/efi/callwrap.S
 @@ -48,6 +48,26 @@ FUNCTION(efi_wrap_1)
- 	addq $48, %rsp
+ 	addq $40, %rsp
  	ret
  
 +FUNCTION(efi_call_foo)
@@ -52,20 +52,20 @@ index 2df95dd..f0f1dd8 100644
 +	ret
 +
  FUNCTION(efi_wrap_2)
- 	subq $48, %rsp
+ 	subq $40, %rsp
  	mov  %rsi, %rcx
 @@ -127,3 +147,6 @@ FUNCTION(efi_wrap_10)
  	call *%rdi
- 	addq $96, %rsp
+ 	addq $88, %rsp
  	ret
 +
 +	.data
 +saved_sp:	.quad   0
 diff --git a/include/grub/efi/api.h b/include/grub/efi/api.h
-index 26127de..374d88b 100644
+index c7c9f0e..af1c603 100644
 --- a/include/grub/efi/api.h
 +++ b/include/grub/efi/api.h
-@@ -1437,6 +1437,10 @@ typedef struct grub_efi_block_io grub_efi_block_io_t;
+@@ -1731,6 +1731,10 @@ typedef struct grub_efi_block_io grub_efi_block_io_t;
  
  grub_uint64_t EXPORT_FUNC(efi_wrap_0) (void *func);
  grub_uint64_t EXPORT_FUNC(efi_wrap_1) (void *func, grub_uint64_t arg1);
