@@ -13,18 +13,33 @@ verify the identity of the executable image when utilizing a shim
 to boot LUV.
 
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+
+Add definitions of macros IMAGE_FILE_MACHINE_* which is involved by
+0004-efi-chainloader-port-shim-to-grub.patch.
+
+Signed-off-by: Kai Kang <kai.kang@windriver.com>
 ---
- include/grub/efi/pe32.h | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ include/grub/efi/pe32.h | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
 diff --git a/include/grub/efi/pe32.h b/include/grub/efi/pe32.h
-index c3efa9b..c1c3483 100644
+index f79c36c..23afc68 100644
 --- a/include/grub/efi/pe32.h
 +++ b/include/grub/efi/pe32.h
-@@ -313,4 +313,40 @@ struct grub_pe32_reloc
+@@ -317,4 +317,50 @@ struct grub_pe32_reloc
  #define GRUB_PE32_REL_I386_DIR32	0x6
  #define GRUB_PE32_REL_I386_REL32	0x14
  
++//
++// PE32+ Machine type for EFI images
++//
++#define IMAGE_FILE_MACHINE_I386            0x014c
++#define IMAGE_FILE_MACHINE_IA64            0x0200
++#define IMAGE_FILE_MACHINE_EBC             0x0EBC
++#define IMAGE_FILE_MACHINE_X64             0x8664
++#define IMAGE_FILE_MACHINE_ARMTHUMB_MIXED  0x01c2
++#define IMAGE_FILE_MACHINE_ARM64	   0xaa64
++
 +struct grub_te_header
 +{
 +  grub_uint16_t                    signature;
