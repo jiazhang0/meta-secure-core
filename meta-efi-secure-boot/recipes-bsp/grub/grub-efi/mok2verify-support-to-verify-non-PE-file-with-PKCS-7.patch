@@ -24,6 +24,12 @@ to prevent from tampering the kernel commandline or booting unsigned
 kernel.
 
 Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
+
+Replace asm codes to halt system with function grub_halt() in
+grub-core/normal/main.c. The asm codes are x86 specified but aarch64 is
+supported by grub-efi now.
+
+Signed-off-by: Kai Kang <kai.kang@windriver.com>
 ---
  grub-core/Makefile.core.def    |   6 ++
  grub-core/commands/boot.c      |  14 +++-
@@ -487,7 +493,7 @@ index be6fa0f..edc6d24 100644
 +  return err;
  }
 diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index 78a70a8..1058c97 100644
+index 78a70a8..b1340c7 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
 @@ -33,6 +33,9 @@
@@ -544,7 +550,7 @@ index 78a70a8..1058c97 100644
  static void
  read_lists (const char *val)
  {
-@@ -273,6 +291,24 @@ grub_normal_execute (const char *config, int nested, int batch)
+@@ -273,6 +291,20 @@ grub_normal_execute (const char *config, int nested, int batch)
  
    if (config)
      {
@@ -558,18 +564,14 @@ index 78a70a8..1058c97 100644
 +	  grub_print_error ();
 +
 +	  /* System halt. */
-+	  asm volatile ("cli");
-+	  while (1)
-+	    {
-+		asm volatile ("hlt");
-+	    }
++	  grub_halt();
 +	}
 +#endif
 +
        menu = read_config_file (config);
  
        /* Ignore any error.  */
-@@ -302,7 +338,10 @@ grub_enter_normal_mode (const char *config)
+@@ -302,7 +334,10 @@ grub_enter_normal_mode (const char *config)
    nested_level++;
    grub_normal_execute (config, 0, 0);
    grub_boot_time ("Entering shell");
@@ -581,7 +583,7 @@ index 78a70a8..1058c97 100644
    nested_level--;
    if (grub_normal_exit_level)
      grub_normal_exit_level--;
-@@ -338,6 +377,18 @@ grub_cmd_normal (struct grub_command *cmd __attribute__ ((unused)),
+@@ -338,6 +373,13 @@ grub_cmd_normal (struct grub_command *cmd __attribute__ ((unused)),
      grub_enter_normal_mode (argv[0]);
  
  quit:
@@ -589,18 +591,13 @@ index 78a70a8..1058c97 100644
 +  if (grub_is_secured () == 1)
 +    {
 +      /* Never return back to the rescue mode */
-+      asm volatile ("cli");
-+
-+      while (1)
-+	{
-+	  asm volatile ("hlt");
-+	}
++      grub_halt();
 +    }
 +#endif
    return 0;
  }
  
-@@ -525,8 +576,11 @@ GRUB_MOD_INIT(normal)
+@@ -525,8 +567,11 @@ GRUB_MOD_INIT(normal)
    /* Register a command "normal" for the rescue mode.  */
    grub_register_command ("normal", grub_cmd_normal,
  			 0, N_("Enter normal mode."));
