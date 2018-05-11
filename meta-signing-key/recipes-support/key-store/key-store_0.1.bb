@@ -57,7 +57,7 @@ python () {
     d.setVar('FILES_' + pn, d.getVar('MODSIGN_PRIV_KEY', True))
     d.setVar('CONFFILES_' + pn, d.getVar('MODSIGN_PRIV_KEY', True))
 
-    pn = d.getVar('PN', True) + 'ima-privkey'
+    pn = d.getVar('PN', True) + '-ima-privkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
     d.setVar('FILES_' + pn, d.getVar('IMA_PRIV_KEY', True))
     d.setVar('CONFFILES_' + pn, d.getVar('IMA_PRIV_KEY', True))
