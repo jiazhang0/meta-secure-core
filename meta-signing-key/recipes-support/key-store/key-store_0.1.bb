@@ -31,6 +31,7 @@ SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
 
 # For ${PN}-extra-system-trusted-cert
 EXTRA_SYSTEM_CERT = "${KEY_DIR}/extra_system_trusted_key.crt"
+EXTRA_SYSTEM_DER_ENC_CERT = "${KEY_DIR}/x509_secondary_system_trusted_key.der"
 
 # For ${PN}-modsign-cert
 MODSIGN_CERT = "${KEY_DIR}/modsign_key.crt"
@@ -99,6 +100,8 @@ do_install() {
     key_dir="${@uks_extra_system_trusted_keys_dir(d)}"
     install -m 0644 "$key_dir/extra_system_trusted_key.crt" \
         "${D}${EXTRA_SYSTEM_CERT}"
+    openssl x509 -inform PEM -outform DER -in "${D}${EXTRA_SYSTEM_CERT}" \
+        -out "${D}${EXTRA_SYSTEM_DER_ENC_CERT}"
 
     if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
         install -m 0400 "$key_dir/extra_system_trusted_key.key" \
@@ -167,8 +170,14 @@ PACKAGES_DYNAMIC = "\
 FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 
-FILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
-CONFFILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
+FILES_${PN}-extra-system-trusted-cert = "\
+    ${EXTRA_SYSTEM_CERT} \
+    ${EXTRA_SYSTEM_DER_ENC_CERT} \
+    "
+CONFFILES_${PN}-extra-system-trusted-cert = "\
+    ${EXTRA_SYSTEM_CERT} \
+    ${EXTRA_SYSTEM_DER_ENC_CERT} \
+    "
 
 FILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
 CONFFILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
