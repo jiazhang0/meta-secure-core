@@ -95,7 +95,7 @@ fi
 [ ! -d "$securityfs_dir/ima" ] &&
     print_info "IMA is not enabled. Exiting ..." && exit 2
 
-keyring_id=0x`grep '\skeyring\s*\.ima: ' "${ROOT_DIR}/proc/keys" | awk '{ print $1 }'`
+ima_keyring_id=0x`grep '\skeyring\s*\.ima: ' "${ROOT_DIR}/proc/keys" | awk '{ print $1 }'`
 
 # The trusted IMA certificate /etc/keys/x509_evm.der in initramfs was
 # automatically loaded by kernel already. Here is the opportunity to load
@@ -103,7 +103,7 @@ keyring_id=0x`grep '\skeyring\s*\.ima: ' "${ROOT_DIR}/proc/keys" | awk '{ print 
 for cert in ${ROOT_DIR}/etc/keys/x509_evm*.der; do
     [ ! -s "$cert" ] && continue
 
-    if ! evmctl import "$cert" "$keyring_id" >"${ROOT_DIR}/dev/null"; then
+    if ! evmctl import "$cert" "$ima_keyring_id" >"${ROOT_DIR}/dev/null"; then
         print_critical "Unable to load the custom IMA certificate $cert for IMA appraisal"
     else
         print_verbose "The custom IMA certificate $cert loaded for IMA appraisal"
