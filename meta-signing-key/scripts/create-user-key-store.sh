@@ -98,7 +98,7 @@ SYSTEM_KEYS_DIR="$KEYS_DIR/system_trusted_keys"
 IMA_KEYS_DIR="$KEYS_DIR/ima_keys"
 RPM_KEYS_DIR="$KEYS_DIR/rpm_keys"
 MODSIGN_KEYS_DIR="$KEYS_DIR/modsign_keys"
-EXTRA_SYSTEM_KEYS_DIR="$KEYS_DIR/extra_system_trusted_keys"
+SECONDARY_TRUSTED_KEYS_DIR="$KEYS_DIR/secondary_trusted_keys"
 
 pem2der() {
     local src="$1"
@@ -201,12 +201,12 @@ create_modsign_user_key() {
         "/CN=MODSIGN Certificate/"
 }
 
-create_extra_system_user_key() {
-    local key_dir="$EXTRA_SYSTEM_KEYS_DIR"
+create_secondary_user_key() {
+    local key_dir="$SECONDARY_TRUSTED_KEYS_DIR"
 
     [ ! -d "$key_dir" ] && mkdir -p "$key_dir"
 
-    ca_sign "$key_dir" extra_system_trusted_key "$SYSTEM_KEYS_DIR" system_trusted_key \
+    ca_sign "$key_dir" secondary_trusted_key "$SYSTEM_KEYS_DIR" system_trusted_key \
         "/CN=Extra System Trusted Certificate/"
 }
 
@@ -297,8 +297,8 @@ create_user_keys() {
     echo "Creating the user key for system"
     create_system_user_key
 
-    echo "Creating the user key for system extra"
-    create_extra_system_user_key
+    echo "Creating the user key for system secondary trust"
+    create_secondary_user_key
 
     echo "Creating the user key for modsign"
     create_modsign_user_key

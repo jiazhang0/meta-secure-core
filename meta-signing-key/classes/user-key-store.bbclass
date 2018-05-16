@@ -12,7 +12,7 @@ MOK_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d
 MODSIGN = '${@bb.utils.contains("DISTRO_FEATURES", "modsign", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
 SYSTEM_TRUSTED = '${@"1" if d.getVar("IMA", True) or d.getVar("MODSIGN", True) else "0"}'
-EXTRA_SYSTEM_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) else "0"}'
+SECONDARY_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) else "0"}'
 RPM = '1'
 
 def vprint(str, d):
@@ -26,9 +26,9 @@ def uks_system_trusted_keys_dir(d):
     set_keys_dir('SYSTEM_TRUSTED', d)
     return d.getVar('SYSTEM_TRUSTED_KEYS_DIR', True) + '/'
 
-def uks_extra_system_trusted_keys_dir(d):
-    set_keys_dir('EXTRA_SYSTEM_TRUSTED', d)
-    return d.getVar('EXTRA_SYSTEM_TRUSTED_KEYS_DIR', True) + '/'
+def uks_secondary_trusted_keys_dir(d):
+    set_keys_dir('SECONDARY_TRUSTED', d)
+    return d.getVar('SECONDARY_TRUSTED_KEYS_DIR', True) + '/'
 
 def uks_modsign_keys_dir(d):
     set_keys_dir('MODSIGN', d)
@@ -173,10 +173,10 @@ def check_system_trusted_keys(d):
         vprint("%s.crt is unavailable" % _, d)
         return False
 
-def check_extra_system_trusted_keys(d):
-    dir = uks_extra_system_trusted_keys_dir(d)
+def check_secondary_trusted_keys(d):
+    dir = uks_secondary_trusted_keys_dir(d)
 
-    _ = 'extra_system_trusted_key'
+    _ = 'secondary_trusted_key'
     if not os.path.exists(dir + _ + '.key'):
         vprint("%s.key is unavailable" % _, d)
         return False
@@ -379,13 +379,13 @@ deploy_system_trusted_keys() {
     fi
 }
 
-deploy_extra_system_trusted_keys() {
-    local deploy_dir="${DEPLOY_KEYS_DIR}/extra_system_trusted_keys"
+deploy_secondary_trusted_keys() {
+    local deploy_dir="${DEPLOY_KEYS_DIR}/secondary_trusted_keys"
 
-    if [ x"${EXTRA_SYSTEM_TRUSTED_KEYS_DIR}" != x"$deploy_dir" ]; then
+    if [ x"${SECONDARY_TRUSTED_KEYS_DIR}" != x"$deploy_dir" ]; then
         install -d "$deploy_dir"
 
-        cp -af "${EXTRA_SYSTEM_TRUSTED_KEYS_DIR}"/* "$deploy_dir"
+        cp -af "${SECONDARY_TRUSTED_KEYS_DIR}"/* "$deploy_dir"
     fi
 }
 
@@ -413,8 +413,8 @@ def sanity_check_user_keys(name, may_exit, d):
         _ = check_ima_user_keys(d)
     elif name == 'SYSTEM_TRUSTED':
         _ = check_system_trusted_keys(d)
-    elif name == 'EXTRA_SYSTEM_TRUSTED':
-        _ = check_extra_system_trusted_keys(d)
+    elif name == 'SECONDARY_TRUSTED':
+        _ = check_secondary_trusted_keys(d)
     elif name == 'MODSIGN':
         _ = check_modsign_keys(d)
     elif name == 'RPM':
@@ -440,7 +440,7 @@ def set_keys_dir(name, d):
         d.setVar(name + '_KEYS_DIR', d.getVar('DEPLOY_DIR_IMAGE', True) + '/user-keys/' + name.lower() + '_keys')
 
 python check_deploy_keys() {
-    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED', 'EXTRA_SYSTEM_TRUSTED', 'MODSIGN', 'RPM'):
+    for _ in ('UEFI_SB', 'MOK_SB', 'IMA', 'SYSTEM_TRUSTED', 'SECONDARY_TRUSTED', 'MODSIGN', 'RPM'):
         if d.getVar(_, True) != "1":
             continue
 
