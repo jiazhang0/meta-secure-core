@@ -23,6 +23,9 @@ SRC_URI += "\
     ${EXTRA_SRC_URI} \
 "
 
+# functions efi_call_foo and efi_shim_exit are not implemented for arm64 yet
+COMPATIBLE_HOST_aarch64 = 'null'
+
 EFI_BOOT_PATH = "/boot/efi/EFI/BOOT"
 
 GRUB_BUILDIN_append += " chain ${@'efivar mok2verify password_pbkdf2' \
