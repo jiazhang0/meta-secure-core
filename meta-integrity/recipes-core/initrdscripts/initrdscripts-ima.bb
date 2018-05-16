@@ -34,7 +34,7 @@ RDEPENDS_${PN} += "\
     gawk \
     util-linux-mount \
     util-linux-umount \
-    ima-evm-utils \
+    keyutils \
     ima-policy \
 "
 
