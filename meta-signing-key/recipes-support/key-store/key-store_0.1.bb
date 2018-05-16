@@ -17,8 +17,8 @@ RPM_KEY_DIR = "${sysconfdir}/pki/rpm-gpg"
 # For ${PN}-system-trusted-privkey
 SYSTEM_PRIV_KEY = "${KEY_DIR}/system_trusted_key.key"
 
-# For ${PN}-extra-system-trusted-privkey
-EXTRA_SYSTEM_PRIV_KEY = "${KEY_DIR}/extra_system_trusted_key.key"
+# For ${PN}-secondary-trusted-privkey
+SECONDARY_TRUSTED_PRIV_KEY = "${KEY_DIR}/secondary_trusted_key.key"
 
 # For ${PN}-modsign-privkey
 MODSIGN_PRIV_KEY = "${KEY_DIR}/modsign_key.key"
@@ -29,8 +29,8 @@ IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.crt"
 # For ${PN}-system-trusted-cert
 SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
 
-# For ${PN}-extra-system-trusted-cert
-EXTRA_SYSTEM_CERT = "${KEY_DIR}/extra_system_trusted_key.crt"
+# For ${PN}-secondary-trusted-cert
+SECONDARY_TRUSTED_CERT = "${KEY_DIR}/secondary_trusted_key.crt"
 
 # For ${PN}-modsign-cert
 MODSIGN_CERT = "${KEY_DIR}/modsign_key.crt"
@@ -47,10 +47,10 @@ python () {
     d.setVar('FILES_' + pn, d.getVar('SYSTEM_PRIV_KEY', True))
     d.setVar('CONFFILES_' + pn, d.getVar('SYSTEM_PRIV_KEY', True))
 
-    pn = d.getVar('PN', True) + '-extra-system-trusted-privkey'
+    pn = d.getVar('PN', True) + '-secondary-trusted-privkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
-    d.setVar('FILES_' + pn, d.getVar('EXTRA_SYSTEM_PRIV_KEY', True))
-    d.setVar('CONFFILES_' + pn, d.getVar('EXTRA_SYSTEM_PRIV_KEY', True))
+    d.setVar('FILES_' + pn, d.getVar('SECONDARY_TRUSTED_PRIV_KEY', True))
+    d.setVar('CONFFILES_' + pn, d.getVar('SECONDARY_TRUSTED_PRIV_KEY', True))
 
     pn = d.getVar('PN', True) + '-modsign-privkey'
     d.setVar('PACKAGES_prepend', pn + ' ')
@@ -96,13 +96,13 @@ do_install() {
         install -m 0400 "$key_dir/system_trusted_key.key" "${D}${SYSTEM_PRIV_KEY}"
     fi
 
-    key_dir="${@uks_extra_system_trusted_keys_dir(d)}"
-    install -m 0644 "$key_dir/extra_system_trusted_key.crt" \
-        "${D}${EXTRA_SYSTEM_CERT}"
+    key_dir="${@uks_secondary_trusted_keys_dir(d)}"
+    install -m 0644 "$key_dir/secondary_trusted_key.crt" \
+        "${D}${SECONDARY_TRUSTED_CERT}"
 
     if [ "${@uks_signing_model(d)}" = "sample" -o "${@uks_signing_model(d)}" = "user" ]; then
-        install -m 0400 "$key_dir/extra_system_trusted_key.key" \
-            "${D}${EXTRA_SYSTEM_PRIV_KEY}"
+        install -m 0400 "$key_dir/secondary_trusted_key.key" \
+            "${D}${SECONDARY_TRUSTED_PRIV_KEY}"
     fi
 
     key_dir="${@uks_modsign_keys_dir(d)}"
@@ -150,7 +150,7 @@ pkg_postinst_${PN}-rpm-pubkey() {
 
 PACKAGES = "\
     ${PN}-system-trusted-cert \
-    ${PN}-extra-system-trusted-cert \
+    ${PN}-secondary-trusted-cert \
     ${PN}-modsign-cert \
     ${PN}-ima-cert \
 "
@@ -158,7 +158,7 @@ PACKAGES = "\
 # Note any private key is not available if user key signing model used.
 PACKAGES_DYNAMIC = "\
     ${PN}-system-trusted-privkey \
-    ${PN}-extra-system-trusted-privkey \
+    ${PN}-secondary-trusted-privkey \
     ${PN}-modsign-privkey \
     ${PN}-ima-privkey \
     ${PN}-rpm-pubkey \
@@ -167,8 +167,8 @@ PACKAGES_DYNAMIC = "\
 FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 
-FILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
-CONFFILES_${PN}-extra-system-trusted-cert = "${EXTRA_SYSTEM_CERT}"
+FILES_${PN}-secondary-trusted-cert = "${SECONDARY_TRUSTED_CERT}"
+CONFFILES_${PN}-secondary-trusted-cert = "${SECONDARY_TRUSTED_CERT}"
 
 FILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
 CONFFILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
