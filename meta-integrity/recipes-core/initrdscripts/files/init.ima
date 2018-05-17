@@ -97,6 +97,19 @@ fi
 
 mount --move ${ROOT_DIR}/proc /proc
 
+# If we have a secondary trusted keyring, here is the opportunity to load
+# additional trusted keys from the real rootfs.
+for cert in ${ROOT_DIR}/etc/keys/x509_secondary_*.der; do
+    [ ! -s "$cert" ] && continue
+    name=`basename $cert`
+
+    if ! keyctl padd asymmetric "$name" %:.secondary_trusted_keys < $cert > ${ROOT_DIR}/dev/null; then
+        print_critical "Unable to load the secondary certificate $cert"
+    else
+        print_verbose "The secondary certificate $cert has been loaded"
+    fi
+done
+
 # The trusted IMA certificate /etc/keys/x509_evm.der in initramfs was
 # automatically loaded by kernel already. Here is the opportunity to load
 # a custom IMA certificate from the real rootfs.
