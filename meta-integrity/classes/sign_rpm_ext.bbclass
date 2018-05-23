@@ -47,4 +47,8 @@ python () {
         if status:
             raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
                                       (gpg_path, output))
+
+    is_image = bb.data.inherits_class('image', d)
+    if is_image:
+        bb.build.exec_func("check_rpm_public_key", d)
 }
