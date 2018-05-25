@@ -60,7 +60,7 @@ do_configure() {
 
     if [ ! -e lib/ccan ]; then
         export CC="${BUILD_CC}"
-        lib/ccan.git/tools/create-ccan-tree \
+        TMPDIR=lib lib/ccan.git/tools/create-ccan-tree \
             --build-type=automake lib/ccan \
                 talloc read_write_all build_assert array_size endian || exit 1
     fi
