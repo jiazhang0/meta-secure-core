@@ -62,7 +62,7 @@ do_configure_prepend() {
         # The default setting depends on (non-whitelisted) host tools.
         sed -i -e 's#^\(SCOREDIR=\).*#\1#' lib/ccan.git/Makefile
 
-        lib/ccan.git/tools/create-ccan-tree \
+        TMPDIR=lib lib/ccan.git/tools/create-ccan-tree \
             --build-type=automake lib/ccan \
             talloc read_write_all build_assert array_size endian
     fi
