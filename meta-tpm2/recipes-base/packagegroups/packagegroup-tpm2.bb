@@ -2,7 +2,7 @@ require packagegroup-tpm2.inc
 
 RDEPENDS_${PN} += "\
     tpm2-abrmd \
-    tpm2.0-tools \
+    tpm2-tools \
     rng-tools \
 "
 

@@ -66,7 +66,7 @@ FILES_${PN}-initramfs = "\
 # @grep: grep
 # @procps: pkill, pgrep
 # @cryptsetup: cryptsetup
-# @tpm2.0-tools: tpm2_*
+# @tpm2-tools: tpm2_*
 # @tpm2-abrmd: optional
 RDEPENDS_${PN} += "\
     libtss2 \
@@ -77,7 +77,7 @@ RDEPENDS_${PN} += "\
     grep \
     procps \
     cryptsetup \
-    tpm2.0-tools \
+    tpm2-tools \
 "
 
 # For init.cryptfs
