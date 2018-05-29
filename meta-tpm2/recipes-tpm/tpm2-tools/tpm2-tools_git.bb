@@ -1,5 +1,5 @@
 SUMMARY = "Tools for TPM2."
-DESCRIPTION = "tpm2.0-tools"
+DESCRIPTION = "tpm2-tools"
 SECTION = "security/tpm"
 
 LICENSE = "BSD"
