@@ -9,7 +9,7 @@ SECTION = "security/tpm"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=500b2e742befc3da00684d8a1d5fd9da"
 
-DEPENDS += "autoconf-archive dbus glib-2.0 pkgconfig tpm2.0-tss glib-2.0-native"
+DEPENDS += "autoconf-archive dbus glib-2.0 pkgconfig tpm2-tss glib-2.0-native"
 
 PV = "1.2.0+git${SRCPV}"
 

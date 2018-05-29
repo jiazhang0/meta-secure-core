@@ -5,7 +5,7 @@ SECTION = "security/tpm"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=91b7c548d73ea16537799e8060cea819"
 
-DEPENDS += "tpm2.0-tss tpm2-abrmd openssl curl autoconf-archive pkgconfig"
+DEPENDS += "tpm2-tss tpm2-abrmd openssl curl autoconf-archive pkgconfig"
 
 PV = "3.0.3+git${SRCPV}"
 
