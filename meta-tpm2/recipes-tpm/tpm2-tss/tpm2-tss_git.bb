@@ -1,5 +1,5 @@
 SUMMARY = "Software stack for TPM2."
-DESCRIPTION = "tpm2.0-tss like woah."
+DESCRIPTION = "tpm2-tss like woah."
 SECTION = "security/tpm"
 
 LICENSE = "BSD-2-Clause"

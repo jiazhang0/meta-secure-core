@@ -15,7 +15,7 @@ SECTION = "security/tpm"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=89c8ce1346a3dfe75379e84f3ba9d641"
 
-DEPENDS += "tpm2.0-tss tpm2-abrmd pkgconfig-native"
+DEPENDS += "tpm2-tss tpm2-abrmd pkgconfig-native"
 
 PV = "0.6.2+git${SRCPV}"
 
