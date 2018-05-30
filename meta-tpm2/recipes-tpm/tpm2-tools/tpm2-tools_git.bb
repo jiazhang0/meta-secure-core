@@ -1,42 +1,22 @@
-SUMMARY = "Tools for TPM2."
-DESCRIPTION = "tpm2-tools"
-SECTION = "security/tpm"
+include ${BPN}.inc
 
-LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=91b7c548d73ea16537799e8060cea819"
+DEFAULT_PREFERENCE = "-1"
 
-DEPENDS += "tpm2-tss tpm2-abrmd openssl curl autoconf-archive pkgconfig"
+DEPENDS += "libtss2 libtss2-mu libtss2-tcti-device libtss2-tcti-mssim"
 
-PV = "3.0.3+git${SRCPV}"
+PVBASE := "${PV}"
+PV = "${PVBASE}.${SRCPV}"
 
-SRC_URI = "\
-    git://github.com/tpm2-software/tpm2-tools.git;branch=3.X \
-    file://0001-tpm2-tools-use-dynamic-linkage-with-tpm2-abrmd.patch \
-"
-SRCREV = "6b4385f098bd5d39e1cfc6cd2b038b68c960413f"
+SRC_URI = "git://github.com/tpm2-software/${BPN}.git;protocol=git;branch=master;name=${BPN};destsuffix=${BPN}"
 
-S = "${WORKDIR}/git"
+SRCREV = "${AUTOREV}"
 
-inherit autotools pkgconfig
+S = "${WORKDIR}/${BPN}"
 
-EXTRA_OECONF += "\
-    --with-tcti-device \
-    --without-tcti-socket \
-    --with-tcti-tabrmd \
-"
-
-EXTRA_OEMAKE += "\
-    CFLAGS="${CFLAGS} -Wno-implicit-fallthrough" \
-    LIBS=-ldl \
-"
-
-do_configure_prepend() {
-    # execute the bootstrap script
-    currentdir="$(pwd)"
-    cd "${S}"
-    ACLOCAL="aclocal --system-acdir=${STAGING_DATADIR}/aclocal" \
-        ./bootstrap
-    cd "${currentdir}"
+do_configure_prepend () {
+	# execute the bootstrap script
+	currentdir=$(pwd)
+	cd ${S}
+	AUTORECONF=true ./bootstrap
+	cd ${currentdir}
 }
-
-RDEPENDS_${PN} += "libtss2 libtctidevice"
