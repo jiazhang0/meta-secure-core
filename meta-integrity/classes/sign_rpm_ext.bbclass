@@ -34,6 +34,7 @@ python check_rpm_public_key () {
 }
 check_rpm_public_key[lockfiles] = "${TMPDIR}/check_rpm_public_key.lock"
 do_package_write_rpm[prefuncs] += "check_rpm_public_key"
+do_rootfs[prefuncs] += "check_rpm_public_key"
 check_rpm_public_key[prefuncs] += "check_deploy_keys"
 
 python () {
@@ -47,8 +48,4 @@ python () {
         if status:
             raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
                                       (gpg_path, output))
-
-    is_image = bb.data.inherits_class('image', d)
-    if is_image:
-        bb.build.exec_func("check_rpm_public_key", d)
 }
