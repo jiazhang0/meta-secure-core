@@ -11,7 +11,6 @@ DEPENDS += "autoconf-archive-native dbus glib-2.0 glib-2.0-native"
 
 SRC_URI = "\
     file://tpm2-abrmd-init.sh \
-    file://tpm2-abrmd.default \
 "
 
 inherit autotools pkgconfig systemd update-rc.d useradd
@@ -26,14 +25,6 @@ INITSCRIPT_PARAMS = "start 99 2 3 4 5 . stop 19 0 1 6 ."
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "tss"
 USERADD_PARAM_${PN} = "--system -M -d /var/lib/tpm -s /bin/false -g tss tss"
-
-do_install_append() {
-    install -d "${D}${sysconfdir}/init.d"
-    install -m 0755 "${WORKDIR}/tpm2-abrmd-init.sh" "${D}${sysconfdir}/init.d/tpm2-abrmd"
-
-    install -d "${D}${sysconfdir}/default"
-    install -m 0644 "${WORKDIR}/tpm2-abrmd.default" "${D}${sysconfdir}/default/tpm2-abrmd"
-}
 
 FILES_${PN} += "\
     ${libdir}/systemd \
