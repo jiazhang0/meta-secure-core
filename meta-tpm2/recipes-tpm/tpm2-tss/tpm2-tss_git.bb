@@ -1,82 +1,75 @@
-SUMMARY = "Software stack for TPM2."
-DESCRIPTION = "tpm2-tss like woah."
-SECTION = "security/tpm"
+include ${BPN}.inc
 
-LICENSE = "BSD-2-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=500b2e742befc3da00684d8a1d5fd9da"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=0b1d631c4218b72f6b05cb58613606f4"
 
-DEPENDS += "autoconf-archive pkgconfig"
+DEFAULT_PREFERENCE = "-1"
 
-PV = "1.3.0+git${SRCPV}"
+DEPENDS += "libgcrypt"
 
-SRC_URI = "\
-    git://github.com/tpm2-software/tpm2-tss.git;branch=1.x \
-"
-SRCREV = "b1d9ece8c6bea2e3043943b2edfaebcdca330c38"
+PROVIDES = "${PACKAGES}"
 
-S = "${WORKDIR}/git"
+PVBASE := "${PV}"
+PV = "${PVBASE}.${SRCPV}"
 
-inherit autotools pkgconfig
+SRC_URI = "git://github.com/tpm2-software/${BPN}.git;protocol=git;branch=master;name=${BPN};destsuffix=${BPN}"
 
-do_configure_prepend() {
-    # execute the bootstrap script
-    currentdir="$(pwd)"
-    cd "${S}"
-    ACLOCAL="aclocal --system-acdir=${STAGING_DATADIR}/aclocal" \
-        ./bootstrap
-    cd "${currentdir}"
+SRCREV = "${AUTOREV}"
+
+S = "${WORKDIR}/${BPN}"
+
+do_configure_prepend () {
+       # Execute the bootstrap script, to generate src_vars.mk.
+       # The actual autotools bootstrapping is done by the normal
+       # do_configure, which does a better job with it (for example,
+       # it finds m4 macros also in the native sysroot).
+       currentdir=$(pwd)
+       cd ${S}
+       AUTORECONF=true ./bootstrap
+       cd ${currentdir}
 }
 
-PACKAGES = "\
-    ${PN}-dbg \
-    libtss2 \
-    libtss2-dev \
-    libtss2-staticdev \
-    libtss2-doc \
-    libtctidevice \
-    libtctidevice-dev \
-    libtctidevice-staticdev \
-    libtctisocket \
-    libtctisocket-dev \
-    libtctisocket-staticdev \
-"
+PACKAGES = " \
+	libtss2-mu \
+	libtss2-mu-dev \
+	libtss2-mu-staticdev \
+	libtss2-tcti-device \
+	libtss2-tcti-device-dev \
+	libtss2-tcti-device-staticdev \
+	libtss2-tcti-mssim \
+	libtss2-tcti-mssim-dev \
+	libtss2-tcti-mssim-staticdev \
+	libtss2 \
+	libtss2-dev \
+	libtss2-staticdev \
+	${PN} \
+	${PN}-doc \
+	${PN}-dbg \
+	"
 
-FILES_libtss2 = "${libdir}/libsapi.so.*"
-FILES_libtss2-dev = "\
-    ${includedir}/sapi \
-    ${includedir}/tcti/common.h \
-    ${libdir}/libsapi.so \
-    ${libdir}/pkgconfig/sapi.pc \
-"
-FILES_libtss2-staticdev = "\
-    ${libdir}/libsapi.a \
-    ${libdir}/libsapi.la \
-"
-FILES_libtss2-doc = "\
-    ${mandir} \
-"
-FILES_libtctidevice = "${libdir}/libtcti-device.so.*"
-FILES_libtctidevice-dev = "\
-    ${includedir}/tcti/tcti_device.h \
-    ${libdir}/libtcti-device.so \
-    ${libdir}/pkgconfig/tcti-device.pc \
-"
-FILES_libtctidevice-staticdev = "\
-    ${libdir}/libtcti-device.a \
-    ${libdir}/libtcti-device.la \
-"
-FILES_libtctisocket = "${libdir}/libtcti-socket.so.*"
-FILES_libtctisocket-dev = "\
-    ${includedir}/tcti/tcti_socket.h \
-    ${libdir}/libtcti-socket.so \
-    ${libdir}/pkgconfig/tcti-socket.pc \
-"
-FILES_libtctisocket-staticdev = "\
-    ${libdir}/libtcti-socket.a \
-    ${libdir}/libtcti-socket.la \
-"
+FILES_libtss2-tcti-device = "${libdir}/libtss2-tcti-device.so.*"
+FILES_libtss2-tcti-device-dev = " \
+	${includedir}/tss2/tss2_tcti_device.h \
+	${libdir}/pkgconfig/tss2-tcti-device.pc \
+	${libdir}/libtss2-tcti-device.so"
+FILES_libtss2-tcti-device-staticdev = "${libdir}/libtss2-tcti-device.*a"
 
-RRECOMMENDS_${PN} += "\
-    kernel-module-tpm-crb \
-    kernel-module-tpm-tis \
-"
+FILES_libtss2-tcti-mssim = "${libdir}/libtss2-tcti-mssim.so.*"
+FILES_libtss2-tcti-mssim-dev = " \
+	${includedir}/tss2/tss2_tcti_mssim.h \
+	${libdir}/pkgconfig/tss2-tcti-mssim.pc \
+	${libdir}/libtss2-tcti-mssim.so"
+FILES_libtss2-tcti-mssim-staticdev = "${libdir}/libtss2-tcti-mssim.*a"
+
+FILES_libtss2-mu = "${libdir}/libtss2-mu.so.*"
+FILES_libtss2-mu-dev = " \
+	${includedir}/tss2/tss2_mu.h \
+	${libdir}/pkgconfig/tss2-mu.pc \
+	${libdir}/libtss2-mu.so"
+FILES_libtss2-mu-staticdev = "${libdir}/libtss2-mu.*a"
+
+FILES_libtss2 = "${libdir}/libtss2*so.*"
+FILES_libtss2-dev = " \
+	${includedir} \
+	${libdir}/pkgconfig \
+	${libdir}/libtss2*so"
+FILES_libtss2-staticdev = "${libdir}/libtss*a"
