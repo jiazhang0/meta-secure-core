@@ -26,7 +26,13 @@ USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "tss"
 USERADD_PARAM_${PN} = "--system -M -d /var/lib/tpm -s /bin/false -g tss tss"
 
+EXTRA_OECONF += "\
+    --with-systemdsystemunitdir=${systemd_system_unitdir} \
+    --with-systemdpresetdir=${systemd_unitdir}/system-preset \
+    --with-udevrulesdir=${sysconfdir}/udev/rules.d \
+"
+
 FILES_${PN} += "\
-    ${libdir}/systemd \
+    ${systemd_unitdir}/system-preset \
     ${datadir}/dbus-1/system-services/com.intel.tss2.Tabrmd.service \
 "
