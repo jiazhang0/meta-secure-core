@@ -17,12 +17,12 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=89c8ce1346a3dfe75379e84f3ba9d641"
 
 DEPENDS += "tpm2-tss tpm2-abrmd pkgconfig-native"
 
-PV = "0.6.2+git${SRCPV}"
+PV = "0.6.3+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/jiazhang0/cryptfs-tpm2.git \
 "
-SRCREV = "4a3eb44436184597ce9fc207d6b7fa7ce0690c62"
+SRCREV = "fb49abad57f7da72e94ed61b30fbf777400cf0a7"
 
 S = "${WORKDIR}/git"
 
