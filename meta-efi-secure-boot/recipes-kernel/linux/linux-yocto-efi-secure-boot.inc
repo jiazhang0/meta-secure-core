@@ -78,7 +78,7 @@ do_deploy_append() {
         fi
 
         if [ -f "${B}/$type.initramfs.unsigned" ]; then
-            install -m 0644 "${B}/$type.initramfs.unsigned" "${DEPLOYDIR}/efi-unsigned/type.initramfs"
+            install -m 0644 "${B}/$type.initramfs.unsigned" "${DEPLOYDIR}/efi-unsigned/$type.initramfs"
         fi
 
         if [ -f "${D}/boot/$type-initramfs-${MACHINE}.bin.p7b" ]; then
