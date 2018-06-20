@@ -31,7 +31,7 @@ fakeroot python do_sign() {
         uks_sel_sign(kernel, d)
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}'))
-        shutil.move(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
+        shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
         os.symlink(type + d.expand('-${KERNEL_RELEASE}.p7b'), d.expand('${D}/boot/') + type + '.p7b')
 }
 
