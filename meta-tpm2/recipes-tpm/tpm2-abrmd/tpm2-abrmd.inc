@@ -11,7 +11,6 @@ DEPENDS += "autoconf-archive-native dbus glib-2.0 glib-2.0-native"
 
 SRC_URI = "\
     file://tpm2-abrmd-init.sh \
-    file://tpm2-abrmd.default \
 "
 
 inherit autotools pkgconfig systemd update-rc.d useradd
@@ -37,11 +36,3 @@ FILES_${PN} += "\
     ${systemd_unitdir}/system-preset \
     ${datadir}/dbus-1/system-services/com.intel.tss2.Tabrmd.service \
 "
-
-do_install_append() {
-    install -d "${D}${sysconfdir}/init.d"
-    install -m 0755 "${WORKDIR}/tpm2-abrmd-init.sh" "${D}${sysconfdir}/init.d/tpm2-abrmd"
-
-    install -d "${D}${sysconfdir}/default"
-    install -m 0644 "${WORKDIR}/tpm2-abrmd.default" "${D}${sysconfdir}/default/tpm2-abrmd"
-}
