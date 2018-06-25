@@ -92,6 +92,10 @@ DEBUG_FLAGS_forcevariable = ""
 IMAGE_INSTALL += "kernel-image-bzimage"
 USER_CLASSES_remove = "image-prelink"
 
+# Uncomment this line to modify the root parameter in boot command line if the default one
+# is not working for you. It is helpful when secure boot is enabled.
+#BOOT_CMD_ROOT = "/dev/hda2"
+
 III. Build meta-secure-core
 ===========================
 

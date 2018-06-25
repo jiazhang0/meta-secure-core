@@ -76,6 +76,12 @@ do_install_append_class-target() {
             sed -i 's/^\s*linux\s\+.*bzImage.*/& ima_policy=tcb/g' "$menu"
     }
 
+    # Replace the root parameter in boot command line with BOOT_CMD_ROOT,
+    # which can be configured. It is helpful when secure boot is enabled.
+    [ -n "${BOOT_CMD_ROOT}" ] && {
+        sed -i "s,root=/dev/hda2,root=${BOOT_CMD_ROOT},g" "$menu"
+    }
+
     # Install the stacked grub configs.
     install -d "${D}${EFI_BOOT_PATH}"
     install -m 0600 "${WORKDIR}/grub-efi.cfg" "${D}${EFI_BOOT_PATH}/grub.cfg"
