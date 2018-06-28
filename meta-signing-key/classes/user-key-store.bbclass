@@ -11,8 +11,8 @@ UEFI_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", 
 MOK_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
 MODSIGN = '${@bb.utils.contains("DISTRO_FEATURES", "modsign", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
-SYSTEM_TRUSTED = '${@"1" if d.getVar("IMA", True) or d.getVar("MODSIGN", True) else "0"}'
-SECONDARY_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) else "0"}'
+SYSTEM_TRUSTED = '${@"1" if d.getVar("IMA", True) == "1" or d.getVar("MODSIGN", True) == "1" else "0"}'
+SECONDARY_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) == "1" else "0"}'
 RPM = '1'
 
 def vprint(str, d):
