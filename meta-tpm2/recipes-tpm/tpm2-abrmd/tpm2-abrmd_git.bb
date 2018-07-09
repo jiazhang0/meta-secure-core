@@ -12,7 +12,13 @@ SRC_URI += " \
     file://tpm2-abrmd_git.default \
     "
 
-SRCREV = "${AUTOREV}"
+def version_git(d):
+    version = d.getVar("PREFERRED_VERSION_%s" % d.getVar('PN'))
+    if version is not None and "git" in version:
+        return d.getVar("AUTOREV")
+    else:
+        return "cceb6c12ebb335aacb49207ee13d2f2fc833580a"
+SRCREV ?= '${@version_git(d)}'
 
 S = "${WORKDIR}/${BPN}"
 
