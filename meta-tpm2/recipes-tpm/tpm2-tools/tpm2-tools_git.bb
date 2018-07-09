@@ -9,7 +9,13 @@ PV = "${PVBASE}.${SRCPV}"
 
 SRC_URI = "git://github.com/tpm2-software/${BPN}.git;protocol=git;branch=master;name=${BPN};destsuffix=${BPN}"
 
-SRCREV = "${AUTOREV}"
+def version_git(d):
+    version = d.getVar("PREFERRED_VERSION_%s" % d.getVar('PN'))
+    if version is not None and "git" in version:
+        return d.getVar("AUTOREV")
+    else:
+        return "e105149f07c9b944f69599ab67cd8b018ad880d2"
+SRCREV ?= '${@version_git(d)}'
 
 S = "${WORKDIR}/${BPN}"
 
