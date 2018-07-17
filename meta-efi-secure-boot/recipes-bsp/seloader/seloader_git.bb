@@ -24,12 +24,12 @@ DEPENDS += "\
     gnu-efi sbsigntool-native \
 "
 
-PV = "0.4.5+git${SRCPV}"
+PV = "0.4.6+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/jiazhang0/SELoader.git \
 "
-SRCREV = "9c2723afae0d61f3a1bd6f11e81b5855ec466c6a"
+SRCREV = "8b90f76a8df51d9020e67824026556434f407086"
 
 S = "${WORKDIR}/git"
 
