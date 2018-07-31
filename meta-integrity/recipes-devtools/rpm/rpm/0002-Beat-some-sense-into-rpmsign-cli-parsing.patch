@@ -1,0 +1,43 @@
+From 8bcfd98c0545eaf98bbc99e56cc2118c995a8fad Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Thu, 8 Jun 2017 12:39:53 +0300
+Subject: [PATCH] Beat some sense into rpmsign cli parsing
+
+Separate missing mode and several modes, print usage in the former
+and mumble about modes only if more than one actually specified.
+---
+ rpmsign.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/rpmsign.c b/rpmsign.c
+index 0402af556..de6f79384 100644
+--- a/rpmsign.c
++++ b/rpmsign.c
+@@ -14,12 +14,13 @@ char ** environ = NULL;
+ #endif
+ 
+ enum modes {
++    MODE_NONE    = 0,
+     MODE_ADDSIGN = (1 << 0),
+     MODE_RESIGN  = (1 << 1),
+     MODE_DELSIGN = (1 << 2),
+ };
+ 
+-static int mode = 0;
++static int mode = MODE_NONE;
+ 
+ static int signfiles = 0, fskpass = 0;
+ static char * fileSigningKey = NULL;
+@@ -142,6 +143,9 @@ int main(int argc, char *argv[])
+ 	    ec += rpmPkgDelSign(arg, &sargs);
+ 	}
+ 	break;
++    case MODE_NONE:
++	printUsage(optCon, stderr, 0);
++	break;
+     default:
+ 	argerror(_("only one major mode may be specified"));
+ 	break;
+-- 
+2.11.0
+
