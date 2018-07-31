@@ -1,0 +1,54 @@
+From 46c7bf438e5349676139dba0655faed3b2230827 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Fri, 9 Jun 2017 12:52:08 +0300
+Subject: [PATCH] Fix a number of problems in get_fskpass()
+
+Fix segfault in case of fgets() failure, fix memleak on password
+buffer on failure.
+---
+ rpmsign.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/rpmsign.c b/rpmsign.c
+index a59f2dc1c..ae86f666d 100644
+--- a/rpmsign.c
++++ b/rpmsign.c
+@@ -61,7 +61,7 @@ static char *get_fskpass(void)
+     struct termios flags, tmp_flags;
+     int passlen = 64;
+     char *password = xmalloc(passlen);
+-    char *pwd;
++    char *pwd = NULL;
+ 
+     tcgetattr(fileno(stdin), &flags);
+     tmp_flags = flags;
+@@ -70,17 +70,23 @@ static char *get_fskpass(void)
+ 
+     if (tcsetattr(fileno(stdin), TCSANOW, &tmp_flags) != 0) {
+ 	perror("tcsetattr");
+-	return NULL;
++	goto exit;
+     }
+ 
+     printf("PEM password: ");
+     pwd = fgets(password, passlen, stdin);
+-    pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
+ 
+     if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
+ 	perror("tcsetattr");
+-	return NULL;
++	pwd = NULL;
++	goto exit;
+     }
++
++exit:
++    if (pwd)
++	pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
++    else
++	free(password);
+     return pwd;
+ }
+ #endif
+-- 
+2.11.0
+
