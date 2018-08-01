@@ -14,6 +14,10 @@ PROVIDES = "${PACKAGES}"
 
 inherit autotools pkgconfig
 
+EXTRA_OECONF += " \
+    --with-udevrulesdir=${sysconfdir}/udev/rules.d \
+"
+
 PACKAGES = " \
     libtss2-mu \
     libtss2-mu-dev \
