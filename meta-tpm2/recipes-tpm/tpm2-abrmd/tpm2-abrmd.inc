@@ -33,7 +33,6 @@ USERADD_PARAM_${PN} = "--system -M -d /var/lib/tpm -s /bin/false -g tss tss"
 EXTRA_OECONF += "\
     --with-systemdsystemunitdir=${systemd_system_unitdir} \
     --with-systemdpresetdir=${systemd_unitdir}/system-preset \
-    --with-udevrulesdir=${sysconfdir}/udev/rules.d \
 "
 
 do_install_append() {
