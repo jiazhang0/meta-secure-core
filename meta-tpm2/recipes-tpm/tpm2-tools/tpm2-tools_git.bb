@@ -2,8 +2,6 @@ include ${BPN}.inc
 
 DEFAULT_PREFERENCE = "-1"
 
-DEPENDS += "libtss2 libtss2-mu libtss2-tcti-device libtss2-tcti-mssim"
-
 PVBASE := "${PV}"
 PV = "${PVBASE}.${SRCPV}"
 

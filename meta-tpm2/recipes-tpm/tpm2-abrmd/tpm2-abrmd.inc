@@ -7,10 +7,14 @@ SECTION = "security/tpm"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=500b2e742befc3da00684d8a1d5fd9da"
 
-DEPENDS += "autoconf-archive-native dbus glib-2.0 glib-2.0-native"
+DEPENDS += " \
+    autoconf-archive-native dbus glib-2.0 glib-2.0-native \
+    tpm2-tss libtss2 libtss2-mu libtss2-tcti-device libtss2-tcti-mssim \
+    "
 
 SRC_URI = "\
     file://tpm2-abrmd-init.sh \
+    file://tpm2-abrmd.default \
 "
 
 inherit autotools pkgconfig systemd update-rc.d useradd
@@ -32,7 +36,17 @@ EXTRA_OECONF += "\
     --with-udevrulesdir=${sysconfdir}/udev/rules.d \
 "
 
+do_install_append() {
+    install -d "${D}${sysconfdir}/init.d"
+    install -m 0755 "${WORKDIR}/tpm2-abrmd-init.sh" "${D}${sysconfdir}/init.d/tpm2-abrmd"
+
+    install -d "${D}${sysconfdir}/default"
+    install -m 0644 "${WORKDIR}/tpm2-abrmd.default" "${D}${sysconfdir}/default/tpm2-abrmd"
+}
+
 FILES_${PN} += "\
     ${systemd_unitdir}/system-preset \
     ${datadir}/dbus-1/system-services/com.intel.tss2.Tabrmd.service \
 "
+
+RDEPENDS_${PN} += "tpm2-tss"
