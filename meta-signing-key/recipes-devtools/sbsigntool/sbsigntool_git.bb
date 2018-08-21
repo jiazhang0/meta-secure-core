@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "\
     file://COPYING;md5=a7710ac18adec371b84a9594ed04fd20 \
 "
 
-DEPENDS += "binutils-native openssl-native gnu-efi-native util-linux-native"
+DEPENDS += "binutils openssl gnu-efi util-linux"
 
 PV = "0.6+git${SRCPV}"
 
@@ -26,7 +26,7 @@ SRCREV="951ee95a301674c046f55330cd7460e1314deff2"
 
 S = "${WORKDIR}/git"
 
-inherit autotools-brokensep pkgconfig native
+inherit autotools-brokensep pkgconfig
 
 def efi_arch(d):
     import re
@@ -69,3 +69,5 @@ do_configure() {
     ./autogen.sh --noconfigure
     oe_runconf
 }
+
+BBCLASSEXTEND = "native nativesdk"
