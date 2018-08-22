@@ -21,7 +21,7 @@ PV = "0.3.2+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/libsign.git \
 "
-SRCREV = "0e8005f1c546ef25d834084f5cd85d386cf7cd1d"
+SRCREV = "1050db752d208fb3571167f154a1db0e031c3a09"
 
 PARALLEL_MAKE = ""
 
@@ -50,4 +50,4 @@ FILES_${PN} += "\
 RDEPENDS_${PN}_class-target += "libcrypto"
 RDEPENDS_${PN}_class-native += "openssl"
 
-BBCLASSEXTEND = "native"
+BBCLASSEXTEND = "native nativesdk"
