@@ -133,22 +133,20 @@ key_store_sysroot_preprocess() {
     sysroot_stage_dir "${D}${sysconfdir}" "${SYSROOT_DESTDIR}${sysconfdir}"
 }
 
-pkg_postinst_${PN}-rpm-pubkey() {
-    if [ -z "$D" ]; then
-        keydir="${RPM_KEY_DIR}"
+pkg_postinst_ontarget_${PN}-rpm-pubkey() {
+    keydir="${RPM_KEY_DIR}"
 
-        [ ! -d "$keydir" ] && mkdir -p "$keydir"
+    [ ! -d "$keydir" ] && mkdir -p "$keydir"
 
-        # XXX: only import the new key
-        for keyfile in `ls $keydir/RPM-GPG-KEY-*`; do
-            [ -s "$keyfile" ] || continue
+    # XXX: only import the new key
+    for keyfile in `ls $keydir/RPM-GPG-KEY-*`; do
+        [ -s "$keyfile" ] || continue
 
-            rpm --import "$keyfile" || {
-                echo "Unable to import the public key $keyfile"
-                exit 1
-            }
-        done
-    fi
+        rpm --import "$keyfile" || {
+            echo "Unable to import the public key $keyfile"
+            exit 1
+        }
+    done
 }
 
 PACKAGES = "\
