@@ -1,4 +1,4 @@
-From e909a2d4777a6fd2644ff89361539db141c0a67f Mon Sep 17 00:00:00 2001
+From 363c731290a57f968b7435e648907c6d8cc4499c Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Sat, 28 Jan 2017 13:42:28 +0800
 Subject: [PATCH] Build DBX by default
@@ -9,7 +9,7 @@ Signed-off-by: Lans Zhang <jia.zhang@windriver.com>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index a1fc538..7f767c8 100644
+index dd45e31..93c919d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -26,7 +26,7 @@ include Make.rules
@@ -31,7 +31,7 @@ index a1fc538..7f767c8 100644
  
  LockDown.o: PK.h KEK.h DB.h DBX.h
 @@ -116,7 +116,7 @@ flash-var: flash-var.o lib/lib.a
- 	$(CC) $(ARCH3264) -o $@ $< lib/lib.a
+ 	$(CC) $(ARCH3264) -o $@ $< $(EXTRA_LDFLAGS) lib/lib.a
  
  clean:
 -	rm -f PK.* KEK.* DB.* $(EFIFILES) $(EFISIGNED) $(BINARIES) *.o *.so
@@ -39,6 +39,3 @@ index a1fc538..7f767c8 100644
  	rm -f noPK.*
  	rm -f doc/*.1
  	$(MAKE) -C lib clean
--- 
-2.7.4
-
