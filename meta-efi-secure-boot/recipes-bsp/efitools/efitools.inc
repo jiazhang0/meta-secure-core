@@ -61,3 +61,5 @@ do_install() {
 }
 
 FILES_${PN} += "${EFI_BOOT_PATH}"
+
+SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/LockDown.efi"
