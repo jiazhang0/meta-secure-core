@@ -101,3 +101,7 @@ do_deploy() {
 addtask deploy after do_install before do_build
 
 FILES_${PN} += "${EFI_TARGET}"
+
+SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/efi-unsigned"
+SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/Hash2DxeCrypto.efi"
+SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/Pkcs7VerifyDxe.efi"
