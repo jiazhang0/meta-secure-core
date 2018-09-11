@@ -17,12 +17,12 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=89c8ce1346a3dfe75379e84f3ba9d641"
 
 DEPENDS += "tpm2-tss tpm2-abrmd pkgconfig-native"
 
-PV = "0.6.3+git${SRCPV}"
+PV = "0.7.0+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/jiazhang0/cryptfs-tpm2.git \
 "
-SRCREV = "fb49abad57f7da72e94ed61b30fbf777400cf0a7"
+SRCREV = "cb83b1d02e163d2e343e9e0bc3565c1d2c601b84"
 
 S = "${WORKDIR}/git"
 
@@ -30,9 +30,9 @@ EXTRA_OEMAKE = "\
     sbindir="${sbindir}" \
     libdir="${libdir}" \
     includedir="${includedir}" \
-    tpm2_tss_includedir="${STAGING_INCDIR}/sapi" \
+    tpm2_tss_includedir="${STAGING_INCDIR}/tss2" \
     tpm2_tss_libdir="${STAGING_LIBDIR}" \
-    tpm2_tabrmd_includedir="${STAGING_INCDIR}" \
+    tpm2_tabrmd_includedir="${STAGING_INCDIR}/tss2" \
     CC="${CC}" \
     PKG_CONFIG="${STAGING_BINDIR_NATIVE}/pkg-config" \
     EXTRA_CFLAGS="${CFLAGS}" \
@@ -70,8 +70,8 @@ FILES_${PN}-initramfs = "\
 # @tpm2-abrmd: optional
 RDEPENDS_${PN} += "\
     libtss2 \
-    libtctidevice \
-    libtctisocket \
+    libtss2-tcti-device \
+    libtss2-tcti-mssim \
     bash \
     coreutils \
     grep \
