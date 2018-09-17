@@ -39,6 +39,7 @@ EXTRA_OEMAKE = "\
     EXTRA_CFLAGS="${CFLAGS}" \
     EXTRA_LDFLAGS="${LDFLAGS}" \
 "
+SECURITY_LDFLAGS_remove_pn-${BPN} = "-fstack-protector-strong"
 
 PARALLEL_MAKE = ""
 
