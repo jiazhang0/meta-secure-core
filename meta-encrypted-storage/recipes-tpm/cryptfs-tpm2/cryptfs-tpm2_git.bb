@@ -22,7 +22,7 @@ PV = "0.7.0+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/cryptfs-tpm2.git \
 "
-SRCREV = "cb83b1d02e163d2e343e9e0bc3565c1d2c601b84"
+SRCREV = "87c35c63090a33d4de437f518b8da9f2d1f1d828"
 
 S = "${WORKDIR}/git"
 
@@ -30,10 +30,11 @@ EXTRA_OEMAKE = "\
     sbindir="${sbindir}" \
     libdir="${libdir}" \
     includedir="${includedir}" \
-    tpm2_tss_includedir="${STAGING_INCDIR}/tss2" \
+    tpm2_tss_includedir="${STAGING_INCDIR}" \
     tpm2_tss_libdir="${STAGING_LIBDIR}" \
-    tpm2_tabrmd_includedir="${STAGING_INCDIR}/tss2" \
+    tpm2_tabrmd_includedir="${STAGING_INCDIR}" \
     CC="${CC}" \
+    CCLD="${CCLD}" \
     PKG_CONFIG="${STAGING_BINDIR_NATIVE}/pkg-config" \
     EXTRA_CFLAGS="${CFLAGS}" \
     EXTRA_LDFLAGS="${LDFLAGS}" \
