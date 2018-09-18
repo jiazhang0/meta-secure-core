@@ -3,7 +3,7 @@ SUMMARY = "The utility to manipulate machines owner keys which managed in shim"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
-DEPENDS += "openssl efivar"
+DEPENDS += "openssl efivar virtual/crypt"
 
 PV = "0.3.0+git${SRCPV}"
 
