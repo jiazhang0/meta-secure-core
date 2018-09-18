@@ -15,8 +15,8 @@ B = "${WORKDIR}/${BPN}-${PV}"
 
 inherit linux-kernel-base kernel-arch
 
-INITRAMFS_BASE_NAME = "${KERNEL_IMAGETYPE}-initramfs-${PV}-${PR}-${MACHINE}-${DATETIME}"
-INITRAMFS_BASE_NAME[vardepsexclude] = "DATETIME"
+INITRAMFS_NAME = "${KERNEL_IMAGETYPE}-initramfs-${PV}-${PR}-${MACHINE}-${DATETIME}"
+INITRAMFS_NAME[vardepsexclude] = "DATETIME"
 INITRAMFS_EXT_NAME = "-${@oe.utils.read_file('${STAGING_KERNEL_BUILDDIR}/kernel-abiversion')}"
 
 BUNDLE = "${@'1' if d.getVar('INITRAMFS_IMAGE', True) and \
