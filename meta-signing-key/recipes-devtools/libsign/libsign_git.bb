@@ -21,7 +21,7 @@ PV = "0.3.2+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/libsign.git \
 "
-SRCREV = "1050db752d208fb3571167f154a1db0e031c3a09"
+SRCREV = "353d5aaf0e8ab8cced360f6928dc4673054d696f"
 
 PARALLEL_MAKE = ""
 
@@ -29,6 +29,7 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "\
     CC="${CC}" \
+    CCLD="${CCLD}" \
     bindir="${STAGING_BINDIR}" \
     libdir="${STAGING_LIBDIR}" \
     includedir="${STAGING_INCDIR}" \
