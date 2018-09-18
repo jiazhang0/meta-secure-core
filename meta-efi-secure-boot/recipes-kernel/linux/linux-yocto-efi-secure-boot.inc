@@ -86,10 +86,10 @@ do_deploy_append() {
         fi
 
         if [ -f "${B}/${KERNEL_OUTPUT_DIR}/$type.p7b" ]; then
-            base_name="${type}-${KERNEL_IMAGE_BASE_NAME}.bin.p7b"
+            base_name="${type}-${KERNEL_IMAGE_NAME}.bin.p7b"
 
             install -m 0644 "${B}/${KERNEL_OUTPUT_DIR}/$type.p7b" "${DEPLOYDIR}/$base_name"
-            ln -sf "$base_name" "${DEPLOYDIR}/$type-${KERNEL_IMAGE_SYMLINK_NAME}.bin.p7b"
+            ln -sf "$base_name" "${DEPLOYDIR}/$type-${KERNEL_IMAGE_LINK_NAME}.bin.p7b"
             ln -sf "$base_name" "${DEPLOYDIR}/$type.p7b"
         fi
     done
