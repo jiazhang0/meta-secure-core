@@ -72,25 +72,25 @@ addtask sign_bundled_kernel after do_bundle_initramfs before do_deploy
 do_deploy_append() {
     install -d "${DEPLOYDIR}/efi-unsigned"
 
-    for type in ${KERNEL_IMAGETYPES}; do
-        if [ -f "${B}/$type.unsigned" ]; then
-            install -m 0644 "${B}/$type.unsigned" "${DEPLOYDIR}/efi-unsigned/$type"
+    for imageType in ${KERNEL_IMAGETYPES}; do
+        if [ -f "${B}/$imageType.unsigned" ]; then
+            install -m 0644 "${B}/$imageType.unsigned" "${DEPLOYDIR}/efi-unsigned/$imageType"
         fi
 
-        if [ -f "${B}/$type.initramfs.unsigned" ]; then
-            install -m 0644 "${B}/$type.initramfs.unsigned" "${DEPLOYDIR}/efi-unsigned/$type.initramfs"
+        if [ -f "${B}/$imageType.initramfs.unsigned" ]; then
+            install -m 0644 "${B}/$imageType.initramfs.unsigned" "${DEPLOYDIR}/efi-unsigned/$imageType.initramfs"
         fi
 
-        if [ -f "${D}/boot/$type-initramfs-${MACHINE}.bin.p7b" ]; then
-            install -m 0644 "${D}/boot/$type-initramfs-${MACHINE}.bin.p7b" "${DEPLOYDIR}"
+        if [ -f "${D}/boot/$imageType-initramfs-${MACHINE}.bin.p7b" ]; then
+            install -m 0644 "${D}/boot/$imageType-initramfs-${MACHINE}.bin.p7b" "${DEPLOYDIR}"
         fi
 
-        if [ -f "${B}/${KERNEL_OUTPUT_DIR}/$type.p7b" ]; then
-            base_name="${type}-${KERNEL_IMAGE_NAME}.bin.p7b"
+        if [ -f "${B}/${KERNEL_OUTPUT_DIR}/$imageType.p7b" ]; then
+            base_name="${imageType}-${KERNEL_IMAGE_NAME}.bin.p7b"
 
-            install -m 0644 "${B}/${KERNEL_OUTPUT_DIR}/$type.p7b" "${DEPLOYDIR}/$base_name"
-            ln -sf "$base_name" "${DEPLOYDIR}/$type-${KERNEL_IMAGE_LINK_NAME}.bin.p7b"
-            ln -sf "$base_name" "${DEPLOYDIR}/$type.p7b"
+            install -m 0644 "${B}/${KERNEL_OUTPUT_DIR}/$imageType.p7b" "${DEPLOYDIR}/$base_name"
+            ln -sf "$base_name" "${DEPLOYDIR}/$imageType-${KERNEL_IMAGE_LINK_NAME}.bin.p7b"
+            ln -sf "$base_name" "${DEPLOYDIR}/$imageType.p7b"
         fi
     done
 }
