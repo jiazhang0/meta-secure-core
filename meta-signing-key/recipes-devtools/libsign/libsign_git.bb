@@ -39,6 +39,7 @@ EXTRA_OEMAKE = "\
     BINDIR="${bindir}" \
     LIBDIR="${libdir}" \
 "
+SECURITY_LDFLAGS_remove_pn-${BPN} = "-fstack-protector-strong"
 
 do_install() {
     oe_runmake install DESTDIR="${D}"
