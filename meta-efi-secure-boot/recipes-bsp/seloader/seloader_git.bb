@@ -43,9 +43,8 @@ EXTRA_OEMAKE = "\
     SBSIGN=${STAGING_BINDIR_NATIVE}/sbsign \
     gnuefi_libdir=${STAGING_LIBDIR} \
     LIB_GCC="`${CC} -print-libgcc-file-name`" \
+    GNU_EFI_VERSION=306 \
 "
-
-EXTRA_OEMAKE += "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'rocko', 'GNU_EFI_VERSION=306', '', d)}"
 
 EFI_ARCH_x86 = "ia32"
 EFI_ARCH_x86-64 = "x64"

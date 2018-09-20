@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/rpm:"
 
-ROCKO_SRC_URI = "\
+SRC_URI += "\
     file://0001-Pass-sign-arguments-to-signature-deletion-too.patch \
     file://0002-Beat-some-sense-into-rpmsign-cli-parsing.patch \
     file://0003-Fix-thinko-typo-in-file-signing-error-message.patch \
@@ -13,7 +13,6 @@ ROCKO_SRC_URI = "\
     file://0010-Fix-a-number-of-problems-in-get_fskpass.patch \
     file://0011-Bump-file-digests-to-SHA256-by-default-finally.patch \
 "
-SRC_URI += "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'rocko', '${ROCKO_SRC_URI}', '', d)}"
 
 PACKAGECONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'ima', 'imaevm', '', d)}"
 

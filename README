@@ -10,11 +10,11 @@ Dependencies
 This layer depends on:
 
   URI: git://git.openembedded.org/bitbake
-  branch: master
+  branch: rocko
 
   URI: git://git.openembedded.org/openembedded-core
   layers: meta
-  branch: master
+  branch: rocko
 
 
 Patches
@@ -23,7 +23,7 @@ Patches
 Please submit any patches against the meta-secure-core layer to the
 maintainer:
 
-Maintainer: Jia Zhang <lans.zhang2008@gmail.com>
+Maintainer: Tom Rini <trini@konsulko.com>
 
 
 Table of Contents
