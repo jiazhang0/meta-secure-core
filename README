@@ -16,6 +16,8 @@ This layer depends on:
   layers: meta
   branch: master
 
+This layer also provides the support for the stable branches actively
+maintained by Yocto Project. Please check [this page](https://wiki.yoctoproject.org/wiki/Stable_branch_maintenance) for them.
 
 Patches
 =======
@@ -23,7 +25,7 @@ Patches
 Please submit any patches against the meta-secure-core layer to the
 maintainer:
 
-Maintainer: Jia Zhang <lans.zhang2008@gmail.com>
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
 
 
 Table of Contents

@@ -45,8 +45,6 @@ EXTRA_OEMAKE = "\
     LIB_GCC="`${CC} -print-libgcc-file-name`" \
 "
 
-EXTRA_OEMAKE += "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'rocko', 'GNU_EFI_VERSION=306', '', d)}"
-
 EFI_ARCH_x86 = "ia32"
 EFI_ARCH_x86-64 = "x64"
 
