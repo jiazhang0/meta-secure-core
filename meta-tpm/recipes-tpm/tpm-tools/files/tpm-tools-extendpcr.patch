@@ -71,7 +71,7 @@ index 27fc9ef..4f6d581 100644
  tpm_unsealdata_SOURCES = tpm_unsealdata.c
 diff --git a/src/cmds/tpm_extendpcr.c b/src/cmds/tpm_extendpcr.c
 new file mode 100644
-index 0000000..e19b271
+index 0000000..ee4bb15
 --- /dev/null
 +++ b/src/cmds/tpm_extendpcr.c
 @@ -0,0 +1,181 @@
@@ -115,7 +115,7 @@ index 0000000..e19b271
 +
 +}
 +
-+static char in_filename[PATH_MAX] = "";
++static char in_filename[PATH_MAX+1] = "";
 +static TSS_HPCRS hPcrs = NULL_HPCRS;
 +static TSS_HTPM hTpm;
 +static UINT32 selectedPcrs[24];
@@ -213,11 +213,11 @@ index 0000000..e19b271
 +
 +		unsigned char msg[EVP_MAX_MD_SIZE];
 +		unsigned int msglen;
-+		EVP_MD_CTX ctx;
-+		EVP_DigestInit(&ctx, EVP_sha1());
++		EVP_MD_CTX *ctx = EVP_MD_CTX_create();
++		EVP_DigestInit(ctx, EVP_sha1());
 +		while ((lineLen = BIO_read(bin, line, sizeof(line))) > 0)
-+			EVP_DigestUpdate(&ctx, line, lineLen);
-+		EVP_DigestFinal(&ctx, msg, &msglen);
++			EVP_DigestUpdate(ctx, line, lineLen);
++		EVP_DigestFinal(ctx, msg, &msglen);
 +
 +		if (contextCreateObject(hContext, TSS_OBJECT_TYPE_PCRS, initFlag,
 +					&hPcrs) != TSS_SUCCESS)
