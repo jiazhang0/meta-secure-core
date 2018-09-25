@@ -16,17 +16,20 @@ export TPM_KEY_ENC_PW=xxxxxxxx
 "xxxxxxxx" is the encrypted TPM key password for libtpm.so.
 
 Signed-off-by: Meng Li <Meng.Li@windriver.com>
+
+Rebase to 0.5.0
+Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
 ---
- e_tpm.c     | 110 ++++++++++++++++++++++++++++++++++++++++++++++--------------
- e_tpm.h     |   4 +--
- e_tpm_err.c |   4 +--
+ src/e_tpm.c     | 110 +++++++++++++++++++++++++++++++++++++++++++-------------
+ src/e_tpm.h     |   4 +--
+ src/e_tpm_err.c |   4 +--
  3 files changed, 89 insertions(+), 29 deletions(-)
 
-diff --git a/e_tpm.c b/e_tpm.c
-index 11bf74b..ee86a3a 100644
---- a/e_tpm.c
-+++ b/e_tpm.c
-@@ -275,7 +275,7 @@ static int tpm_decode_base64(unsigned char *indata,
+diff --git a/src/e_tpm.c b/src/e_tpm.c
+index afbf720..6347f0e 100644
+--- a/src/e_tpm.c
++++ b/src/e_tpm.c
+@@ -290,7 +290,7 @@ static int tpm_decode_base64(unsigned char *indata,
  	return 0;
  }
  
@@ -35,7 +38,7 @@ index 11bf74b..ee86a3a 100644
  				unsigned char *outdata,
  				int *out_len)
  {
-@@ -288,35 +288,35 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
+@@ -303,35 +303,35 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
  	const EVP_MD *dgst = NULL;
  	EVP_CIPHER_CTX *ctx = NULL;
  
@@ -80,7 +83,7 @@ index 11bf74b..ee86a3a 100644
  		free(aes_pw);
  		return 1;
  	}
-@@ -325,14 +325,14 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
+@@ -340,14 +340,14 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
  	OPENSSL_assert(EVP_CIPHER_CTX_iv_length(ctx) == 16);
  
  	if (!EVP_CipherInit_ex(ctx, NULL, NULL, key, iv, 0)) {
@@ -97,7 +100,7 @@ index 11bf74b..ee86a3a 100644
  		free(aes_pw);
  		EVP_CIPHER_CTX_free(ctx);
  		return 1;
-@@ -340,7 +340,7 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
+@@ -355,7 +355,7 @@ static int tpm_decrypt_srk_pw(unsigned char *indata, int in_len,
  
  	if (!EVP_CipherFinal_ex(ctx, dec_data + dec_data_len, &dec_data_lenfinal)) {
  		/* Error */
@@ -106,7 +109,7 @@ index 11bf74b..ee86a3a 100644
  		free(aes_pw);
  		EVP_CIPHER_CTX_free(ctx);
  		return 1;
-@@ -448,8 +448,7 @@ int tpm_load_srk(UI_METHOD *ui, void *cb_data)
+@@ -463,8 +463,7 @@ int tpm_load_srk(UI_METHOD *ui, void *cb_data)
  			return 0;
  		}
  
@@ -116,7 +119,7 @@ index 11bf74b..ee86a3a 100644
  			Tspi_Context_CloseObject(hContext, hSRK);
  			free(auth);
  			free(out_buf);
-@@ -460,7 +459,7 @@ int tpm_load_srk(UI_METHOD *ui, void *cb_data)
+@@ -475,7 +474,7 @@ int tpm_load_srk(UI_METHOD *ui, void *cb_data)
  		free(out_buf);
  	}
  #ifdef TPM_SRK_PLAIN_PW
@@ -125,7 +128,7 @@ index 11bf74b..ee86a3a 100644
  		if (0 == strcmp(srkPasswd, "#WELLKNOWN#")) {
  			memset(auth, 0, TPM_WELL_KNOWN_KEY_LEN);
  			secretMode = TSS_SECRET_MODE_SHA1;
-@@ -807,6 +806,9 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
+@@ -832,6 +831,9 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
  	if (authusage) {
  		TSS_HPOLICY hPolicy;
  		BYTE *auth;
@@ -135,7 +138,7 @@ index 11bf74b..ee86a3a 100644
  
  		if ((auth = calloc(1, 128)) == NULL) {
  			Tspi_Context_CloseObject(hContext, hKey);
-@@ -814,13 +816,71 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
+@@ -839,13 +841,71 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
  			return NULL;
  		}
  
@@ -214,7 +217,7 @@ index 11bf74b..ee86a3a 100644
  		}
  
  		if ((result = Tspi_Context_CreateObject(hContext,
-@@ -842,8 +902,8 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
+@@ -867,8 +927,8 @@ static EVP_PKEY *tpm_engine_load_key(ENGINE *e, const char *key_id,
  		}
  
  		if ((result = Tspi_Policy_SetSecret(hPolicy,
@@ -225,10 +228,10 @@ index 11bf74b..ee86a3a 100644
  			Tspi_Context_CloseObject(hContext, hKey);
  			Tspi_Context_CloseObject(hContext, hPolicy);
  			free(auth);
-diff --git a/e_tpm.h b/e_tpm.h
+diff --git a/src/e_tpm.h b/src/e_tpm.h
 index 56ff202..7faf744 100644
---- a/e_tpm.h
-+++ b/e_tpm.h
+--- a/src/e_tpm.h
++++ b/src/e_tpm.h
 @@ -67,7 +67,7 @@ void ERR_TSS_error(int function, int reason, char *file, int line);
  #define TPM_F_TPM_ENGINE_GET_AUTH		117
  #define TPM_F_TPM_CREATE_SRK_POLICY		118
@@ -247,11 +250,11 @@ index 56ff202..7faf744 100644
  
  /* structure pointed to by the RSA object's app_data pointer */
  struct rsa_app_data
-diff --git a/e_tpm_err.c b/e_tpm_err.c
-index 439e267..f8ce624 100644
---- a/e_tpm_err.c
-+++ b/e_tpm_err.c
-@@ -236,7 +236,7 @@ static ERR_STRING_DATA TPM_str_functs[] = {
+diff --git a/src/e_tpm_err.c b/src/e_tpm_err.c
+index bffe686..b04dffb 100644
+--- a/src/e_tpm_err.c
++++ b/src/e_tpm_err.c
+@@ -235,7 +235,7 @@ static ERR_STRING_DATA TPM_str_functs[] = {
  	{ERR_PACK(0, TPM_F_TPM_FILL_RSA_OBJECT, 0), "TPM_FILL_RSA_OBJECT"},
  	{ERR_PACK(0, TPM_F_TPM_ENGINE_GET_AUTH, 0), "TPM_ENGINE_GET_AUTH"},
  	{ERR_PACK(0, TPM_F_TPM_DECODE_BASE64, 0), "TPM_DECODE_BASE64"},
@@ -260,7 +263,7 @@ index 439e267..f8ce624 100644
  	{0, NULL}
  };
  
-@@ -268,7 +268,7 @@ static ERR_STRING_DATA TPM_str_reasons[] = {
+@@ -267,7 +267,7 @@ static ERR_STRING_DATA TPM_str_reasons[] = {
  	{TPM_R_ID_INVALID, "engine id doesn't match"},
  	{TPM_R_UI_METHOD_FAILED, "ui function failed"},
  	{TPM_R_DECODE_BASE64_FAILED, "decode base64 failed"},
@@ -270,5 +273,5 @@ index 439e267..f8ce624 100644
  };
  
 -- 
-2.9.3
+2.7.4
 
