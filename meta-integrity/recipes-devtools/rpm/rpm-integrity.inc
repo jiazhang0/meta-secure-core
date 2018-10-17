@@ -6,3 +6,4 @@ PACKAGECONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'ima', 'imaevm', '', d)
 EXTRA_OECONF_remove += "\
     --disable-plugins \
 "
+EXTRA_OECONF_append_class-native = " --disable-inhibit-plugin"
