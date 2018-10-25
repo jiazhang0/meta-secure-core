@@ -336,6 +336,10 @@ deploy_uefi_sb_keys() {
         install -d "$deploy_dir"
 
         cp -af "${UEFI_SB_KEYS_DIR}"/* "$deploy_dir"
+        for KEY in DB KEK PK; do
+             openssl x509 -in "${UEFI_SB_KEYS_DIR}"/${KEY}.crt \
+                 -out "$deploy_dir"/${KEY}.cer -outform DER;
+        done
     fi
 }
 
