@@ -110,6 +110,19 @@ default, the sample keys are used for the purpose of development and
 demonstration. Please ensure you know what your risk is to use the sample keys
 in your product, because they are completely public.
 
+If sample keys are used, the private IMA key is installed as /etc/keys/x509_ima.key.
+
+A typical signing command is as following:
+
+    # evmctl ima_sign --hashalgo sha256 --key /etc/keys/x509_ima.key --pass=<passowrd> /path/to/file
+or
+
+    # evmctl ima_sign --hashalgo sha256 --key /etc/keys/x509_ima.key --pass=<passowrd> -r /path/to/directory
+
+The following command can be used to verify a file's IMA signature with specified certificate:
+
+    # evmctl ima_verify --key /etc/keys/x509_ima.der /path/to/file
+
 ### RPM File Signing
 The payloads in a RPM are signed by the private key during the build, and each
 IMA signatures for the corresponding  payload file will be eventually written

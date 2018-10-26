@@ -24,7 +24,7 @@ SECONDARY_TRUSTED_PRIV_KEY = "${KEY_DIR}/secondary_trusted_key.key"
 MODSIGN_PRIV_KEY = "${KEY_DIR}/modsign_key.key"
 
 # For ${PN}-ima-privkey
-IMA_PRIV_KEY = "${KEY_DIR}/privkey_evm.crt"
+IMA_PRIV_KEY = "${KEY_DIR}/x509_ima.key"
 
 # For ${PN}-system-trusted-cert
 SYSTEM_CERT = "${KEY_DIR}/system_trusted_key.crt"
@@ -37,7 +37,7 @@ SECONDARY_TRUSTED_DER_ENC_CERT = "${KEY_DIR}/x509_secondary_system_trusted_key.d
 MODSIGN_CERT = "${KEY_DIR}/modsign_key.crt"
 
 # For ${PN}-ima-cert
-IMA_CERT = "${KEY_DIR}/x509_evm.der"
+IMA_CERT = "${KEY_DIR}/x509_ima.der"
 
 python () {
     if not (uks_signing_model(d) in "sample", "user"):
