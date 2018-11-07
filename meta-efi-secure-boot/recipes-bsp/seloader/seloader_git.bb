@@ -21,7 +21,7 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d9bf404642f21afb4ad89f95d7bc91ee"
 
 DEPENDS += "\
-    gnu-efi sbsigntool-native \
+    gnu-efi sbsigntool-native openssl-native \
 "
 
 PV = "0.4.6+git${SRCPV}"
