@@ -18,18 +18,18 @@ Signed-off-by: Robert Yang <liezhi.yang@windriver.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index bf228df..dc10bff 100644
+index 00cfc4a..dc59f73 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -6,7 +6,7 @@
+@@ -4,7 +4,7 @@
  
- AC_INIT([mtree Utility for creating and verifying file hierarchies], [1.0.2], [http://www.freebsd.org/], [mtree])
+ AC_INIT([mtree Utility for creating and verifying file hierarchies], [1.0.3], [http://www.freebsd.org/], [mtree])
  AC_CONFIG_AUX_DIR(scripts)
 -AM_INIT_AUTOMAKE
 +AM_INIT_AUTOMAKE([foreign])
  dnl AM_MAINTAINER_MODE
  AC_PREREQ(2.59)
- AC_REVISION($Id: configure.ac 15 2013-05-30 15:29:35Z archie.cobbs $)
+ AC_PREFIX_DEFAULT(/usr)
 -- 
 1.7.9.5
 
