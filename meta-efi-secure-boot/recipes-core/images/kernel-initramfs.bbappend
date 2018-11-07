@@ -1,3 +1,4 @@
+DEPENDS += "openssl-native"
 inherit user-key-store deploy
 
 # Always fetch the latest initramfs image
