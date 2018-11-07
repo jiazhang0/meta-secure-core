@@ -1,3 +1,4 @@
+DEPENDS += "openssl-native"
 FILESEXTRAPATHS_prepend := "${THISDIR}/grub-efi:"
 
 EXTRA_SRC_URI = "\
@@ -123,7 +124,7 @@ fakeroot python do_sign_class-target() {
         uks_sel_sign(dir + 'password.inc', d)
 }
 
-fakeroot python do_sign() {
+python do_sign() {
 }
 addtask sign after do_install before do_deploy do_package
 do_sign[prefuncs] += "check_deploy_keys"
