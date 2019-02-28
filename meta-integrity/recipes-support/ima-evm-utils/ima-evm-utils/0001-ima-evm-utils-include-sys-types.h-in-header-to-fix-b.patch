@@ -1,0 +1,37 @@
+From d6d021947a0e5ceeca182e8716b51eb8e02c0744 Mon Sep 17 00:00:00 2001
+From: Luca Boccassi <luca.boccassi@microsoft.com>
+Date: Tue, 26 Feb 2019 14:57:10 +0000
+Subject: [PATCH] Include sys/types.h in header to fix build with musl
+
+Building a third program that depends on libimaevm with musl fails, as
+the imaevm.h uses uid_t and gid_t without including sys/types.h:
+
+<..>/sysroot/usr/include/imaevm.h:90:2: error: unknown type name 'uid_t'
+  uid_t uid;
+
+Including sys/types.h fixes building with musl and does not affect
+building with glibc.
+
+Signed-off-by: Luca Boccassi <luca.boccassi@microsoft.com>
+---
+Applied-Upstream: no
+Forwarded: https://patchwork.kernel.org/patch/10830643/
+
+ src/imaevm.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/imaevm.h b/src/imaevm.h
+index 795966a..d85db0d 100644
+--- a/src/imaevm.h
++++ b/src/imaevm.h
+@@ -44,6 +44,7 @@
+ #include <linux/fs.h>
+ #include <stdint.h>
+ #include <syslog.h>
++#include <sys/types.h>
+ #include <stdbool.h>
+ #include <errno.h>
+ 
+-- 
+2.20.1
+
