@@ -26,7 +26,7 @@ BUNDLE = "${@'1' if d.getVar('INITRAMFS_IMAGE', True) and \
 python() {
     image = d.getVar('INITRAMFS_IMAGE', True)
     if image:
-        d.appendVarFlag('do_install', 'depends', ' ${INITRAMFS_IMAGE}:do_rootfs')
+        d.appendVarFlag('do_install', 'depends', ' ${INITRAMFS_IMAGE}:do_image_complete')
 }
 
 do_unpack[depends] += "virtual/kernel:do_deploy"
