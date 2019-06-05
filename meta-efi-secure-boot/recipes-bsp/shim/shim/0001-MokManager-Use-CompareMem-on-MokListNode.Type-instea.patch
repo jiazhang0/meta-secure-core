@@ -1,0 +1,75 @@
+From 4747fa5ae785d264da717396ddc0429ef39d018b Mon Sep 17 00:00:00 2001
+From: Gary Lin <glin@suse.com>
+Date: Tue, 26 Feb 2019 11:33:53 +0800
+Subject: [PATCH] MokManager: Use CompareMem on MokListNode.Type instead of
+ CompareGuid
+
+Fix the errors from gcc9 '-Werror=address-of-packed-member'
+
+https://github.com/rhboot/shim/issues/161
+
+Upstream-Status: Backport
+[https://github.com/rhboot/shim/pull/170/commits/f30cd0b6330be8ea72a93bf25e43829c222ba611]
+
+Signed-off-by: Gary Lin <glin@suse.com>
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ MokManager.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/MokManager.c b/MokManager.c
+index 208c706..dd18249 100644
+--- a/MokManager.c
++++ b/MokManager.c
+@@ -1122,7 +1122,8 @@ static EFI_STATUS write_back_mok_list (MokListNode *list, INTN key_num,
+ 			continue;
+ 
+ 		DataSize += sizeof(EFI_SIGNATURE_LIST);
+-		if (CompareGuid(&(list[i].Type), &CertType) == 0)
++		if (CompareMem(&(list[i].Type), &CertType,
++			       sizeof(EFI_GUID)) == 0)
+ 			DataSize += sizeof(EFI_GUID);
+ 		DataSize += list[i].MokSize;
+ 	}
+@@ -1144,7 +1145,8 @@ static EFI_STATUS write_back_mok_list (MokListNode *list, INTN key_num,
+ 		CertList->SignatureType = list[i].Type;
+ 		CertList->SignatureHeaderSize = 0;
+ 
+-		if (CompareGuid(&(list[i].Type), &CertType) == 0) {
++		if (CompareMem(&(list[i].Type), &CertType,
++			       sizeof(EFI_GUID)) == 0) {
+ 			CertList->SignatureListSize = list[i].MokSize +
+ 						      sizeof(EFI_SIGNATURE_LIST) +
+ 						      sizeof(EFI_GUID);
+@@ -1185,7 +1187,8 @@ static void delete_cert (void *key, UINT32 key_size,
+ 	int i;
+ 
+ 	for (i = 0; i < mok_num; i++) {
+-		if (CompareGuid(&(mok[i].Type), &CertType) != 0)
++		if (CompareMem(&(mok[i].Type), &CertType,
++			       sizeof(EFI_GUID)) != 0)
+ 			continue;
+ 
+ 		if (mok[i].MokSize == key_size &&
+@@ -1236,7 +1239,7 @@ static void delete_hash_in_list (EFI_GUID Type, UINT8 *hash, UINT32 hash_size,
+ 	sig_size = hash_size + sizeof(EFI_GUID);
+ 
+ 	for (i = 0; i < mok_num; i++) {
+-		if ((CompareGuid(&(mok[i].Type), &Type) != 0) ||
++		if ((CompareMem(&(mok[i].Type), &Type, sizeof(EFI_GUID)) != 0) ||
+ 		    (mok[i].MokSize < sig_size))
+ 			continue;
+ 
+@@ -1407,7 +1410,8 @@ static EFI_STATUS delete_keys (void *MokDel, UINTN MokDelSize, BOOLEAN MokX)
+ 
+ 	/* Search and destroy */
+ 	for (i = 0; i < del_num; i++) {
+-		if (CompareGuid(&(del_key[i].Type), &CertType) == 0) {
++		if (CompareMem(&(del_key[i].Type), &CertType,
++			       sizeof(EFI_GUID)) == 0) {
+ 			delete_cert(del_key[i].Mok, del_key[i].MokSize,
+ 				    mok, mok_num);
+ 		} else if (is_sha2_hash(del_key[i].Type)) {
+-- 
+2.7.4
+
