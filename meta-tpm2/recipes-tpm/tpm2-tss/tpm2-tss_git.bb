@@ -5,7 +5,9 @@ DEFAULT_PREFERENCE = "-1"
 PVBASE := "${PV}"
 PV = "${PVBASE}.${SRCPV}"
 
-SRC_URI = "git://github.com/tpm2-software/${BPN}.git;protocol=git;branch=master;name=${BPN};destsuffix=${BPN}"
+SRC_URI = "git://github.com/tpm2-software/${BPN}.git;protocol=git;branch=master;name=${BPN};destsuffix=${BPN} \
+           file://0001-Makefile.am-Update-CODE_COVERAGE_RULES-for-new-autoc.patch \
+"
 
 def version_git(d):
     version = d.getVar("PREFERRED_VERSION_%s" % d.getVar('PN'))
