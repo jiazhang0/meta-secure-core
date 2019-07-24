@@ -1,0 +1,69 @@
+From 3cacba40114f26650c681b067ff0495f4a0dd186 Mon Sep 17 00:00:00 2001
+From: Jonas Witschel <diabonas@gmx.de>
+Date: Fri, 25 Jan 2019 16:52:21 +0100
+Subject: [PATCH] build: update for ax_code_coverage.m4 version 2019.01.06
+
+ @CODE_COVERAGE_RULES@ doesn't exist any more and needs to be replaced.
+ Also includes a compatibility wrapper for older versions of the file.
+
+There is a bug in the new version of ax_code_coverage.m4
+(cf. https://github.com/autoconf-archive/autoconf-archive/pull/182):
+AM_DISTCHECK_CONFIGURE_FLAGS is recursively defined, which causes
+"make distcheck" to fail in combination with --enable-code-coverage.
+This is fixed by overwriting the faulty definition.
+
+Upstream-Status: Backport [https://github.com/tpm2-software/tpm2-abrmd/commit/3cacba40114f26650c681b067ff0495f4a0dd186]
+
+Signed-off-by: Jonas Witschel <diabonas@gmx.de>
+Signed-off-by: Mingli Yu <Mingli.Yu@windriver.com>
+---
+ Makefile.am  | 15 +++++++++++++++
+ configure.ac |  5 +++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/Makefile.am b/Makefile.am
+index 68c5359..eaeca94 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -166,7 +166,22 @@ dbusservicedir   = $(datadir)/dbus-1/system-services
+ dbusservice_DATA = dist/com.intel.tss2.Tabrmd.service
+ endif # HAVE_SYSTEMD
+ 
++# ax_code_coverage
++if AUTOCONF_CODE_COVERAGE_2019_01_06
++include $(top_srcdir)/aminclude_static.am
++clean-local: code-coverage-clean
++distclean-local: code-coverage-dist-clean
++
++# workaround for a bug in Autoconf Archive 2019.01.06
++# (https://github.com/autoconf-archive/autoconf-archive/pull/182)
++if CODE_COVERAGE_ENABLED
++AM_DISTCHECK_CONFIGURE_FLAGS := $(AM_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
++endif # CODE_COVERAGE_ENABLED
++
++else # AUTOCONF_CODE_COVERAGE_2019_01_06
+ @CODE_COVERAGE_RULES@
++endif # AUTOCONF_CODE_COVERAGE_2019_01_06
++
+ @VALGRIND_CHECK_RULES@
+ VALGRIND_G_DEBUG = fatal-criticals,gc-friendly
+ VALGRIND_memcheck_FLAGS = --leak-check=full --show-leak-kinds=definite,indirect --track-origins=yes --error-exitcode=1
+diff --git a/configure.ac b/configure.ac
+index 504db32..6f35fb5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -45,6 +45,11 @@ AS_IF([test ! -x "$(which $GDBUS_CODEGEN)"],
+       [AC_MSG_ERROR([*** gdbus-codegen is required to build tpm2-abrmd])])
+ 
+ AX_CODE_COVERAGE
++m4_ifdef([_AX_CODE_COVERAGE_RULES],
++         [AM_CONDITIONAL(AUTOCONF_CODE_COVERAGE_2019_01_06, [true])],
++         [AM_CONDITIONAL(AUTOCONF_CODE_COVERAGE_2019_01_06, [false])])
++AX_ADD_AM_MACRO_STATIC([])
++
+ # disable helgrind and drd, they hate GAsyncQueue
+ AX_VALGRIND_DFLT([sgcheck], [off])
+ AX_VALGRIND_DFLT([helgrind], [off])
+-- 
+2.7.4
+
