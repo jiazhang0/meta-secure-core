@@ -7,6 +7,20 @@ ROOT_DIR="`cd "$_D" && pwd`"
 KEYS_DIR="$ROOT_DIR/user-keys"
 GPG_KEYNAME=
 GPG_EMAIL=
+GPG_COMMENT=
+BOOT_GPG_KEYNAME=
+BOOT_GPG_EMAIL=
+BOOT_GPG_COMMENT=
+EMPTY_PW=0
+GPG_PASS=
+GPG_BIN=${GPG_BIN=gpg}
+IMA_PASS=
+gpg_key_name="PKG-SecureCore"
+gpg_email="SecureCore@foo.com"
+gpg_comment="Signing Key"
+boot_gpg_key_name="BOOT-SecureCore"
+boot_gpg_email="SecureCore@foo.com"
+boot_gpg_comment="Bootloader Signing Key"
 
 function show_help()
 {
@@ -14,6 +28,7 @@ function show_help()
 $1 - creation tool for user key store
 
 (C)Copyright 2017, Jia Zhang <lans.zhang2008@gmail.com>
+(C)Copyright 2019, Jason Wessel <jason.wessel@windriver.com> Wind River Systems, Inc.
 
 Usage: $1 options...
 
@@ -21,21 +36,37 @@ Options:
  -d <dir>
     Set the path to save the generated user keys.
     Default: `pwd`/user-keys
-
+ -c <gpg key comment>
+    Set the RPM/OStree gpg's key name
+    Default: $gpg_comment
  -n <gpg key name>
-    Set the gpg's key name
-    Default: SecureCore
-
- -m <gpg key ower's email address>
-    Set the ower's email address of the gpg key
-    Default: SecureCore@foo.com
-
- -h|--help
-    Show this help information.
+    Set the RPM/OStree gpg's key name
+    Default: $gpg_key_name
+ -m <gpg key owner's email address>
+    Set the RPM/OStree owner's email address of the gpg key
+    Default: $gpg_email
+ -rp <OSTree/RPM GPG passphrase>
+ -bgp <Boot Loader GPG passphrase>
+ -bp <Boot loader config password>
+ -ip <IMA passphrase>
+ -h|--help       Show this help information.
+Overides:
+ -bc <gpg key comment>
+    Force set the gpg key comment for the boot loader
+ -bn <gpg key name>
+    Force set the gpg key name for the boot loader
+ -bm <gpg key owner's email address>
+    Force set the gpg email address for the boot loader
 
 EOF
 }
 
+print_fatal() {
+    printf "\033[1;35m"
+    echo "$@"
+    printf "\033[0m"
+    exit 1
+}
 print_critical() {
     printf "\033[1;35m"
     echo "$@"
@@ -72,19 +103,42 @@ while [ $# -gt 0 ]; do
         -d)
             shift && KEYS_DIR="$1"
             ;;
+        -c)
+            shift && GPG_COMMENT="$1"
+            ;;
+        -bc)
+            shift && BOOT_GPG_COMMENT="$1"
+            ;;
         -n)
             shift && GPG_KEYNAME="$1"
             ;;
+        -bn)
+            shift && BOOT_GPG_KEYNAME="$1"
+            ;;
         -m)
             shift && GPG_EMAIL="$1"
+            ;;
+        -bm)
+            shift && BOOT_GPG_EMAIL="$1"
+            ;;
+        -rp)
+            shift && GPG_PASS="$1"
+            ;;
+        -bgp)
+            shift && BOOT_GPG_PASS="$1"
+            ;;
+        -bp)
+            shift && BOOT_PASS="$1"
+            ;;
+        -ip)
+            shift && IMA_PASS="$1"
             ;;
         -h|--help)
             show_help `basename $0`
             exit 0
             ;;
         *)
-            echo "Unsupported option $opt"
-            exit 1
+            print_fatal "Unsupported option $opt"
             ;;
     esac
     shift
@@ -97,6 +151,7 @@ MOK_SB_KEYS_DIR="$KEYS_DIR/mok_sb_keys"
 SYSTEM_KEYS_DIR="$KEYS_DIR/system_trusted_keys"
 IMA_KEYS_DIR="$KEYS_DIR/ima_keys"
 RPM_KEYS_DIR="$KEYS_DIR/rpm_keys"
+BOOT_KEYS_DIR="$KEYS_DIR/boot_keys"
 MODSIGN_KEYS_DIR="$KEYS_DIR/modsign_keys"
 SECONDARY_TRUSTED_KEYS_DIR="$KEYS_DIR/secondary_trusted_keys"
 
@@ -121,22 +176,39 @@ ca_sign() {
             -sha256 -nodes -days 3650 \
             -subj "$subject" \
             -keyout "$key_dir/$key_name.key" \
-            -out "$key_dir/$key_name.crt"
+            -out "$key_dir/$key_name.crt" \
+                || print_fatal "openssl failure"
     else
         if [ -z "$encrypted" ]; then
             openssl req -new -newkey rsa:2048 \
                 -sha256 -nodes \
                 -subj "$subject" \
                 -keyout "$key_dir/$key_name.key" \
-                -out "$key_dir/$key_name.csr"
+                -out "$key_dir/$key_name.csr" \
+                    || print_fatal "openssl failure"
         else
             # Prompt user to type the password
-            openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048
+            if [ "$IMA_PASS" = "" ] ; then
+                openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048 \
+                        || print_fatal "openssl failure"
 
-            openssl req -new -sha256 \
-                -subj "$subject" \
-                -key "$key_dir/$key_name.key" \
-                -out "$key_dir/$key_name.csr"
+                openssl req -new -sha256 \
+                    -subj "$subject" \
+                    -key "$key_dir/$key_name.key" \
+                    -out "$key_dir/$key_name.csr" \
+                        || print_fatal "openssl failure"
+            else
+                openssl genrsa -des3 -passout "pass:$IMA_PASS" \
+                    -out "$key_dir/$key_name.key" 2048 \
+                        || print_fatal "openssl failure"
+
+                openssl req -new -sha256 -passin "pass:$IMA_PASS" \
+                    -subj "$subject" \
+                    -key "$key_dir/$key_name.key" \
+                    -out "$key_dir/$key_name.csr" \
+                        || print_fatal "openssl failure"
+            fi
+
         fi
 
         local ca_cert="$ca_key_dir/$ca_key_name.crt"
@@ -153,7 +225,8 @@ ca_sign() {
             -CAkey "$ca_key_dir/$ca_key_name.key" \
             -set_serial 1 -days 3650 \
             -extfile "$ROOT_DIR/openssl.cnf" -extensions v3_req \
-            -out "$key_dir/$key_name.crt"
+            -out "$key_dir/$key_name.crt" \
+                || print_fatal "openssl failure"
 
         rm -f "$key_dir/$key_name.csr"
     fi
@@ -222,69 +295,74 @@ create_ima_user_key() {
     rm -f "$key_dir/x509_ima.crt"
 }
 
-create_rpm_user_key() {
-    local gpg_ver=`gpg --version | head -1 | awk '{ print $3 }' | awk -F. '{ print $1 }'`
-    local key_dir="$RPM_KEYS_DIR"
+create_boot_pw_key() {
+        local bootprog=`which grub-mkpasswd-pbkdf2`
+        if [ "$bootprog" = "" ] ; then
+                print_fatal "ERROR could not locate \"grub-mkpasswd-pbkdf2\" please install it or set the path to the host native sysroot"
+        fi
+        (echo "$BOOT_PASS"; echo "$BOOT_PASS") | $bootprog > $BOOT_KEYS_DIR/boot_cfg_pw.tmp
+        if [ $? != 0 ] ; then
+            print_fatal "ERROR failed to run grub-mkpasswd-mpkdf2 to generate password"
+        fi
+        cat $BOOT_KEYS_DIR/boot_cfg_pw.tmp |grep grub.pbkdf2 |sed -e 's/.*grub.pbkdf2/grub.pbkdf2/' > $BOOT_KEYS_DIR/boot_cfg_pw
+        rm -f $BOOT_KEYS_DIR/boot_cfg_pw.tmp
+
+}
+
+create_gpg_user_key() {
+    local gpg_ver=`$GPG_BIN --version | head -1 | awk '{ print $3 }' | awk -F. '{ print $1 }'`
+    local key_dir="$1"
 
     [ ! -d "$key_dir" ] && mkdir -m 0700 -p "$key_dir"
 
-    local gpg_key_name="SecureCore"
-    local gpg_email="SecureCore@foo.com"
+    local priv_key="$key_dir/$2-GPG-PRIVKEY-$3"
+    local pub_key="$key_dir/$2-GPG-KEY-$3"
+    local name_real="$3"
+    local USE_PW="Passphrase: $4"
+    local pw="$4"
+    local comment="$5"
+    local email="$6"
 
-    if [ ! -z $GPG_KEYNAME ]; then
-	    gpg_key_name=$GPG_KEYNAME
+    if [ "$gpg_ver" != "1" -a "$gpg_ver" != "2" ]; then
+        print_fatal "ERROR: GPG Version 1 or 2 are required for key generation and signing"
     fi
-
-    if [ ! -z $GPG_EMAIL ]; then
-	    gpg_email=$GPG_EMAIL
-    fi
-
-    local priv_key="$key_dir/RPM-GPG-PRIVKEY-$gpg_key_name"
-    local pub_key="$key_dir/RPM-GPG-KEY-$gpg_key_name"
-
-    if [ "$gpg_ver" == "2" ]; then
-        gpg --homedir "$key_dir" --quick-generate-key --batch \
-            "$gpg_key_name" default default never
-
-        gpg --homedir "$key_dir" --export --armor "$gpg_key_name" > "$pub_key"
-
-        gpg --homedir "$key_dir" --export-secret-keys --armor "$gpg_key_name" > "$priv_key"
-
-        cd "$key_dir"
-        rm -rf openpgp-revocs.d private-keys-v1.d pubring.kbx* \
-            trustdb.gpg
-        cd -
-    else
-        cat >"$key_dir/gen_rpm_keyring" <<EOF
+    cat >"$key_dir/gen_keyring" <<EOF
 Key-Type: RSA
-Key-Length: 2048
-Name-Real: $gpg_key_name
-Name-Comment: RPM Signing Certificate
-Name-Email: $gpg_email
+Key-Length: 4096
+Name-Real: $name_real
+Name-Comment: $comment
+Name-Email: $email
 Expire-Date: 0
-%pubring $pub_key.pub
-%secring $priv_key.sec
+$USE_PW
 %commit
-%echo RPM keyring $gpg_key_name created
+%echo keyring $name_real created
 EOF
 
-        gpg --batch --gen-key "$key_dir/gen_rpm_keyring"
-
-        gpg="gpg --no-default-keyring --secret-keyring \
-            $priv_key.sec --keyring $pub_key.pub"
-
-        $gpg --list-secret-keys
-
-        print_error "Please type passwd to modify the passphrase, and type quit to exit"
-
-        $gpg --edit-key "$gpg_key_name"
-
-        $gpg --export --armor "$gpg_key_name" > "$pub_key"
-        $gpg --export-secret-keys --armor "$gpg_key_name" > "$priv_key"
-
-        rm -f "$key_dir/gen_rpm_keyring"
-        rm -f "$priv_key.sec" "$pub_key.pub"
+    pinentry=""
+    if [ "$gpg_ver" = "2" ] ; then
+            pinentry="--pinentry-mode=loopback"
+            echo "allow-loopback-pinentry" > $key_dir/gpg-agent.conf
+            gpg-connect-agent --homedir "$key_dir" reloadagent /bye
     fi
+    $GPG_BIN --homedir "$key_dir" --batch --yes --gen-key "$key_dir/gen_keyring"
+    if [ $? != 0 ] ; then
+            print_fatal "Error with keyring generation"
+    fi
+
+    $GPG_BIN --homedir "$key_dir" -k
+
+    $GPG_BIN --homedir "$key_dir" --export --armor "$name_real" > "$pub_key" || print_fatal "gpg export failed"
+    if [ "$2" = "BOOT" ] ; then
+            $GPG_BIN --homedir "$key_dir" --export "$name_real" > "$key_dir/boot_pub_key" || print_fatal "gpg export failed"
+    fi
+
+    $GPG_BIN --homedir "$key_dir" --export-secret-keys $pinentry --passphrase "$pw" --armor "$3" > "$priv_key" || print_fatal "gpg export failed"
+
+    rm -f "$key_dir/gen_keyring"
+    cd "$key_dir"
+    rm -rf openpgp-revocs.d private-keys-v1.d pubring.kbx* \
+            trustdb.gpg* random_seed pubring.gpg* secring.gpg* gpg-agent.conf
+    cd -
 }
 
 create_user_keys() {
@@ -306,9 +384,166 @@ create_user_keys() {
     echo "Creating the user key for IMA appraisal"
     create_ima_user_key
 
-    echo "Creating the user key for RPM"
-    create_rpm_user_key
+    echo "Creating the gpg key for RPM/OSTree"
+    create_gpg_user_key "$RPM_KEYS_DIR" RPM "$gpg_key_name" "$GPG_PASS" "$gpg_comment" "$gpg_email"
+
+    echo "Creating the gpg key for boot loader"
+    create_gpg_user_key "$BOOT_KEYS_DIR" BOOT "$boot_gpg_key_name" "$BOOT_GPG_PASS" "$boot_gpg_comment" "$boot_gpg_email"
+
+    echo "Creating the password salt for boot"
+    create_boot_pw_key
 }
 
+if [ -d "$KEYS_DIR" ] ; then
+    print_fatal "ERROR: $KEYS_DIR already exists, please remove it, to allow for the creation of new keys."
+fi
+
+if [ ! -z "$GPG_KEYNAME" ]; then
+    gpg_key_name="$GPG_KEYNAME"
+else
+    echo -n "Enter RPM/OSTree GPG keyname (use dashes instead of spaces) [default: $gpg_key_name]: "
+    read val
+    if [ ! -z "$val" ] ; then
+        gpg_key_name=$val
+    fi
+fi
+
+if [ ! -z "$GPG_EMAIL" ]; then
+    gpg_email=$GPG_EMAIL
+else
+    echo -n "Enter RPM/OSTree GPG e-mail address [default: $gpg_email]: "
+    read val
+    if [ ! -z "$val" ] ; then
+        gpg_email=$val
+    fi
+fi
+
+if [ ! -z "$GPG_COMMENT" ]; then
+    gpg_comment=$GPG_COMMENT
+else
+    echo -n "Enter RPM/OSTREE GPG comment [default: $gpg_comment]: "
+    read val
+    if [ ! -z "$val" ] ; then
+        gpg_comment=$val
+    fi
+fi
+
+boot_gpg_key_name="BOOT-${gpg_key_name#PKG-}"
+boot_gpg_email="$gpg_email"
+boot_gpg_comment="$gpg_comment"
+if [ ! -z "$BOOT_GPG_KEYNAME" ]; then
+    boot_gpg_key_name="$BOOT_GPG_KEYNAME"
+fi
+if [ ! -z "$BOOT_GPG_EMAIL" ]; then
+    boot_gpg_email=$BOOT_GPG_EMAIL
+fi
+if [ ! -z "$BOOT_GPG_COMMENT" ]; then
+    boot_gpg_comment=$BOOT_GPG_COMMENT
+fi
+
+echo "  Using boot loader gpg name: $boot_gpg_key_name"
+echo "  Using boot loader gpg email: $boot_gpg_email"
+echo "  Using boot loader gpg comment: $boot_gpg_comment"
+echo "    Press control-c now if and use -bn -bm -bc arguments if you want"
+echo "    different values other than listed above"
+
+# Sanity checks on values so far
+
+if [ "$boot_gpg_key_name" = "$gpg_key_name" ] ; then
+    echo "==================================="
+    echo " RPM_GPG_NAME = \"$gpg_key_name\""
+    echo " BOOT_GPG_NAME = \"$boot_gpg_key_name\""
+    print_fatal "ERROR: The gpg key names must be unique"
+fi
+if [ "$boot_gpg_key_name" != "${boot_gpg_key_name/$gpg_key_name/}" ] ; then
+    echo "==================================="
+    echo " RPM_GPG_NAME = \"$gpg_key_name\""
+    echo " BOOT_GPG_NAME = \"$boot_gpg_key_name\""
+    print_fatal "ERROR: The RPM/OSTree gpg key name cannot be a subset of the boot loader gpg key name"
+fi
+if [ "$gpg_key_name" != "${gpg_key_name/$boot_gpg_key_name/}" ] ; then
+    echo "==================================="
+    echo " RPM_GPG_NAME = \"$gpg_key_name\""
+    echo " BOOT_GPG_NAME = \"$boot_gpg_key_name\""
+    print_fatal "ERROR: The boot loader gpg key name cannot be a subset of the RPM/OSTREE gpg key name"
+fi
+
+# Passwor section next
+if [ -z $GPG_PASS ]; then
+    while [ 1 ] ; do
+        echo -n "Enter RPM/OSTREE passphrase: "
+        read val
+        if [ ! -z "$val" ] ; then
+            GPG_PASS=$val
+            break
+        fi
+    done
+fi
+if [ -z $IMA_PASS ]; then
+    while [ 1 ] ; do
+        echo -n "Enter IMA passphrase: "
+        read val
+        if [ ! -z "$val" ] ; then
+            IMA_PASS=$val
+            break
+        fi
+    done
+fi
+if [ -z $BOOT_GPG_PASS ]; then
+    while [ 1 ] ; do
+        echo -n "Enter boot loader GPG passphrase: "
+        read val
+        if [ ! -z "$val" ] ; then
+            BOOT_GPG_PASS=$val
+            break
+        fi
+    done
+fi
+if [ -z $BOOT_PASS ]; then
+    while [ 1 ] ; do
+        echo -n "Enter boot loader locked configuration password(e.g. grub pw): "
+        read val
+        if [ ! -z "$val" ] ; then
+            BOOT_PASS=$val
+            break
+        fi
+    done
+fi
+
 create_user_keys
+
+cat <<EOF>$KEYS_DIR/keys.conf
+MASTER_KEYS_DIR = "$(readlink -f $KEYS_DIR)"
+
+IMA_KEYS_DIR = "\${MASTER_KEYS_DIR}/ima_keys"
+IMA_EVM_KEY_DIR = "\${MASTER_KEYS_DIR}/ima_keys"
+RPM_KEYS_DIR = "\${MASTER_KEYS_DIR}/rpm_keys"
+BOOT_KEYS_DIR = "\${MASTER_KEYS_DIR}/boot_keys"
+MOK_SB_KEYS_DIR = "\${MASTER_KEYS_DIR}/mok_sb_keys"
+SYSTEM_TRUSTED_KEYS_DIR = "\${MASTER_KEYS_DIR}/system_trusted_keys"
+UEFI_SB_KEYS_DIR = "\${MASTER_KEYS_DIR}/uefi_sb_keys"
+GRUB_PUB_KEY = "\${MASTER_KEYS_DIR}/boot_keys/boot_pub_key"
+GRUB_PW_FILE = "\${MASTER_KEYS_DIR}/boot_keys/boot_cfg_pw"
+OSTREE_GPGDIR = "\${MASTER_KEYS_DIR}/rpm_keys"
+
+RPM_GPG_NAME = "$gpg_key_name"
+RPM_GPG_PASSPHRASE = "$GPG_PASS"
+RPM_FSK_PASSWORD = "$IMA_PASS"
+BOOT_GPG_NAME = "$boot_gpg_key_name"
+BOOT_GPG_PASSPHRASE = "$BOOT_GPG_PASS"
+OSTREE_GPGID = "$gpg_key_name"
+OSTREE_GPG_PASSPHRASE = "$GPG_PASS"
+OSTREE_GRUB_PW_FILE = "\${GRUB_PW_FILE}"
+EOF
+
+cat<<EOF
+## The following variables need to be entered into your local.conf
+## in order to use the new signing keys:
+
+$(cat $KEYS_DIR/keys.conf)
+
+## Please save the values above to your local.conf
+## Or copy and uncomment the following line:
+# require $(readlink -f $KEYS_DIR/keys.conf)
+EOF
 
