@@ -7,6 +7,13 @@ ROOT_DIR="`cd "$_D" && pwd`"
 KEYS_DIR="$ROOT_DIR/user-keys"
 GPG_KEYNAME=
 GPG_EMAIL=
+GPG_COMMENT=
+EMPTY_PW=0
+GPG_PASS=
+IMA_PASS=
+gpg_key_name="SecureCore"
+gpg_email="SecureCore@foo.com"
+gpg_comment="Package Signing Key"
 
 function show_help()
 {
@@ -22,13 +29,21 @@ Options:
     Set the path to save the generated user keys.
     Default: `pwd`/user-keys
 
+ -c <gpg key comment>
+    Set the gpg's key name
+    Default: $gpg_comment
+
  -n <gpg key name>
     Set the gpg's key name
-    Default: SecureCore
+    Default: $gpg_key_name
 
  -m <gpg key ower's email address>
     Set the ower's email address of the gpg key
-    Default: SecureCore@foo.com
+    Default: $gpg_email
+
+ -rp <OSTree/RPM passphrase>
+
+ -ip <IMA passphrase>
 
  -h|--help
     Show this help information.
@@ -72,11 +87,20 @@ while [ $# -gt 0 ]; do
         -d)
             shift && KEYS_DIR="$1"
             ;;
+        -c)
+            shift && GPG_COMMENT="$1"
+            ;;
         -n)
             shift && GPG_KEYNAME="$1"
             ;;
         -m)
             shift && GPG_EMAIL="$1"
+            ;;
+	-rp)
+	    shift && GPG_PASS="$1"
+            ;;
+	-ip)
+	    shift && IMA_PASS="$1"
             ;;
         -h|--help)
             show_help `basename $0`
@@ -131,12 +155,22 @@ ca_sign() {
                 -out "$key_dir/$key_name.csr"
         else
             # Prompt user to type the password
-            openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048
+	    if [ "$GPG_PASS" = "" ] ; then
+		openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048
 
-            openssl req -new -sha256 \
-                -subj "$subject" \
-                -key "$key_dir/$key_name.key" \
-                -out "$key_dir/$key_name.csr"
+		openssl req -new -sha256 \
+                    -subj "$subject" \
+                    -key "$key_dir/$key_name.key" \
+                    -out "$key_dir/$key_name.csr"
+	    else
+		openssl genrsa -des3 -passout "pass:$IMA_PASS" \
+		    -out "$key_dir/$key_name.key" 2048
+		openssl req -new -sha256 -passin "pass:$IMA_PASS" \
+                    -subj "$subject" \
+                    -key "$key_dir/$key_name.key" \
+                    -out "$key_dir/$key_name.csr"
+	    fi
+
         fi
 
         local ca_cert="$ca_key_dir/$ca_key_name.crt"
@@ -228,62 +262,41 @@ create_rpm_user_key() {
 
     [ ! -d "$key_dir" ] && mkdir -m 0700 -p "$key_dir"
 
-    local gpg_key_name="SecureCore"
-    local gpg_email="SecureCore@foo.com"
-
-    if [ ! -z $GPG_KEYNAME ]; then
-	    gpg_key_name=$GPG_KEYNAME
-    fi
-
-    if [ ! -z $GPG_EMAIL ]; then
-	    gpg_email=$GPG_EMAIL
-    fi
-
     local priv_key="$key_dir/RPM-GPG-PRIVKEY-$gpg_key_name"
     local pub_key="$key_dir/RPM-GPG-KEY-$gpg_key_name"
 
     if [ "$gpg_ver" == "2" ]; then
-        gpg --homedir "$key_dir" --quick-generate-key --batch \
-            "$gpg_key_name" default default never
+	USE_PW=""
+	if [ "$GPG_PASS" != "" ] ; then
+	    USE_PW="Passphrase: $GPG_PASS"
+	fi
+        cat >"$key_dir/gen_rpm_keyring" <<EOF
+Key-Type: RSA
+Key-Length: 4096
+Name-Real: $gpg_key_name
+Name-Comment: $gpg_comment
+Name-Email: $gpg_email
+Expire-Date: 0
+$USE_PW
+%commit
+%echo RPM keyring $gpg_key_name created
+EOF
+	cat $key_dir/gen_rpm_keyring
+
+	gpg --homedir "$key_dir" --batch --yes --generate-key "$key_dir/gen_rpm_keyring"
 
         gpg --homedir "$key_dir" --export --armor "$gpg_key_name" > "$pub_key"
 
-        gpg --homedir "$key_dir" --export-secret-keys --armor "$gpg_key_name" > "$priv_key"
+        gpg --homedir "$key_dir" --export-secret-keys --pinentry-mode=loopback --passphrase "$GPG_PASS" --armor "$gpg_key_name" > "$priv_key"
 
         cd "$key_dir"
+        rm -f "$key_dir/gen_rpm_keyring"
         rm -rf openpgp-revocs.d private-keys-v1.d pubring.kbx* \
             trustdb.gpg
         cd -
     else
-        cat >"$key_dir/gen_rpm_keyring" <<EOF
-Key-Type: RSA
-Key-Length: 2048
-Name-Real: $gpg_key_name
-Name-Comment: RPM Signing Certificate
-Name-Email: $gpg_email
-Expire-Date: 0
-%pubring $pub_key.pub
-%secring $priv_key.sec
-%commit
-%echo RPM keyring $gpg_key_name created
-EOF
-
-        gpg --batch --gen-key "$key_dir/gen_rpm_keyring"
-
-        gpg="gpg --no-default-keyring --secret-keyring \
-            $priv_key.sec --keyring $pub_key.pub"
-
-        $gpg --list-secret-keys
-
-        print_error "Please type passwd to modify the passphrase, and type quit to exit"
-
-        $gpg --edit-key "$gpg_key_name"
-
-        $gpg --export --armor "$gpg_key_name" > "$pub_key"
-        $gpg --export-secret-keys --armor "$gpg_key_name" > "$priv_key"
-
-        rm -f "$key_dir/gen_rpm_keyring"
-        rm -f "$priv_key.sec" "$pub_key.pub"
+	echo "ERROR: GPG Version 2 is required for key generation and signing"
+	exit 1
     fi
 }
 
@@ -310,5 +323,75 @@ create_user_keys() {
     create_rpm_user_key
 }
 
+if [ -d "$KEYS_DIR" ] ; then
+    echo "ERROR: $KEYS_DIR already exists, please remove it, to allow for the creation of new keys."
+    exit 1
+fi
+
+if [ ! -z "$GPG_KEYNAME" ]; then
+	gpg_key_name="$GPG_KEYNAME"
+else
+	echo -n "Enter GPG keyname [default: $gpg_key_name]: "
+	read val
+	if [ ! -z "$val" ] ; then
+		gpg_key_name=$val
+	fi
+fi
+
+if [ ! -z "$GPG_EMAIL" ]; then
+	gpg_email=$GPG_EMAIL
+else
+	echo -n "Enter GPG e-mail address [default: $gpg_email]: "
+	read val
+	if [ ! -z "$val" ] ; then
+		gpg_email=$val
+	fi
+fi
+
+if [ ! -z "$GPG_COMMENT" ]; then
+	gpg_email=$GPG_EMAIL
+else
+	echo -n "Enter GPG comment [default: $gpg_comment]: "
+	read val
+	if [ ! -z "$val" ] ; then
+		gpg_email=$val
+	fi
+fi
+if [ -z $GPG_PASS ]; then
+	while [ 1 ] ; do
+		echo -n "Enter RPM/OSTREE Passphrase: "
+		read val
+		if [ ! -z "$val" ] ; then
+			GPG_PASS=$val
+			break
+		fi
+	done
+fi
+if [ -z $IMA_PASS ]; then
+	while [ 1 ] ; do
+		echo -n "Enter IMA Passphrase: "
+		read val
+		if [ ! -z "$val" ] ; then
+			IMA_PASS=$val
+			break
+		fi
+	done
+fi
+
+
 create_user_keys
+
+cat<<EOF
+## The following variables need to be entered into your local.conf
+## in order to use the new signing keys:
+
+RPM_GPG_NAME = "$gpg_key_name"
+RPM_GPG_PASSPHRASE = "$GPG_PASS"
+RPM_FSK_PASSWORD = "$IMA_PASS"
+OSTREE_GPGID = "$gpg_key_name"
+OSTREE_GPG_PASSPHRASE = "$GPG_PASS"
+WR_KEYS_DIR = "$KEYS_DIR"
+
+## Please save the values above to your local.conf
+EOF
 
