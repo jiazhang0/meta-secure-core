@@ -1,4 +1,4 @@
-From 00fd7457c9d907800587e93f87fc5b6de68ba49e Mon Sep 17 00:00:00 2001
+From 69884cfde30dc876cda61714f1476a3d331bc2db Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Wed, 12 Jul 2017 16:02:13 +0800
 Subject: [PATCH] mok2verify: support to verify non-PE file with PKCS#7
@@ -30,6 +30,12 @@ grub-core/normal/main.c. The asm codes are x86 specified but aarch64 is
 supported by grub-efi now.
 
 Signed-off-by: Kai Kang <kai.kang@windriver.com>
+
+Rebase patch for 2.0.4
+Add a parameter file type to grub_verify_linux function to adapt new
+grub_file_open function.
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
 ---
  grub-core/Makefile.core.def    |   6 ++
  grub-core/commands/boot.c      |  14 +++-
@@ -37,19 +43,19 @@ Signed-off-by: Kai Kang <kai.kang@windriver.com>
  grub-core/lib/efi/mok2verify.c | 182 +++++++++++++++++++++++++++++++++++++++++
  grub-core/loader/i386/linux.c  |  60 ++++++++++++++
  grub-core/loader/linux.c       |  27 +++++-
- grub-core/normal/main.c        |  62 +++++++++++++-
+ grub-core/normal/main.c        |  53 +++++++++++-
  grub-core/normal/menu.c        |  31 +++++--
  grub-core/normal/menu_text.c   |  33 ++++++--
  include/grub/efi/mok2verify.h  |  48 +++++++++++
- 10 files changed, 472 insertions(+), 30 deletions(-)
+ 10 files changed, 463 insertions(+), 30 deletions(-)
  create mode 100644 grub-core/lib/efi/mok2verify.c
  create mode 100644 include/grub/efi/mok2verify.h
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index a82c1f3..76b3c7d 100644
+index 18d2316..59a5cf1 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -1754,6 +1754,12 @@ module = {
+@@ -1870,6 +1870,12 @@ module = {
  };
  
  module = {
@@ -155,7 +161,7 @@ index a4c8178..da49c9e 100644
  	  self->text = grub_xasprintf (value, self->value);
 diff --git a/grub-core/lib/efi/mok2verify.c b/grub-core/lib/efi/mok2verify.c
 new file mode 100644
-index 0000000..3865661
+index 0000000..790efa0
 --- /dev/null
 +++ b/grub-core/lib/efi/mok2verify.c
 @@ -0,0 +1,182 @@
@@ -342,26 +348,26 @@ index 0000000..3865661
 +
 +#pragma GCC diagnostic error "-Wvla"
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index 083f941..486e420 100644
+index d0501e2..e684300 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
-@@ -35,6 +35,9 @@
- #include <grub/i18n.h>
+@@ -36,6 +36,9 @@
  #include <grub/lib/cmdline.h>
  #include <grub/linux.h>
+ #include <grub/machine/kernel.h>
 +#ifdef GRUB_MACHINE_EFI
 +#include <grub/efi/mok2verify.h>
 +#endif
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -673,6 +676,55 @@ grub_linux_unload (void)
+@@ -635,6 +638,55 @@ grub_linux_unload (void)
    return GRUB_ERR_NONE;
  }
  
 +#ifdef GRUB_MACHINE_EFI
 +static grub_err_t
-+grub_verify_linux (const char *path)
++grub_verify_linux (const char *path, enum grub_file_type type)
 +{
 +  grub_file_t file;
 +  grub_ssize_t size;
@@ -369,7 +375,7 @@ index 083f941..486e420 100644
 +
 +  grub_dprintf ("linux", "Verifying kernel %s\n", path);
 +
-+  file = grub_file_open (path);
++  file = grub_file_open (path, type);
 +  if (!file)
 +    return grub_errno;
 +
@@ -402,7 +408,7 @@ index 083f941..486e420 100644
 +}
 +#else
 +static grub_err_t
-+grub_verify_linux (const char *path)
++grub_verify_linux (const char *path, enum grub_file_type type)
 +{
 +  return GRUB_ERR_NONE;
 +}
@@ -411,17 +417,17 @@ index 083f941..486e420 100644
  static grub_err_t
  grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  		int argc, char *argv[])
-@@ -695,6 +747,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -657,6 +709,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
        goto fail;
      }
  
-+  if (grub_verify_linux (argv[0]))
++  if (grub_verify_linux (argv[0], GRUB_FILE_TYPE_LINUX_KERNEL))
 +    goto fail;
 +
-   file = grub_file_open (argv[0]);
+   file = grub_file_open (argv[0], GRUB_FILE_TYPE_LINUX_KERNEL);
    if (! file)
      goto fail;
-@@ -1132,6 +1187,11 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+@@ -1114,6 +1169,11 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
   fail:
    grub_initrd_close (&initrd_ctx);
  
@@ -434,7 +440,7 @@ index 083f941..486e420 100644
  }
  
 diff --git a/grub-core/loader/linux.c b/grub-core/loader/linux.c
-index be6fa0f..edc6d24 100644
+index 471b214..bb312ac 100644
 --- a/grub-core/loader/linux.c
 +++ b/grub-core/loader/linux.c
 @@ -4,6 +4,9 @@
@@ -493,7 +499,7 @@ index be6fa0f..edc6d24 100644
 +  return err;
  }
 diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index 78a70a8..b1340c7 100644
+index 1b03dfd..f48a549 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
 @@ -33,6 +33,9 @@
@@ -612,7 +618,7 @@ index 78a70a8..b1340c7 100644
    /* Reload terminal colors when these variables are written to.  */
    grub_register_variable_hook ("color_normal", NULL, grub_env_write_color_normal);
 diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
-index 719e2fb..0665abc 100644
+index d5e0c79..512f710 100644
 --- a/grub-core/normal/menu.c
 +++ b/grub-core/normal/menu.c
 @@ -32,6 +32,9 @@
@@ -625,7 +631,7 @@ index 719e2fb..0665abc 100644
  
  /* Time to delay after displaying an error message about a default/fallback
     entry failing to boot.  */
-@@ -772,18 +775,30 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
+@@ -773,18 +776,30 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
  	      break;
  
  	    case 'c':
@@ -782,5 +788,5 @@ index 0000000..98ef2d4
 +
 +#endif	/* ! GRUB_EFI_MOK2_VERIFY_HEADER */
 -- 
-2.7.5
+2.7.4
 
