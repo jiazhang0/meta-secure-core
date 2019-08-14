@@ -10,6 +10,7 @@ GPG_EMAIL=
 GPG_COMMENT=
 EMPTY_PW=0
 GPG_PASS=
+GPG_BIN=${GPG_BIN=gpg}
 IMA_PASS=
 gpg_key_name="SecureCore"
 gpg_email="SecureCore@foo.com"
@@ -257,7 +258,7 @@ create_ima_user_key() {
 }
 
 create_rpm_user_key() {
-    local gpg_ver=`gpg --version | head -1 | awk '{ print $3 }' | awk -F. '{ print $1 }'`
+    local gpg_ver=`$GPG_BIN --version | head -1 | awk '{ print $3 }' | awk -F. '{ print $1 }'`
     local key_dir="$RPM_KEYS_DIR"
 
     [ ! -d "$key_dir" ] && mkdir -m 0700 -p "$key_dir"
@@ -265,12 +266,15 @@ create_rpm_user_key() {
     local priv_key="$key_dir/RPM-GPG-PRIVKEY-$gpg_key_name"
     local pub_key="$key_dir/RPM-GPG-KEY-$gpg_key_name"
 
-    if [ "$gpg_ver" == "2" ]; then
-	USE_PW=""
-	if [ "$GPG_PASS" != "" ] ; then
+    if [ "$gpg_ver" != "1" -a "$gpg_ver" != "2" ]; then
+	echo "ERROR: GPG Version 1 or 2 are required for key generation and signing"
+	exit 1
+    fi
+    USE_PW=""
+    if [ "$GPG_PASS" != "" ] ; then
 	    USE_PW="Passphrase: $GPG_PASS"
-	fi
-        cat >"$key_dir/gen_rpm_keyring" <<EOF
+    fi
+    cat >"$key_dir/gen_rpm_keyring" <<EOF
 Key-Type: RSA
 Key-Length: 4096
 Name-Real: $gpg_key_name
@@ -281,23 +285,26 @@ $USE_PW
 %commit
 %echo RPM keyring $gpg_key_name created
 EOF
-	cat $key_dir/gen_rpm_keyring
 
-	gpg --homedir "$key_dir" --batch --yes --generate-key "$key_dir/gen_rpm_keyring"
-
-        gpg --homedir "$key_dir" --export --armor "$gpg_key_name" > "$pub_key"
-
-        gpg --homedir "$key_dir" --export-secret-keys --pinentry-mode=loopback --passphrase "$GPG_PASS" --armor "$gpg_key_name" > "$priv_key"
-
-        cd "$key_dir"
-        rm -f "$key_dir/gen_rpm_keyring"
-        rm -rf openpgp-revocs.d private-keys-v1.d pubring.kbx* \
-            trustdb.gpg
-        cd -
-    else
-	echo "ERROR: GPG Version 2 is required for key generation and signing"
-	exit 1
+    pinentry=""
+    if [ "$gpg_ver" = "2" ] ; then
+	    pinentry="--pinentry-mode=loopback"
+	    echo "allow-loopback-pinentry" > $key_dir/gpg-agent.conf
+	    gpg-connect-agent --homedir "$key_dir" reloadagent /bye
     fi
+    $GPG_BIN --homedir "$key_dir" --batch --yes --gen-key "$key_dir/gen_rpm_keyring"
+
+    $GPG_BIN --homedir "$key_dir" -k
+
+    $GPG_BIN --homedir "$key_dir" --export --armor "$gpg_key_name" > "$pub_key"
+
+    $GPG_BIN --homedir "$key_dir" --export-secret-keys $pinentry --passphrase "$GPG_PASS" --armor "$gpg_key_name" > "$priv_key"
+
+    rm -f "$key_dir/gen_rpm_keyring"
+    cd "$key_dir"
+    rm -rf openpgp-revocs.d private-keys-v1.d pubring.kbx* \
+            trustdb.gpg* random_seed pubring.gpg* secring.gpg* gpg-agent.conf
+    cd -
 }
 
 create_user_keys() {
