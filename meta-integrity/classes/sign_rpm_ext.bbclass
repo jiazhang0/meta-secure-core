@@ -29,8 +29,7 @@ python check_rpm_public_key () {
             (gpg_bin, gpg_path, d.getVar('RPM_GPG_PASSPHRASE', True), gpg_key)
     status, output = oe.utils.getstatusoutput(cmd)
     if status:
-        raise bb.build.FuncFailed('Failed to import gpg key (%s): %s' %
-                                  (gpg_key, output))
+        bb.fatal('Failed to import gpg key (%s): %s' % (gpg_key, output))
 }
 check_rpm_public_key[lockfiles] = "${TMPDIR}/check_rpm_public_key.lock"
 do_package_write_rpm[prefuncs] += "check_rpm_public_key"
@@ -46,6 +45,5 @@ python () {
     if not os.path.exists(gpg_path):
         status, output = oe.utils.getstatusoutput('mkdir -m 0700 -p %s' % gpg_path)
         if status:
-            raise bb.build.FuncFailed('Failed to create gpg keying %s: %s' %
-                                      (gpg_path, output))
+            bb.fatal('Failed to create gpg keying %s: %s' % (gpg_path, output))
 }
