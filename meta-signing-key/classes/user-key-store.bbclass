@@ -220,7 +220,7 @@ def pem2der(input, output, d):
     try:
         result, _ = bb.process.run(cmd)
     except bb.process.ExecutionError:
-        raise bb.fatal('Unable to convert %s to %s' % (input, output))
+        bb.fatal('Unable to convert %s to %s' % (input, output))
 
 # Convert the certificate (PEM formatted) to ESL.
 __pem2esl() {
