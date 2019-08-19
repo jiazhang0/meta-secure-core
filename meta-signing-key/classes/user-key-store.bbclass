@@ -53,7 +53,7 @@ def sign_efi_image(key, cert, input, output, d):
     try:
         result, _ = bb.process.run(cmd)
     except bb.process.ExecutionError:
-        raise bb.build.FuncFailed('ERROR: Unable to sign %s' % input)
+        bb.fatal('Unable to sign %s' % input)
 
 def edss_sign_efi_image(input, output, d):
    # This function will be overloaded in pulsar-binary-release
@@ -136,7 +136,7 @@ def sel_sign(key, cert, input, d):
     try:
         result, _ = bb.process.run(cmd)
     except bb.process.ExecutionError:
-        raise bb.build.FuncFailed('ERROR: Unable to sign %s' % input)
+        bb.fatal('Unable to sign %s' % input)
 
 def uks_sel_sign(input, d):
     if d.getVar('UEFI_SB', True) != '1':
@@ -220,7 +220,7 @@ def pem2der(input, output, d):
     try:
         result, _ = bb.process.run(cmd)
     except bb.process.ExecutionError:
-        raise bb.build.FuncFailed('ERROR: Unable to convert %s to %s' % (input, output))
+        raise bb.fatal('Unable to convert %s to %s' % (input, output))
 
 # Convert the certificate (PEM formatted) to ESL.
 __pem2esl() {
@@ -429,7 +429,7 @@ def sanity_check_user_keys(name, may_exit, d):
 
     if _ == False:
         if may_exit:
-            raise bb.build.FuncFailed('ERROR: Unable to find user key for %s ...' % name)
+            bb.fatal('Unable to find user key for %s ...' % name)
 
         vprint('Failed to check the user keys for %s ...' % name, d)
 
