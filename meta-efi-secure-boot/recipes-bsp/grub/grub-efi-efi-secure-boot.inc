@@ -129,6 +129,16 @@ python do_sign() {
 addtask sign after do_install before do_deploy do_package
 do_sign[prefuncs] += "check_deploy_keys"
 
+fakeroot do_chownp7b() {
+    chown root:root -R "${D}${EFI_BOOT_PATH}/grub.cfg.p7b"
+    chown root:root -R "${D}${EFI_BOOT_PATH}/boot-menu.inc.p7b"
+    [ x"${UEFI_SB}" = x"1" ] && {
+        chown root:root -R "${D}${EFI_BOOT_PATH}/efi-secure-boot.inc.p7b"
+        chown root:root -R "${D}${EFI_BOOT_PATH}/password.inc.p7b"
+    }
+}
+addtask chownp7b after do_deploy before do_package
+
 # Override the do_deploy() in oe-core.
 do_deploy_class-target() {
     install -m 0644 "${D}${EFI_BOOT_PATH}/${GRUB_IMAGE}" "${DEPLOYDIR}"
