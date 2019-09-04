@@ -14,15 +14,15 @@ diff --git a/src/Makefile.am b/src/Makefile.am
 index deb18fb..aa8f666 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -9,7 +9,7 @@ libimaevm_la_LIBADD =  $(OPENSSL_LIBS)
- 
- include_HEADERS = imaevm.h
+@@ -15,7 +15,7 @@ EXTRA_DIST = hash_info.gen
+ hash_info.h: Makefile
+ 	$(srcdir)/hash_info.gen $(KERNEL_HEADERS) >$@
  
 -bin_PROGRAMS = evmctl
 +sbin_PROGRAMS = evmctl
  
  evmctl_SOURCES = evmctl.c
- evmctl_CPPFLAGS = $(OPENSSL_CFLAGS)
+ evmctl_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCRYPTO_CFLAGS)
 -- 
 2.7.4
 
