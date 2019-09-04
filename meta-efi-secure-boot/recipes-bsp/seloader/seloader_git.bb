@@ -21,7 +21,7 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d9bf404642f21afb4ad89f95d7bc91ee"
 
 DEPENDS += "\
-    gnu-efi sbsigntool-native openssl-native \
+    gnu-efi sbsigntool-native openssl-native ovmf \
 "
 
 PV = "0.4.6+git${SRCPV}"
@@ -53,10 +53,6 @@ EFI_TARGET = "/boot/efi/EFI/BOOT"
 python do_sign() {
     sb_sign(d.expand('${B}/Src/Efi/SELoader.efi'), \
             d.expand('${B}/Src/Efi/SELoader.efi.signed'), d)
-    sb_sign(d.expand('${B}/Bin/Hash2DxeCrypto.efi'), \
-            d.expand('${B}/Bin/Hash2DxeCrypto.efi.signed'), d)
-    sb_sign(d.expand('${B}/Bin/Pkcs7VerifyDxe.efi'), \
-            d.expand('${B}/Bin/Pkcs7VerifyDxe.efi.signed'), d)
 }
 addtask sign after do_compile before do_install
 do_sign[prefuncs] += "check_deploy_keys"
@@ -65,6 +61,9 @@ do_install() {
     install -d ${D}${EFI_TARGET}
 
     oe_runmake install EFI_DESTDIR=${D}${EFI_TARGET}
+    # Remove precompiled files, now provided by OVMF
+    rm -f ${D}${EFI_TARGET}/Hash2DxeCrypto.efi
+    rm -f ${D}${EFI_TARGET}/Pkcs7VerifyDxe.efi
 
     if [ x"${UEFI_SB}" = x"1" ]; then
         if [ x"${MOK_SB}" != x"1" ]; then
@@ -80,8 +79,6 @@ do_deploy() {
 
     install -m 0600 "${B}/Src/Efi/SELoader.efi" \
         "${DEPLOYDIR}/efi-unsigned/SELoader${EFI_ARCH}.efi"
-    install -m 0600 "${B}/Bin/Hash2DxeCrypto.efi" "${DEPLOYDIR}/efi-unsigned"
-    install -m 0600 "${B}/Bin/Pkcs7VerifyDxe.efi" "${DEPLOYDIR}/efi-unsigned"
 
     # Deploy the signed images
     if [ x"${UEFI_SB}" = x"1" -a x"${MOK_SB}" != x"1" ]; then
@@ -91,15 +88,11 @@ do_deploy() {
     fi
     install -m 0600 "${D}${EFI_TARGET}/${SEL_NAME}${EFI_ARCH}.efi" \
         "${DEPLOYDIR}/${SEL_NAME}${EFI_ARCH}.efi"
-    install -m 0600 "${D}${EFI_TARGET}/Hash2DxeCrypto.efi" \
-        "${DEPLOYDIR}/Hash2DxeCrypto.efi"
-    install -m 0600 "${D}${EFI_TARGET}/Pkcs7VerifyDxe.efi" \
-        "${DEPLOYDIR}/Pkcs7VerifyDxe.efi"
 }
 addtask deploy after do_install before do_build
+
+RDEPENDS_${PN} += "ovmf-pkcs7-efi"
 
 FILES_${PN} += "${EFI_TARGET}"
 
 SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/efi-unsigned"
-SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/Hash2DxeCrypto.efi"
-SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/Pkcs7VerifyDxe.efi"
