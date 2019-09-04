@@ -16,6 +16,8 @@ inherit autotools pkgconfig
 
 EXTRA_OECONF += " \
     --with-udevrulesdir=${sysconfdir}/udev/rules.d \
+    --with-crypto=gcrypt \
+    --disable-doxygen-doc \
 "
 
 PACKAGES = " \
