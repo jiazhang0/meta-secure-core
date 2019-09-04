@@ -1,0 +1,54 @@
+Index: grub-2.02/grub-core/loader/multiboot.c
+===================================================================
+--- grub-2.02.orig/grub-core/loader/multiboot.c
++++ grub-2.02/grub-core/loader/multiboot.c
+@@ -47,6 +47,7 @@ GRUB_MOD_LICENSE ("GPLv3+");
+ 
+ #ifdef GRUB_MACHINE_EFI
+ #include <grub/efi/efi.h>
++#include <grub/efi/mok2verify.h>
+ #endif
+ 
+ struct grub_relocator *GRUB_MULTIBOOT (relocator) = NULL;
+@@ -325,6 +326,20 @@ grub_cmd_multiboot (grub_command_t cmd _
+   if (! file)
+     return grub_errno;
+ 
++#if GRUB_MACHINE_EFI
++  err = grub_verify_file (argv[0]);
++  if (err != GRUB_ERR_NONE)
++    {
++      grub_error(err, N_("Failed to verify module %s"), argv[0]);
++
++      /* An unauthenticated module always causes a complete boot failure. */
++      if (grub_is_secured () == 1)
++	grub_loader_unset();
++
++      return err;
++    }
++#endif
++
+   grub_dl_ref (my_mod);
+ 
+   /* Skip filename.  */
+@@ -379,6 +394,20 @@ grub_cmd_module (grub_command_t cmd __at
+   if (! file)
+     return grub_errno;
+ 
++#if GRUB_MACHINE_EFI
++  err = grub_verify_file (argv[0]);
++  if (err != GRUB_ERR_NONE)
++    {
++      grub_error(err, N_("Failed to verify module %s"), argv[0]);
++
++      /* An unauthenticated module always causes a complete boot failure. */
++      if (grub_is_secured () == 1)
++	grub_loader_unset();
++
++      return err;
++    }
++#endif
++
+ #ifndef GRUB_USE_MULTIBOOT2
+   lowest_addr = 0x100000;
+   if (grub_multiboot_quirks & GRUB_MULTIBOOT_QUIRK_MODULES_AFTER_KERNEL)

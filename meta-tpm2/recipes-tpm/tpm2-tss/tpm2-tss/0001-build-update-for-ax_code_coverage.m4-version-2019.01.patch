@@ -19,7 +19,7 @@ diff --git a/Makefile.am b/Makefile.am
 index d78d23f..7815c4b 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -42,7 +42,13 @@ noinst_PROGRAMS =
+@@ -19,7 +19,13 @@ noinst_PROGRAMS =
  
  ### Add ax_* rules ###
  # ax_code_coverage
@@ -37,8 +37,8 @@ diff --git a/configure.ac b/configure.ac
 index c8aa314..40883a8 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -206,6 +206,9 @@ DX_INIT_DOXYGEN($PACKAGE_NAME, [Doxyfile], [doc/doxygen])
- AM_CONDITIONAL(DOXYMAN, [test $DX_FLAG_man -eq 1])
+@@ -312,6 +312,9 @@ AS_IF([test "x$enable_doxygen_doc" != xn
+       [ERROR_IF_NO_PROG([doxygen])])
  
  AX_CODE_COVERAGE
 +m4_ifdef([_AX_CODE_COVERAGE_RULES],
