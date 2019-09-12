@@ -25,7 +25,7 @@ IMAGE_INSTALL = "\
 
 IMAGE_LINGUAS = " "
 
-INITRAMFS_IMAGE = "secure-core-image-initramfs"
+INITRAMFS_IMAGE ?= "secure-core-image-initramfs"
 
 inherit core-image
 
