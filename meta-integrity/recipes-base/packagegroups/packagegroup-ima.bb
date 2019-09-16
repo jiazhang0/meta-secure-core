@@ -15,6 +15,6 @@ RDEPENDS_${PN} += "\
 
 # Note any private key is not available if user key signing model used.
 RRECOMMENDS_${PN} += "\
-    key-store-ima-privkey \
-    key-store-system-trusted-privkey \
+    key-store-ima-cert \
+    key-store-system-trusted-cert \
 "
