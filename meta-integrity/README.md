@@ -110,14 +110,15 @@ default, the sample keys are used for the purpose of development and
 demonstration. Please ensure you know what your risk is to use the sample keys
 in your product, because they are completely public.
 
-If sample keys are used, the private IMA key is installed as /etc/keys/x509_ima.key.
+Private keys are not installed into the target image. If you understand your
+risks, you can copy them to your target file system or to an external storage.
 
-A typical signing command is as following:
+If you do so, a typical signing command is as following:
 
-    # evmctl ima_sign --hashalgo sha256 --key /etc/keys/x509_ima.key --pass=<passowrd> /path/to/file
+    # evmctl ima_sign --hashalgo sha256 --key path/to/x509_ima.key --pass=<passowrd> /path/to/file
 or
 
-    # evmctl ima_sign --hashalgo sha256 --key /etc/keys/x509_ima.key --pass=<passowrd> -r /path/to/directory
+    # evmctl ima_sign --hashalgo sha256 --key /path/to/x509_ima.key --pass=<passowrd> -r /path/to/directory
 
 The following command can be used to verify a file's IMA signature with specified certificate:
 
