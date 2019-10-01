@@ -17,9 +17,11 @@ SRC_URI += "\
 
 INHIBIT_PACKAGE_STRIP = "${@'1' if d.getVar('MODSIGN_ENABLED', True) == '1' else '0'}"
 
+inherit ${@'user-key-store' if d.getVar('MODSIGN_ENABLED', True) == '1' else ''}
+
 do_configure_prepend() {
     sys_cert="${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.crt"
-    modsign_key="${STAGING_DIR_TARGET}${sysconfdir}/keys/modsign_key.key"
+    modsign_key="${@uks_modsign_keys_dir(d)}/modsign_key.key"
     modsign_cert="${STAGING_DIR_TARGET}${sysconfdir}/keys/modsign_key.crt"
 
     if [ -f "$sys_cert" ]; then
