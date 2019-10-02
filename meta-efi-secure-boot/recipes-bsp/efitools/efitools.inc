@@ -15,7 +15,7 @@ DEPENDS_append += "\
     libfile-slurp-perl-native \
 "
 
-PV = "1.7.0+git${SRCPV}"
+PV = "1.9.2+git${SRCPV}"
 
 SRC_URI = "\
     git://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools.git \
@@ -29,9 +29,8 @@ SRC_URI = "\
     file://Reuse-xxdi.pl.patch \
     file://Add-static-keyword-for-IsValidVariableHeader.patch \
     file://Dynamically-load-openssl.cnf-for-openssl-1.0.x-and-1.patch \
-    file://cert-to-efi-hash-list-support-to-build-with-openssl-.patch \
 "
-SRCREV = "0649468475d20d8ca5634433c4912467cef3ce93"
+SRCREV = "392836a46ce3c92b55dc88a1aebbcfdfc5dcddce"
 
 PARALLEL_MAKE = ""
 
