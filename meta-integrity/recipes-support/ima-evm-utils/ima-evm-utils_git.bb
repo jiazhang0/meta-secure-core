@@ -10,6 +10,7 @@ SRC_URI = "\
     file://0001-Don-t-build-man-pages.patch \
     file://0001-Install-evmctl-to-sbindir-rather-than-bindir.patch \
     file://0001-ima-evm-utils-include-sys-types.h-in-header-to-fix-b.patch \
+    file://0001-libimaevm-retrieve-correct-algo-for-v2-signature.patch \
 "
 SRCREV = "3eab1f93b634249c1720f65fcb495b1996f0256e"
 
