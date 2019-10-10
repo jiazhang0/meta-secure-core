@@ -1,0 +1,26 @@
+From c740d114ca213ece820da39ce2ce99fc4d6ae5c7 Mon Sep 17 00:00:00 2001
+From: Yunguo Wei <yunguo.wei@windriver.com>
+Date: Thu, 10 Oct 2019 16:40:21 +0800
+Subject: [PATCH] libimaevm: retrieve correct algo for v2 signature
+
+Signed-off-by: Yunguo Wei <yunguo.wei@windriver.com>
+---
+ src/libimaevm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libimaevm.c b/src/libimaevm.c
+index 7c17bf4..3586e02 100644
+--- a/src/libimaevm.c
++++ b/src/libimaevm.c
+@@ -939,7 +939,7 @@ static int sign_hash_v2(const char *algo, const unsigned char *hash,
+ 	if (!EVP_PKEY_sign_init(ctx))
+ 		goto err;
+ 	st = "EVP_get_digestbyname";
+-	if (!(md = EVP_get_digestbyname(imaevm_params.hash_algo)))
++	if (!(md = EVP_get_digestbyname(algo)))
+ 		goto err;
+ 	st = "EVP_PKEY_CTX_set_signature_md";
+ 	if (!EVP_PKEY_CTX_set_signature_md(ctx, md))
+-- 
+2.7.4
+
