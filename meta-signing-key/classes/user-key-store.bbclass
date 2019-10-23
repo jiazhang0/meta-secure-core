@@ -42,6 +42,10 @@ def uks_rpm_keys_dir(d):
     set_keys_dir('RPM', d)
     return d.getVar('RPM_KEYS_DIR', True) + '/'
 
+def uks_boot_keys_dir(d):
+    set_keys_dir('BOOT', d)
+    return d.getVar('BOOT_KEYS_DIR', True) + '/'
+
 def sign_efi_image(key, cert, input, output, d):
     import bb.process
 
@@ -460,3 +464,62 @@ python check_deploy_keys() {
 }
 
 check_deploy_keys[lockfiles] = "${TMPDIR}/check_deploy_keys.lock"
+
+def check_gpg_key(basekeyname, keydirfunc, d):
+    gpg_path = d.getVar('GPG_PATH', True)
+    if not gpg_path:
+        gpg_path = d.getVar('TMPDIR', True) + '/.gnupg'
+        d.setVar('GPG_PATH', gpg_path)
+    if not os.path.exists(gpg_path):
+        status, output = oe.utils.getstatusoutput('mkdir -m 0700 -p %s' % gpg_path)
+        if status:
+            bb.fatal('Failed to create gpg keying %s: %s' % (gpg_path, output))
+        f = open(os.path.join(gpg_path, 'gpg-agent.conf'), 'w')
+        f.write('allow-loopback-pinentry\n')
+        f.write('auto-expand-secmem\n')
+        f.close()
+    gpg_bin = d.getVar('GPG_BIN', True) or \
+              bb.utils.which(os.getenv('PATH'), 'gpg')
+    gpg_keyid = d.getVar(basekeyname + '_GPG_NAME', True)
+
+    # Check for keyid
+    cmd = "%s --homedir %s --list-keys %s" % \
+            (gpg_bin, gpg_path, gpg_keyid)
+    status, output = oe.utils.getstatusoutput(cmd)
+    if not status:
+        return
+
+    # Import gpg key if not found
+    gpg_key = keydirfunc(d) + basekeyname + '-GPG-PRIVKEY-' + gpg_keyid
+    cmd = '%s --batch --homedir %s --passphrase %s --import %s' % \
+            (gpg_bin, gpg_path, d.getVar(basekeyname + '_GPG_PASSPHRASE', True), gpg_key)
+    status, output = oe.utils.getstatusoutput(cmd)
+    if status:
+        bb.fatal('Failed to import gpg key (%s): %s' % (gpg_key, output))
+
+python check_boot_public_key () {
+    check_gpg_key('BOOT', uks_boot_keys_dir, d)
+}
+
+check_boot_public_key[lockfiles] = "${TMPDIR}/gpg_key.lock"
+
+def boot_sign(input, d):
+    import bb.process
+
+    gpg_path = d.getVar('GPG_PATH', True)
+    gpg_keyid = d.getVar('BOOT_GPG_NAME', True)
+    gpg_pass = d.getVar('BOOT_GPG_PASSPHRASE', True)
+    gpg_bin = d.getVar('GPG_BIN', True) or \
+              bb.utils.which(os.getenv('PATH'), 'gpg')
+    if os.path.exists(input + '.sig'):
+        os.unlink(input + '.sig')
+    cmd = 'echo "%s" | %s  --pinentry-mode loopback --batch --homedir %s -u "%s" --detach-sign --passphrase-fd 0 "%s"' % \
+            (gpg_pass, gpg_bin, gpg_path, gpg_keyid, input)
+    vprint("Running: %s" % cmd, d)
+    status, output = oe.utils.getstatusoutput(cmd)
+    if status:
+        bb.fatal('Failed to sign: %s' % (input))
+
+def uks_boot_sign(input, d):
+    if d.getVar('GRUB_SIGN_VERIFY', True) == '1':
+        boot_sign(input, d)
