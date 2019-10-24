@@ -41,6 +41,8 @@ S = "${WORKDIR}/git"
 
 inherit deploy user-key-store
 
+SHIM_DEFAULT_LOADER = "${@'DEFAULT_LOADER=\\\\\\\\\\\\SELoader${EFI_ARCH}.efi' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
+
 EXTRA_OEMAKE = "\
     CROSS_COMPILE="${TARGET_PREFIX}" \
     prefix="${STAGING_DIR_HOST}/${prefix}" \
@@ -49,9 +51,9 @@ EXTRA_OEMAKE = "\
     EFI_PATH="${STAGING_LIBDIR}" \
     EFI_INCLUDE="${STAGING_INCDIR}/efi" \
     RELEASE="_${DISTRO}_${DISTRO_VERSION}" \
-    DEFAULT_LOADER=\\\\\\SELoader${EFI_ARCH}.efi \
     OPENSSL=${STAGING_BINDIR_NATIVE}/openssl \
     HEXDUMP=${STAGING_BINDIR_NATIVE}/hexdump \
+    ${SHIM_DEFAULT_LOADER} \
     PK12UTIL=${STAGING_BINDIR_NATIVE}/pk12util \
     CERTUTIL=${STAGING_BINDIR_NATIVE}/certutil \
     SBSIGN=${STAGING_BINDIR_NATIVE}/sbsign \

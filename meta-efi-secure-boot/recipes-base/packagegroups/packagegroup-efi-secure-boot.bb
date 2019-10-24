@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "\
 
 S = "${WORKDIR}"
 
+SELOADER_PKG = "${@'seloader' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
 ALLOW_EMPTY_${PN} = "1"
 
 pkgs = "\
@@ -13,7 +14,7 @@ pkgs = "\
     efitools \
     efibootmgr \
     mokutil \
-    seloader \
+    ${SELOADER_PKG} \
     shim \
 "
 
