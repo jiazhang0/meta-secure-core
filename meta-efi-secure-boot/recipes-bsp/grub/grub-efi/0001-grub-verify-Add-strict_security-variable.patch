@@ -1,0 +1,102 @@
+From 8a7ad88b4880e25df1f54b80631dc035e1e25662 Mon Sep 17 00:00:00 2001
+From: Jason Wessel <jason.wessel@windriver.com>
+Date: Thu, 17 Oct 2019 12:35:01 -0700
+Subject: [PATCH] grub verify:  Add strict_security variable
+
+With strict_security set to 1, it is impossible to change the value of
+check_signatures.  It will also cause grub to reboot instead of
+allowing a rescue or grub shell, which could allow an end user to
+alter boot arguments or load some other binary.
+
+Upstream-Status: Pending
+
+Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+---
+ grub-core/commands/pgp.c |   16 +++++++++++++++-
+ grub-core/kern/main.c    |    9 +++++++++
+ grub-core/normal/main.c  |    7 +++++--
+ 3 files changed, 29 insertions(+), 3 deletions(-)
+
+--- a/grub-core/commands/pgp.c
++++ b/grub-core/commands/pgp.c
+@@ -864,6 +864,7 @@ grub_cmd_verify_signature (grub_extcmd_c
+ }
+ 
+ static int sec = 0;
++static int strict_sec = 0;
+ 
+ static grub_err_t
+ grub_pubkey_init (grub_file_t io, enum grub_file_type type __attribute__ ((unused)),
+@@ -918,10 +919,21 @@ static char *
+ grub_env_write_sec (struct grub_env_var *var __attribute__ ((unused)),
+ 		    const char *val)
+ {
+-  sec = (*val == '1') || (*val == 'e');
++  if (!strict_sec)
++    sec = (*val == '1') || (*val == 'e');
+   return grub_strdup (sec ? "enforce" : "no");
+ }
+ 
++static char *
++grub_env_write_strict_sec (struct grub_env_var *var __attribute__ ((unused)),
++			   const char *val)
++{
++  /* once it is set, it is a one way transition */
++  if (!strict_sec)
++    strict_sec = (*val == '1') || (*val == 'e');
++  return grub_strdup (strict_sec ? "enforce" : "no");
++}
++
+ static grub_ssize_t 
+ pseudo_read (struct grub_file *file, char *buf, grub_size_t len)
+ {
+@@ -961,7 +973,9 @@ GRUB_MOD_INIT(pgp)
+     sec = 0;
+ 
+   grub_register_variable_hook ("check_signatures", 0, grub_env_write_sec);
++  grub_register_variable_hook ("strict_security", 0, grub_env_write_strict_sec);
+   grub_env_export ("check_signatures");
++  grub_env_export ("strict_security");
+ 
+   grub_pk_trusted = 0;
+   FOR_MODULES (header)
+--- a/grub-core/kern/main.c
++++ b/grub-core/kern/main.c
+@@ -29,6 +29,7 @@
+ #include <grub/command.h>
+ #include <grub/reader.h>
+ #include <grub/parser.h>
++#include <grub/time.h>
+ 
+ #ifdef GRUB_MACHINE_PCBIOS
+ #include <grub/machine/memory.h>
+@@ -308,5 +309,13 @@ grub_main (void)
+   grub_boot_time ("After execution of embedded config. Attempt to go to normal mode");
+ 
+   grub_load_normal_mode ();
++  const char *val = grub_env_get ("strict_security");
++  if (val && (val[0] == '1' || val[0] == 'e'))
++    while (1) {
++      grub_printf("Boot configuration error - Attempting reboot\n");
++      grub_sleep(3);
++      grub_dl_load ("reboot");
++      grub_command_execute ("reboot", 0, 0);
++    }
+   grub_rescue_run ();
+ }
+--- a/grub-core/normal/main.c
++++ b/grub-core/normal/main.c
+@@ -301,8 +301,11 @@ grub_enter_normal_mode (const char *conf
+   grub_boot_time ("Entering normal mode");
+   nested_level++;
+   grub_normal_execute (config, 0, 0);
+-  grub_boot_time ("Entering shell");
+-  grub_cmdline_run (0, 1);
++  const char *val = grub_env_get ("strict_security");
++  if (!(val && (val[0] == '1' || val[0] == 'e'))) {
++    grub_boot_time ("Entering shell");
++    grub_cmdline_run (0, 1);
++  }
+   nested_level--;
+   if (grub_normal_exit_level)
+     grub_normal_exit_level--;
