@@ -59,6 +59,17 @@ do_install() {
     oe_runmake install DESTDIR='${D}${base_prefix}'
 }
 
+fakeroot python do_sign_class-target() {
+    image_dir = d.getVar('D', True)
+    efi_boot_path = d.getVar('EFI_BOOT_PATH', True)
+    uks_boot_sign(os.path.join(image_dir + efi_boot_path, 'LockDown.efi'), d)
+}
+addtask sign after do_install before do_deploy do_package
+do_sign[prefuncs] += "${@'check_boot_public_key' if d.getVar('GRUB_SIGN_VERIFY', True) == '1' else ''}"
+
+fakeroot python do_sign() {
+}
+
 FILES_${PN} += "${EFI_BOOT_PATH}"
 
 SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/LockDown.efi"

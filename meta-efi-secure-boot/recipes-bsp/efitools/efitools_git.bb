@@ -77,6 +77,9 @@ do_deploy() {
     install -d ${DEPLOYDIR}
 
     install -m 0600 ${D}${EFI_BOOT_PATH}/LockDown.efi "${DEPLOYDIR}"
+    if [ -e ${D}${EFI_BOOT_PATH}/LockDown.efi.sig ] ; then
+        install -m 0600 ${D}${EFI_BOOT_PATH}/LockDown.efi.sig "${DEPLOYDIR}"
+    fi
 }
 addtask deploy after do_install before do_build
 
