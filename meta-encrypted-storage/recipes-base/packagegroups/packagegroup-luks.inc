@@ -9,4 +9,5 @@ S = "${WORKDIR}"
 
 RDEPENDS_${PN} += "\
     cryptfs-tpm2 \
+    lvm2-udevrules \
 "
