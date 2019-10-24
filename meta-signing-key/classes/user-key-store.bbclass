@@ -413,6 +413,9 @@ def deploy_keys(name, d):
     bb.build.exec_func('deploy_' + name.lower() + '_keys', d)
 
 def sanity_check_user_keys(name, may_exit, d):
+    if d.getVar('UEFI_SELOADER', True) == '1' and d.getVar('GRUB_SIGN_VERIFY', True) == '1':
+        bb.fatal("UEFI_SELOADER and GRUB_SIGN_VERIFY cannot both be set to '1'")
+
     if name == 'UEFI_SB':
         _ = check_uefi_sb_user_keys(d)
     elif name == 'MOK_SB':
@@ -521,5 +524,10 @@ def boot_sign(input, d):
         bb.fatal('Failed to sign: %s' % (input))
 
 def uks_boot_sign(input, d):
+    boot_sign(input, d)
+
+def uks_bl_sign(input, d):
+    if d.getVar('UEFI_SELOADER', True) == '1':
+        uks_sel_sign(input, d)
     if d.getVar('GRUB_SIGN_VERIFY', True) == '1':
         boot_sign(input, d)
