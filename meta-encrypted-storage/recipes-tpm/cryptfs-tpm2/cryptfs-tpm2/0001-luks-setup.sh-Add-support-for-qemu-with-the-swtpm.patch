@@ -1,0 +1,33 @@
+From b586d7fb8f1e94501fd37555e65fc877b49e7f89 Mon Sep 17 00:00:00 2001
+From: Jason Wessel <jason.wessel@windriver.com>
+Date: Fri, 20 Sep 2019 13:28:04 -0700
+Subject: [PATCH] luks-setup.sh: Add support for qemu with the swtpm
+
+The swtpm which is a 2.0 TPM implmentation with PPI 1.3 is detected
+slightly differently, than the hardware TPMs.  This allows the
+luks-setup.sh to run properly.
+
+Upstream-Status: Pending
+
+Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+---
+ scripts/luks-setup.sh | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/scripts/luks-setup.sh b/scripts/luks-setup.sh
+index 5d87928..6e244d2 100755
+--- a/scripts/luks-setup.sh
++++ b/scripts/luks-setup.sh
+@@ -104,6 +104,9 @@ detect_tpm() {
+         # With newer kernel, TPM device description file is renamed
+         grep -q "TPM 2.0 Device" "/sys/class/tpm/$dev/device/firmware_node/description" 2>/dev/null &&
+             tpm_absent=0 && break
++
++	# Support virtual TPM
++	ls "/sys/class/tpm/$dev/device/driver" | grep -q MSFT0101 && tpm_absent=0 && break
+     done
+ 
+     [ $tpm_absent -eq 1 ] && print_info "No TPM device found" && return 1
+-- 
+2.23.0
+

@@ -21,6 +21,7 @@ PV = "0.7.0+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/jiazhang0/cryptfs-tpm2.git \
+    file://0001-luks-setup.sh-Add-support-for-qemu-with-the-swtpm.patch \
 "
 SRCREV = "87c35c63090a33d4de437f518b8da9f2d1f1d828"
 
