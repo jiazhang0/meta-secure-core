@@ -1,0 +1,63 @@
+From: Jason Wessel <jason.wessel@windriver.com>
+Date: Thu, 17 Oct 2019 12:35:01 -0700
+Subject: [PATCH] grub shim verify: Report that the loaded object is verified
+
+When check_signatures is set to enforcing, the signatures of the
+loaded files have been checked, so the shim service should be informed
+that it is ok to execute the loaded file.
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+---
+ grub-core/loader/i386/linux.c |   26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+--- a/grub-core/loader/i386/linux.c
++++ b/grub-core/loader/i386/linux.c
+@@ -21,6 +21,10 @@
+ #include <grub/normal.h>
+ #include <grub/file.h>
+ #include <grub/disk.h>
++#include <grub/efi/api.h>
++#include <grub/efi/efi.h>
++#include <grub/efi/disk.h>
++#include <grub/efi/shim.h>
+ #include <grub/err.h>
+ #include <grub/misc.h>
+ #include <grub/types.h>
+@@ -673,6 +677,23 @@ grub_linux_unload (void)
+   return GRUB_ERR_NONE;
+ }
+ 
++static grub_efi_guid_t grub_shim_protocol_guid = GRUB_EFI_SHIM_PROTOCOL_GUID;
++
++static grub_efi_status_t
++grub_shim_verify (grub_addr_t addr, grub_ssize_t size)
++{
++  struct grub_shim_lock *shim_lock;
++  shim_lock = grub_efi_locate_protocol (&grub_shim_protocol_guid, 0);
++  if (!shim_lock)
++    {
++      grub_error (GRUB_ERR_BAD_OS, "could not load shim protocol");
++      return GRUB_EFI_UNSUPPORTED;
++    }
++
++  shim_lock->verify((void *) addr, size);
++  return GRUB_ERR_NONE;
++}
++
+ static grub_err_t
+ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+ 		int argc, char *argv[])
+@@ -706,6 +728,10 @@ grub_cmd_linux (grub_command_t cmd __att
+ 		    argv[0]);
+       goto fail;
+     }
++  const char *ge_val = grub_env_get ("check_signatures");
++  if (ge_val && (ge_val[0] == '1' || ge_val[0] == 'e'))
++    /* Verify was handled by .sig files, inform shim */
++    grub_shim_verify((grub_addr_t)&lh, sizeof(lh));
+ 
+   if (lh.boot_flag != grub_cpu_to_le16_compile_time (0xaa55))
+     {
