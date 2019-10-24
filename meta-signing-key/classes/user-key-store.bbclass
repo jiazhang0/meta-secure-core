@@ -143,6 +143,9 @@ def sel_sign(key, cert, input, d):
         bb.fatal('Unable to sign %s' % input)
 
 def uks_sel_sign(input, d):
+    if d.getVar('UEFI_SELOADER', True) != '1':
+        return
+
     if d.getVar('UEFI_SB', True) != '1':
         return
 

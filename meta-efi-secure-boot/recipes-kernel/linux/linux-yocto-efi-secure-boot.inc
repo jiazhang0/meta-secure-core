@@ -30,16 +30,22 @@ fakeroot python do_sign() {
         # SELoader signature is always based on the unsigned kernel image,
         # disallowing chainloader to kernel efi-stub.
         uks_sel_sign(kernel, d)
+        uks_boot_sign(kernel, d)
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}'))
-        shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
-        os.symlink(type + d.expand('-${KERNEL_RELEASE}.p7b'), d.expand('${D}/boot/') + type + '.p7b')
+        if os.path.exists(kernel + '.p7b'):
+            shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.p7b'))
+            os.symlink(type + d.expand('-${KERNEL_RELEASE}.p7b'), d.expand('${D}/boot/') + type + '.p7b')
+        if os.path.exists(kernel + '.sig'):
+            shutil.copyfile(kernel + '.sig', d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}.sig'))
+            os.symlink(type + d.expand('-${KERNEL_RELEASE}.sig'), d.expand('${D}/boot/') + type + '.sig')
 }
 
 # Make sure the kernel image has been signed before kernel_do_deploy()
 # which prepares the kernel image for creating usb/iso.
 addtask sign after do_install before do_package do_populate_sysroot do_deploy
 do_sign[prefuncs] += "check_deploy_keys"
+do_sign[prefuncs] += "${@'check_boot_public_key' if d.getVar('GRUB_SIGN_VERIFY', True) == '1' else ''}"
 
 fakeroot python do_sign_bundled_kernel() {
     import re
@@ -64,9 +70,13 @@ fakeroot python do_sign_bundled_kernel() {
         # SELoader signature is always based on the unsigned kernel image,
         # disallowing chainloader to kernel efi-stub.
         uks_sel_sign(kernel, d)
+        uks_boot_sign(kernel, d)
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin'))
-        shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin.p7b'))
+        if os.path.exists(kernel + '.p7b'):
+            shutil.copyfile(kernel + '.p7b', d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin.p7b'))
+        if os.path.exists(kernel + '.sig'):
+            shutil.copyfile(kernel + '.sig', d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin.sig'))
 }
 addtask sign_bundled_kernel after do_bundle_initramfs before do_deploy
 
@@ -85,6 +95,9 @@ do_deploy_append() {
         if [ -f "${D}/boot/$imageType-initramfs-${MACHINE}.bin.p7b" ]; then
             install -m 0644 "${D}/boot/$imageType-initramfs-${MACHINE}.bin.p7b" "${DEPLOYDIR}"
         fi
+        if [ -f "${D}/boot/$imageType-initramfs-${MACHINE}.bin.sig" ]; then
+            install -m 0644 "${D}/boot/$imageType-initramfs-${MACHINE}.bin.sig" "${DEPLOYDIR}"
+        fi
 
         if [ -f "${B}/${KERNEL_OUTPUT_DIR}/$imageType.p7b" ]; then
             base_name="${imageType}-${KERNEL_IMAGE_NAME}.bin.p7b"
@@ -93,13 +106,24 @@ do_deploy_append() {
             ln -sf "$base_name" "${DEPLOYDIR}/$imageType-${KERNEL_IMAGE_LINK_NAME}.bin.p7b"
             ln -sf "$base_name" "${DEPLOYDIR}/$imageType.p7b"
         fi
+        if [ -f "${B}/${KERNEL_OUTPUT_DIR}/$imageType.sig" ]; then
+            base_name="${imageType}-${KERNEL_IMAGE_NAME}.bin.sig"
+
+            install -m 0644 "${B}/${KERNEL_OUTPUT_DIR}/$imageType.sig" "${DEPLOYDIR}/$base_name"
+            ln -sf "$base_name" "${DEPLOYDIR}/$imageType-${KERNEL_IMAGE_LINK_NAME}.bin.sig"
+            ln -sf "$base_name" "${DEPLOYDIR}/$imageType.sig"
+        fi
     done
 }
 
-# Ship *.p7b files to related packages
+# Ship *.p7b or *.sig files to related packages
 python do_package_prepend() {
     for type in d.expand('${KERNEL_IMAGETYPES}').split():
         typelower = type.lower()
-        d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}.p7b'))
-        d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + '.p7b')
+        if d.getVar('UEFI_SELOADER', True) == '1':
+            d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}.p7b'))
+            d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + '.p7b')
+        if d.getVar('GRUB_SIGN_VERIFY', True) == '1':
+            d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}.sig'))
+            d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + '.sig')
 }

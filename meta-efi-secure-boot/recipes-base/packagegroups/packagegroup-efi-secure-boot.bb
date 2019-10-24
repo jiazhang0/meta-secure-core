@@ -8,12 +8,15 @@ S = "${WORKDIR}"
 
 ALLOW_EMPTY_${PN} = "1"
 
+
+SELOADER_PKG = "${@'seloader' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
+
 pkgs = "\
     grub-efi \
     efitools \
     efibootmgr \
     mokutil \
-    seloader \
+    ${SELOADER_PKG} \
     shim \
 "
 
