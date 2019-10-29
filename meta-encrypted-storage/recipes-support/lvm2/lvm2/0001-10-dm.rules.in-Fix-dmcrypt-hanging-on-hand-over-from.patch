@@ -1,0 +1,38 @@
+From b655a26908ca170bf030d7bb8de6d6a96022375b Mon Sep 17 00:00:00 2001
+From: Jason Wessel <jason.wessel@windriver.com>
+Date: Mon, 28 Oct 2019 17:43:57 -0700
+Subject: [PATCH] 10-dm.rules.in: Fix dmcrypt hanging on hand over from
+ initramfs
+
+If an encrypted volume has already been setup from the intiramfs, it
+should not have the device nodes removed.  The udevadm trigger
+--action=add for the device was causing the dm managed udev rules to
+fall throug to the dm_disable path, which knocks the device offline
+and it is not possible to reactivate it because the initramfs shuts
+down the path to obtain the key from the TPM after the boot sequence
+is completed.
+
+Upstream-Status: Pending
+
+Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+---
+ udev/10-dm.rules.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/udev/10-dm.rules.in b/udev/10-dm.rules.in
+index b4fa52a..ccaf863 100644
+--- a/udev/10-dm.rules.in
++++ b/udev/10-dm.rules.in
+@@ -84,7 +84,8 @@ LABEL="dm_flags_done"
+ # script to not remove the existing udev database so we can reuse the information
+ # stored at the time of device activation in the initrd.
+ ACTION!="add", GOTO="dm_no_coldplug"
+-ENV{DM_UDEV_RULES_VSN}!="1", ENV{DM_UDEV_PRIMARY_SOURCE_FLAG}!="1", GOTO="dm_disable"
++ENV{DM_UDEV_RULES_VSN}=="2",GOTO="dm_no_coldplug"
++#ENV{DM_UDEV_RULES_VSN}!="1", ENV{DM_UDEV_PRIMARY_SOURCE_FLAG}!="1", GOTO="dm_disable"
+ ENV{DM_ACTIVATION}="1"
+ LABEL="dm_no_coldplug"
+ 
+-- 
+2.23.0
+
