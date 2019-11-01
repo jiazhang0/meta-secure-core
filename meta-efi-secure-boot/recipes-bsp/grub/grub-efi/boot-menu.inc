@@ -8,8 +8,3 @@ menuentry "Sample EFI boot" --unrestricted {
     linux /bzImage root=/dev/hda2 ro rootwait
     initrd /initrd
 }
-
-menuentry "Sample EFI boot (Recovery)" --unrestricted {
-    linux /bzImage_backup root=/dev/hda2 ro rootwait
-    initrd /initrd_backup
-}
