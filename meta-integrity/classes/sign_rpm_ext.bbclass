@@ -10,6 +10,9 @@ RPM_FSK_PASSWORD ?= "password"
 
 inherit sign_rpm user-key-store
 
+GPG_DEP = "${@'' if d.getVar('GPG_BIN')  else 'gnupg-native pinentry-native'}"
+DEPENDS_append_class-target += "${GPG_DEP}"
+
 python check_rpm_public_key () {
     gpg_path = d.getVar('GPG_PATH', True)
     gpg_bin = d.getVar('GPG_BIN', True) or \
