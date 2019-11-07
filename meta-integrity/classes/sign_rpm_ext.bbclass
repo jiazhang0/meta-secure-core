@@ -10,8 +10,7 @@ RPM_FSK_PASSWORD ?= "password"
 
 inherit sign_rpm user-key-store
 
-GPG_DEP = "${@'' if d.getVar('GPG_BIN')  else 'gnupg-native pinentry-native'}"
-DEPENDS_append_class-target += "${GPG_DEP}"
+GPG_DEP = "${@'' if d.getVar('GPG_BIN') else 'gnupg-native:do_populate_sysroot pinentry-native:do_populate_sysroot'}"
 
 python check_rpm_public_key () {
     gpg_path = d.getVar('GPG_PATH', True)
@@ -35,9 +34,17 @@ python check_rpm_public_key () {
         bb.fatal('Failed to import gpg key (%s): %s' % (gpg_key, output))
 }
 check_rpm_public_key[lockfiles] = "${TMPDIR}/check_rpm_public_key.lock"
-do_package_write_rpm[prefuncs] += "check_rpm_public_key"
-do_rootfs[prefuncs] += "check_rpm_public_key"
 check_rpm_public_key[prefuncs] += "check_deploy_keys"
+do_package_write_rpm[depends] += "${GPG_DEP}"
+do_rootfs[depends] += "${GPG_DEP}"
+
+python do_package_write_rpm_prepend() {
+    bb.build.exec_func("check_rpm_public_key", d)
+}
+
+python do_rootfs_prepend() {
+    bb.build.exec_func("check_rpm_public_key", d)
+}
 
 python () {
     gpg_path = d.getVar('GPG_PATH', True)
