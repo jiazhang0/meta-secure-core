@@ -17,11 +17,9 @@ do_sign[prefuncs] += "${@'check_boot_public_key' if d.getVar('GRUB_SIGN_VERIFY',
 
 do_deploy() {
     install -d "${DEPLOYDIR}"
-    if [ "${UEFI_SELOADER}" = "1" ] ; then
-        for SIG in ${D}/boot/*${SB_FILE_EXT}; do
-            install -m 0644 ${SIG} ${DEPLOYDIR}
-        done
-    fi
+    for SIG in ${D}/boot/*${SB_FILE_EXT}; do
+        install -m 0644 ${SIG} ${DEPLOYDIR}
+    done
 }
 addtask deploy after do_install before do_build
 
