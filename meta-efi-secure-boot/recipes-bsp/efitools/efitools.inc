@@ -61,6 +61,9 @@ do_install() {
 }
 
 fakeroot python do_sign_class-target() {
+    if d.getVar('GRUB_SIGN_VERIFY', True) != '1':
+        return
+
     image_dir = d.getVar('D', True)
     efi_boot_path = d.getVar('EFI_BOOT_PATH', True)
     uks_boot_sign(os.path.join(image_dir + efi_boot_path, 'LockDown.efi'), d)
