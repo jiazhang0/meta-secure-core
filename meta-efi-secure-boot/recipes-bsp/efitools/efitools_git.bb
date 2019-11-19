@@ -10,7 +10,6 @@ SRC_URI_append += "\
     file://Build-DBX-by-default.patch \
     file://LockDown-disable-the-entrance-into-BIOS-setup-to-re-.patch \
     file://Fix-help2man-error.patch \
-    file://0001-console.c-Fix-compilation-against-latest-usr-include.patch \
 "
 
 COMPATIBLE_HOST = '(i.86|x86_64).*-linux'

@@ -29,6 +29,7 @@ SRC_URI = "\
     file://Reuse-xxdi.pl.patch \
     file://Add-static-keyword-for-IsValidVariableHeader.patch \
     file://Dynamically-load-openssl.cnf-for-openssl-1.0.x-and-1.patch \
+    file://0001-console.c-Fix-compilation-against-latest-usr-include.patch \
 "
 SRCREV = "392836a46ce3c92b55dc88a1aebbcfdfc5dcddce"
 
