@@ -35,4 +35,8 @@ python () {
         gpg_path = d.getVar('TMPDIR', True) + '/.gnupg'
         d.setVar('GPG_PATH', gpg_path)
 
+    if len(gpg_path) > 80:
+        msg = "The default GPG_PATH {} of {} characters is too long. Due to GPG homedir path length limit, please set GPG_PATH shorter than 80 characters.".format(gpg_path, len(gpg_path))
+        raise bb.parse.SkipRecipe(msg)
+
 }
