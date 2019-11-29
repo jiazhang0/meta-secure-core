@@ -17,9 +17,6 @@ python check_rpm_public_key () {
 }
 
 check_rpm_public_key[lockfiles] = "${TMPDIR}/gpg_key.lock"
-do_package_write_rpm[prefuncs] += "check_rpm_public_key"
-do_rootfs[prefuncs] += "check_rpm_public_key"
-
 check_rpm_public_key[prefuncs] += "check_deploy_keys"
 do_package_write_rpm[depends] += "${GPG_DEP}"
 do_rootfs[depends] += "${GPG_DEP}"
