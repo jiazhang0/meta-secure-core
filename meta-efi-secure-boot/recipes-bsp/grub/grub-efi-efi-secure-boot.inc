@@ -142,6 +142,12 @@ do_install_append_class-target() {
     rm -f ${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi/*.module
 }
 
+python do_sign_prepend_class-target() {
+    bb.build.exec_func("check_deploy_keys", d)
+    if d.getVar('GRUB_SIGN_VERIFY') == '1':
+        bb.build.exec_func("check_boot_public_key", d)
+}
+
 fakeroot python do_sign_class-target() {
     image_dir = d.getVar('D', True)
     efi_boot_path = d.getVar('EFI_BOOT_PATH', True)
@@ -160,8 +166,6 @@ fakeroot python do_sign_class-target() {
 python do_sign() {
 }
 addtask sign after do_install before do_deploy do_package
-do_sign[prefuncs] += "check_deploy_keys"
-do_sign[prefuncs] += "${@'check_boot_public_key' if d.getVar('GRUB_SIGN_VERIFY', True) == '1' else ''}"
 
 fakeroot do_chownboot() {
     chown root:root -R "${D}${EFI_BOOT_PATH}/grub.cfg${SB_FILE_EXT}"
