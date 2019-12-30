@@ -1,0 +1,30 @@
+From e9d8b0cfa9e2364a6112be7bdeaf3647b968ace3 Mon Sep 17 00:00:00 2001
+From: Changqing Li <changqing.li@windriver.com>
+Date: Mon, 30 Dec 2019 17:40:12 +0800
+Subject: [PATCH] mokutil.c: fix typo enrollement -> enrollment
+
+Signed-off-by: Changqing Li <changqing.li@windriver.com>
+
+Upstream-Status: Backport [https://github.com/lcp/mokutil/commit/e37eeef4866f5f3bbeaef3fe1d1360ebac76bdc5]
+
+Signed-off-by: Changqing Li <changqing.li@windriver.com>
+---
+ src/mokutil.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mokutil.c b/src/mokutil.c
+index 0be9e84..9a7b853 100644
+--- a/src/mokutil.c
++++ b/src/mokutil.c
+@@ -1159,7 +1159,7 @@ print_skip_message (const char *filename, void *mok, uint32_t mok_size,
+ 			printf ("SKIP: %s is already enrolled\n", filename);
+ 		else if (is_duplicate (&efi_guid_x509_cert, mok, mok_size,
+ 				       &efi_guid_shim, "MokNew"))
+-			printf ("SKIP: %s is already in the enrollement request\n", filename);
++			printf ("SKIP: %s is already in the enrollment request\n", filename);
+ 		break;
+ 	case DELETE_MOK:
+ 		if (!is_duplicate (&efi_guid_x509_cert, mok, mok_size,
+-- 
+2.7.4
+
