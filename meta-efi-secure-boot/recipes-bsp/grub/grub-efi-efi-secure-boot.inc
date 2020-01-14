@@ -177,8 +177,8 @@ fakeroot do_chownboot() {
 }
 addtask chownboot after do_deploy before do_package
 
-# Override the do_deploy() in oe-core.
-do_deploy_class-target() {
+# Append the do_deploy() in oe-core.
+do_deploy_append_class-target() {
     install -m 0644 "${D}${EFI_BOOT_PATH}/${GRUB_IMAGE}" "${DEPLOYDIR}"
 
     install -d "${DEPLOYDIR}/efi-unsigned"
