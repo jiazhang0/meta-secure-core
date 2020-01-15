@@ -1,5 +1,4 @@
 DEPENDS += "openssl-native"
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
 
 efi_secure_boot_sccs = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', \
