@@ -5,9 +5,8 @@ DEPENDS += "attr ima-evm-utils tclap"
 
 SRC_URI = " \
     git://github.com/mgerstner/ima-inspect.git \
-    file://fix-new-imaevm.patch \
 "
-SRCREV = "e912be2d2a9fdf30a9693a7fc5d6b2473990a71c"
+SRCREV = "90f395c84eff54c69ba9ee078274313cfd308b53"
 
 S = "${WORKDIR}/git"
 
