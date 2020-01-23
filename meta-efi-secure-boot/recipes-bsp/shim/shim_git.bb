@@ -28,7 +28,6 @@ SRC_URI = "\
     file://0011-Update-verification_method-if-the-loaded-image-is-si.patch;apply=0 \
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
     file://0001-MokManager-Use-CompareMem-on-MokListNode.Type-instea.patch \
-    file://0001-console.c-Fix-compilation-against-latest-usr-include.patch \
 "
 SRC_URI_append_x86-64 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
