@@ -24,7 +24,7 @@ SRCREV = "bdf9f1bc8f63cd6fc370c2deb58d03ac55079e84"
 
 S = "${WORKDIR}/git"
 
-inherit autotools-brokensep gettext
+inherit autotools-brokensep gettext perlnative
 
 do_configure_prepend() {
     mkdir -p po
