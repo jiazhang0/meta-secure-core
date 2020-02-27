@@ -21,7 +21,7 @@ do_deploy() {
         install -m 0644 ${SIG} ${DEPLOYDIR}
     done
 }
-addtask deploy after do_install before do_build
+addtask deploy after do_install before do_package
 
 python do_package_prepend () {
     ext = d.expand('${SB_FILE_EXT}')
