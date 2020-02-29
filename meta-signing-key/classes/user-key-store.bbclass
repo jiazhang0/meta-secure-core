@@ -481,6 +481,15 @@ def check_gpg_key(basekeyname, keydirfunc, d):
         f.write('allow-loopback-pinentry\n')
         f.write('auto-expand-secmem\n')
         f.close()
+
+        bn = d.getVar('BUILDNAME', True)
+        socklist = ["yocto-native", "browser", "ssh", "extra"]
+        for sock in socklist:
+            f = open(os.path.join(gpg_path, 'S.gpg-agent.' + sock), 'w')
+            f.write('%Assuan%\n')
+            f.write('socket=/tmp/S.gpg-agent.%s-%s\n' % (sock, bn))
+            f.close()
+
     gpg_bin = d.getVar('GPG_BIN', True) or \
               bb.utils.which(os.getenv('PATH'), 'gpg')
     gpg_keyid = d.getVar(basekeyname + '_GPG_NAME', True)
@@ -499,6 +508,8 @@ def check_gpg_key(basekeyname, keydirfunc, d):
     status, output = oe.utils.getstatusoutput(cmd)
     if status:
         bb.fatal('Failed to import gpg key (%s): %s' % (gpg_key, output))
+
+check_gpg_key[vardepsexclude] = "BUILDNAME"
 
 python check_boot_public_key () {
     check_gpg_key('BOOT', uks_boot_keys_dir, d)
