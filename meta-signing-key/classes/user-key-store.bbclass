@@ -482,13 +482,16 @@ def check_gpg_key(basekeyname, keydirfunc, d):
         f.write('auto-expand-secmem\n')
         f.close()
 
+    if len(gpg_path) > 80:
         bn = d.getVar('BUILDNAME', True)
-        socklist = ["yocto-native", "browser", "ssh", "extra"]
-        for sock in socklist:
-            f = open(os.path.join(gpg_path, 'S.gpg-agent.' + sock), 'w')
-            f.write('%Assuan%\n')
-            f.write('socket=/tmp/S.gpg-agent.%s-%s\n' % (sock, bn))
-            f.close()
+        suffixlist = ["yocto-native", "browser", "ssh", "extra"]
+        for suffix in suffixlist:
+            socket = os.path.join(gpg_path, 'S.gpg-agent.' + suffix)
+            if not os.path.exists(socket):
+                f = open(socket, 'w')
+                f.write('%Assuan%\n')
+                f.write('socket=/tmp/S.gpg-agent.%s-%s\n' % (suffix, bn))
+                f.close()
 
     gpg_bin = d.getVar('GPG_BIN', True) or \
               bb.utils.which(os.getenv('PATH'), 'gpg')
