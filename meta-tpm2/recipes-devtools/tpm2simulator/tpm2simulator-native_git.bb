@@ -18,7 +18,7 @@ PV = "1.38+git${SRCPV}"
 SRC_URI = "\
     git://github.com/stwagnr/tpm2simulator.git \
 "
-SRCREV = "b9646b90ce26ad34f7fc5c7099f28053eab94333"
+SRCREV = "e45324eba268723d39856111e7933c5c76238481"
 
 S = "${WORKDIR}/git"
 
