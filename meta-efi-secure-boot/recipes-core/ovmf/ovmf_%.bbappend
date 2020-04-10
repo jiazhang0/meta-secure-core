@@ -34,7 +34,7 @@ python do_sign_class-target() {
     sb_sign(d.expand('${WORKDIR}/ovmf/Hash2DxeCrypto.efi'), d.expand('${WORKDIR}/ovmf/Hash2DxeCrypto.efi.signed'), d)
     sb_sign(d.expand('${WORKDIR}/ovmf/Pkcs7VerifyDxe.efi'), d.expand('${WORKDIR}/ovmf/Pkcs7VerifyDxe.efi.signed'), d)
 }
-addtask sign after do_compile before do_install
+addtask sign after do_compile before do_install do_deploy
 
 do_deploy_class-target_append() {
     if [ x"${UEFI_SB}" = x"1" ]; then
