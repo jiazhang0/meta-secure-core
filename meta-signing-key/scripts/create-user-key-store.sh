@@ -340,9 +340,15 @@ EOF
 
     pinentry=""
     if [ "$gpg_ver" = "2" ] ; then
-            pinentry="--pinentry-mode=loopback"
-            echo "allow-loopback-pinentry" > $key_dir/gpg-agent.conf
+            gpg_ver_whole=`gpg --version | head -1 | awk '{ print $3 }'`
+            if [ "$gpg_ver_whole" != "2.0.22" ] ; then
+                pinentry="--pinentry-mode=loopback"
+                echo "allow-loopback-pinentry" > $key_dir/gpg-agent.conf
+            fi
             gpg-connect-agent --homedir "$key_dir" reloadagent /bye
+            if [ $? != 0 ] ; then
+                gpg-agent --homedir "$key_dir" --daemon
+            fi
     fi
     $GPG_BIN --homedir "$key_dir" --batch --yes --gen-key "$key_dir/gen_keyring"
     if [ $? != 0 ] ; then
