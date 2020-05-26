@@ -536,10 +536,6 @@ def boot_sign(input, d):
     status, output = oe.utils.getstatusoutput(cmd)
     if status:
         bb.fatal('Failed to sign: %s' % (input))
-    gpg_conf = bb.utils.which(os.getenv('PATH'), 'gpgconf')
-    cmd = 'GNUPGHOME=%s %s --kill gpg-agent' % \
-            (gpg_path, gpg_conf)
-    status, output = oe.utils.getstatusoutput(cmd)
 
 def uks_boot_sign(input, d):
     boot_sign(input, d)
