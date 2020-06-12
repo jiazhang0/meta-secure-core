@@ -35,7 +35,8 @@ python () {
     d.setVar('PACKAGES_prepend', pn + ' ')
     d.setVar('FILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
     d.setVar('CONFFILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
-    d.appendVar('RDEPENDS_' + pn, ' rpm')
+    mlprefix = d.getVar('MLPREFIX')
+    d.appendVar('RDEPENDS_' + pn, ' %srpm' % mlprefix)
 }
 
 do_install() {
