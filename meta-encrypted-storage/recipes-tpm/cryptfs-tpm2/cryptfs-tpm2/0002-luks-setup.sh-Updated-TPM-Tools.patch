@@ -1,0 +1,11 @@
+--- a/scripts/luks-setup.sh	2020-02-17 15:23:50.214278216 +0100
++++ b/scripts/luks-setup.sh	2020-02-17 15:22:41.054281439 +0100
+@@ -402,7 +402,7 @@
+     detect_tpm
+     if [ $? -eq 0 ]; then
+         if [ $OPT_EVICT_ALL -eq 1 ]; then
+-            cmd="tpm2_takeownership --clear"
++            cmd="tpm2_clear"
+             [ -n "$OPT_OLD_LOCKOUT_AUTH" ] && cmd="${cmd} --oldLockPasswd $OPT_OLD_LOCKOUT_AUTH"
+             [ -n "$OPT_LOCKOUT_AUTH" ] && cmd="${cmd} --LockPasswd $OPT_LOCKOUT_AUTH"
+             eval "$cmd"
