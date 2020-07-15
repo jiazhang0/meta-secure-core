@@ -49,6 +49,6 @@ do_install_append() {
 FILES_${PN} += "${libdir}/systemd/system-preset \
 		${datadir}/dbus-1"
 
-RDEPENDS_${PN} += "tpm2-tss"
+RDEPENDS_${PN} += "tpm2-tss libtss2-tcti-device libtss2-tcti-mssim"
 
 BBCLASSEXTEND = "native"
