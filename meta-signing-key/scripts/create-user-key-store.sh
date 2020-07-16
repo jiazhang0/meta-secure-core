@@ -189,7 +189,7 @@ ca_sign() {
         else
             # Prompt user to type the password
             if [ "$IMA_PASS" = "" ] ; then
-                openssl genrsa -des3 -out "$key_dir/$key_name.key" 2048 \
+                openssl genrsa -aes256 -out "$key_dir/$key_name.key" 2048 \
                         || print_fatal "openssl failure"
 
                 openssl req -new -sha256 \
@@ -198,7 +198,7 @@ ca_sign() {
                     -out "$key_dir/$key_name.csr" \
                         || print_fatal "openssl failure"
             else
-                openssl genrsa -des3 -passout "pass:$IMA_PASS" \
+                openssl genrsa -aes256 -passout "pass:$IMA_PASS" \
                     -out "$key_dir/$key_name.key" 2048 \
                         || print_fatal "openssl failure"
 
