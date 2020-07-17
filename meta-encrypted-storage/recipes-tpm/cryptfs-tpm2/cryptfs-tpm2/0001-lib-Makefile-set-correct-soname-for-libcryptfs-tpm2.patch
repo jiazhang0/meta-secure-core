@@ -1,0 +1,48 @@
+From 04b865d3af710e4116f0ff980918a984345a7ee3 Mon Sep 17 00:00:00 2001
+From: Yi Zhao <yi.zhao@windriver.com>
+Date: Fri, 17 Jul 2020 13:12:35 +0800
+Subject: [PATCH] lib/Makefile: set correct soname for libcryptfs-tpm2
+
+The current soname of libcryptfs-tpm2 is libcryptfs-tpm2.so:
+$ readelf -d libcryptfs-tpm2.so.0.7.0 | grep SONAME
+0x000000000000000e (SONAME)    Library soname: [libcryptfs-tpm2.so]
+
+The libcryptfs-tpm2.so is a symbolic link of libcryptfs-tmp2.so.0.7.0
+and it is not installed by default because it is packaged to dev
+package. Then we will encounter an error when run command cryptfs-tpm2:
+$ cryptfs-tpm2
+cryptfs-tpm2: error while loading shared libraries: libcryptfs-tpm2.so: cannot open shared object file: No such file or directory
+$ ldd cryptfs-tpm2 | grep libcryptfs-tpm2
+    libcryptfs-tpm2.so => not found
+
+Set the soname to libcryptfs-tpm2.so.$(MAJOR_VERSION) to fix the issue.
+
+Upstream-Status: Pending
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ src/lib/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/lib/Makefile b/src/lib/Makefile
+index 75144e7..5a61572 100644
+--- a/src/lib/Makefile
++++ b/src/lib/Makefile
+@@ -40,11 +40,11 @@ install: all
+ 	$(INSTALL) -d -m 755 $(DESTDIR)$(LIBDIR)
+ 	$(INSTALL) -m 755 $(LIB_NAME).a $(DESTDIR)$(LIBDIR)
+ 	$(INSTALL) -m 755 $(LIB_NAME).so $(DESTDIR)$(LIBDIR)/$(LIB_NAME).so.$(VERSION)
+-	$(foreach x, $(LIB_NAME).so, ln -sfn $(x).$(VERSION) $(DESTDIR)$(LIBDIR)/$(patsubst %,%.$(MAJOR_VERSION).$(MINOR_VERSION),$(x)); \
+-		ln -sfn $(x).$(MAJOR_VERSION).$(MINOR_VERSION) $(DESTDIR)$(LIBDIR)/$(patsubst %,%.$(MAJOR_VERSION),$(x));)
++	$(foreach x, $(LIB_NAME), ln -sfn $(x).so.$(VERSION) $(DESTDIR)$(LIBDIR)/$(patsubst %,%.so.$(MAJOR_VERSION),$(x)); \
++		ln -sfn $(x).so.$(VERSION) $(DESTDIR)$(LIBDIR)/$(patsubst %,%.so,$(x));)
+ 
+ $(LIB_NAME).so: $(OBJS_$(LIB_NAME))
+-	$(CCLD) $^ -o $@ $(CFLAGS) -shared -Wl,-soname,$(patsubst %.$(VERSION),%,$@)
++	$(CCLD) $^ -o $@ $(CFLAGS) -shared -Wl,-soname,$(patsubst %,%.$(MAJOR_VERSION),$@)
+ 
+ $(LIB_NAME).a: $(filter-out init.o,$(OBJS_$(LIB_NAME)))
+ 	$(AR) rcs $@ $^
+-- 
+2.17.1
+
