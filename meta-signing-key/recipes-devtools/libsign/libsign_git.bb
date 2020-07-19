@@ -21,7 +21,7 @@ PV = "0.3.2+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/libsign.git \
 "
-SRCREV = "36886d1055db5fd4efd7b5596d1f24e90187f539"
+SRCREV = "eb3a5927dd18e166014cf1e2eb6e9e461cf973fb"
 
 PARALLEL_MAKE = ""
 
