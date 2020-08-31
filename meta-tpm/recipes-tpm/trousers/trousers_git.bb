@@ -29,7 +29,7 @@ SRC_URI = "\
     file://tcsd.service \
     file://tcsd.conf \
 "
-SRCREV = "de57f069ef2297d6a6b3a0353e217a5a2f66e444"
+SRCREV = "e74dd1d96753b0538192143adf58d04fcd3b242b"
 
 S = "${WORKDIR}/git"
 
