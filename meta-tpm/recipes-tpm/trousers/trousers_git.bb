@@ -38,6 +38,9 @@ inherit autotools pkgconfig useradd update-rc.d \
 
 EXTRA_OECONF="--with-gui=none"
 
+# Fix build failure for gcc-10
+CFLAGS_append = " -fcommon"
+
 PACKAGECONFIG ?= "gmp "
 PACKAGECONFIG[gmp] = "--with-gmp, --with-gmp=no, gmp"
 PACKAGECONFIG[gtk] = "--with-gui=gtk, --with-gui=none, gtk+"
