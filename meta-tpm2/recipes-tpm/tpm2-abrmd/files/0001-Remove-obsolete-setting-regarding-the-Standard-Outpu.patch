@@ -1,0 +1,39 @@
+From 488e72dccede7c509cd9cd1b9d4dd9806076b96e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?SZ=20Lin=20=28=E6=9E=97=E4=B8=8A=E6=99=BA=29?=
+ <szlin@debian.org>
+Date: Thu, 27 Aug 2020 11:14:14 +0800
+Subject: [PATCH] Remove obsolete setting regarding the Standard Output
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Standard output type "syslog" is obsolete, causing a warning since systemd
+version 246 [1].
+
+Please consider using "journal" or "journal+console"
+
+[1] https://github.com/systemd/systemd/blob/master/NEWS#L101
+
+Upstream-Status: Backport
+
+Signed-off-by: SZ Lin (林上智) <szlin@debian.org>
+Signed-off-by: Mingli Yu <mingli.yu@windriver.com>
+---
+ dist/tpm2-abrmd.service.in | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/dist/tpm2-abrmd.service.in b/dist/tpm2-abrmd.service.in
+index c8a3420..5f70e57 100644
+--- a/dist/tpm2-abrmd.service.in
++++ b/dist/tpm2-abrmd.service.in
+@@ -9,7 +9,6 @@ ConditionPathExistsGlob=/dev/tpm*
+ [Service]
+ Type=dbus
+ BusName=com.intel.tss2.Tabrmd
+-StandardOutput=syslog
+ ExecStart=@SBINDIR@/tpm2-abrmd
+ User=tss
+ 
+-- 
+2.26.2
+
