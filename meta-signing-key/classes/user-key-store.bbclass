@@ -477,7 +477,10 @@ def check_gpg_key(basekeyname, keydirfunc, d):
         status, output = oe.utils.getstatusoutput('mkdir -m 0700 -p %s' % gpg_path)
         if status:
             bb.fatal('Failed to create gpg keying %s: %s' % (gpg_path, output))
-        f = open(os.path.join(gpg_path, 'gpg-agent.conf'), 'w')
+
+    gpg_conf = os.path.join(gpg_path, 'gpg-agent.conf')
+    if not os.path.exists(gpg_conf):
+        f = open(gpg_conf, 'w')
         f.write('allow-loopback-pinentry\n')
         f.write('auto-expand-secmem\n')
         f.close()
