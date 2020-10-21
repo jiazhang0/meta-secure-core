@@ -5,6 +5,7 @@ DEPENDS_append_class-target += "\
     ${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "efitools-native gnupg-native", "", d)} \
 "
 
+PSEUDO_IGNORE_PATHS .= ",${GPG_PATH}"
 USER_KEY_SHOW_VERBOSE = "1"
 
 UEFI_SB = '${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "1", "0", d)}'
