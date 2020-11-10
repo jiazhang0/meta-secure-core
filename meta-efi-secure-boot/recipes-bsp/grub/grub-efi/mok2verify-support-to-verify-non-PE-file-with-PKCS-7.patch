@@ -1,4 +1,4 @@
-From 69884cfde30dc876cda61714f1476a3d331bc2db Mon Sep 17 00:00:00 2001
+From 3aa619ea2c9d35cc242f0ae870782522176ce018 Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Wed, 12 Jul 2017 16:02:13 +0800
 Subject: [PATCH] mok2verify: support to verify non-PE file with PKCS#7
@@ -37,35 +37,39 @@ grub_file_open function.
 
 Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
 ---
- grub-core/Makefile.core.def    |    6 +
- grub-core/commands/boot.c      |   14 ++-
- grub-core/gfxmenu/gui_label.c  |   39 +++++++-
- grub-core/lib/efi/mok2verify.c |  182 +++++++++++++++++++++++++++++++++++++++++
- grub-core/loader/i386/linux.c  |   60 +++++++++++++
- grub-core/loader/linux.c       |   27 +++++-
- grub-core/normal/main.c        |   53 +++++++++++
- grub-core/normal/menu.c        |   31 +++++-
- grub-core/normal/menu_text.c   |   33 +++++--
- include/grub/efi/mok2verify.h  |   48 ++++++++++
+ grub-core/Makefile.core.def    |   6 ++
+ grub-core/commands/boot.c      |  14 ++-
+ grub-core/gfxmenu/gui_label.c  |  39 +++++--
+ grub-core/lib/efi/mok2verify.c | 182 +++++++++++++++++++++++++++++++++
+ grub-core/loader/i386/linux.c  |  60 +++++++++++
+ grub-core/loader/linux.c       |  27 ++++-
+ grub-core/normal/main.c        |  53 +++++++++-
+ grub-core/normal/menu.c        |  31 ++++--
+ grub-core/normal/menu_text.c   |  33 ++++--
+ include/grub/efi/mok2verify.h  |  48 +++++++++
  10 files changed, 463 insertions(+), 30 deletions(-)
  create mode 100644 grub-core/lib/efi/mok2verify.c
  create mode 100644 include/grub/efi/mok2verify.h
 
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index 18d2316..59a5cf1 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -1870,6 +1870,12 @@ module = {
+@@ -1869,6 +1869,12 @@ module = {
+   enable = efi;
  };
  
- module = {
++module = {
 +  name = mok2verify;
 +  efi = lib/efi/mok2verify.c;
 +  enable = efi;
 +};
 +
-+module = {
+ module = {
    name = mmap;
    common = mmap/mmap.c;
-   x86 = mmap/i386/uppermem.c;
+diff --git a/grub-core/commands/boot.c b/grub-core/commands/boot.c
+index bbca81e..3f44a7e 100644
 --- a/grub-core/commands/boot.c
 +++ b/grub-core/commands/boot.c
 @@ -24,6 +24,9 @@
@@ -96,6 +100,8 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
    grub_machine_fini (grub_loader_flags);
  
+diff --git a/grub-core/gfxmenu/gui_label.c b/grub-core/gfxmenu/gui_label.c
+index a4c8178..da49c9e 100644
 --- a/grub-core/gfxmenu/gui_label.c
 +++ b/grub-core/gfxmenu/gui_label.c
 @@ -24,6 +24,9 @@
@@ -108,7 +114,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
  static const char *align_options[] =
  {
-@@ -183,15 +186,37 @@ label_set_property (void *vself, const c
+@@ -183,15 +186,37 @@ label_set_property (void *vself, const char *name, const char *value)
        else
  	{
  	   if (grub_strcmp (value, "@KEYMAP_LONG@") == 0)
@@ -153,6 +159,9 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  	   /* FIXME: Add more templates here if needed.  */
  	  self->template = grub_strdup (value);
  	  self->text = grub_xasprintf (value, self->value);
+diff --git a/grub-core/lib/efi/mok2verify.c b/grub-core/lib/efi/mok2verify.c
+new file mode 100644
+index 0000000..790efa0
 --- /dev/null
 +++ b/grub-core/lib/efi/mok2verify.c
 @@ -0,0 +1,182 @@
@@ -338,6 +347,8 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
 +}
 +
 +#pragma GCC diagnostic error "-Wvla"
+diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
+index 3a264b9..9caabdd 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
 @@ -40,6 +40,9 @@
@@ -350,7 +361,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -657,6 +660,55 @@ grub_shim_verify (grub_addr_t addr, grub
+@@ -656,6 +659,55 @@ grub_shim_verify (grub_addr_t addr, grub_ssize_t size)
    return GRUB_ERR_NONE;
  }
  
@@ -406,7 +417,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  static grub_err_t
  grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  		int argc, char *argv[])
-@@ -679,6 +731,9 @@ grub_cmd_linux (grub_command_t cmd __att
+@@ -678,6 +730,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
        goto fail;
      }
  
@@ -416,7 +427,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
    file = grub_file_open (argv[0], GRUB_FILE_TYPE_LINUX_KERNEL);
    if (! file)
      goto fail;
-@@ -1140,6 +1195,11 @@ grub_cmd_initrd (grub_command_t cmd __at
+@@ -1139,6 +1194,11 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
   fail:
    grub_initrd_close (&initrd_ctx);
  
@@ -428,19 +439,21 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
    return grub_errno;
  }
  
+diff --git a/grub-core/loader/linux.c b/grub-core/loader/linux.c
+index 8c8565a..7b989d4 100644
 --- a/grub-core/loader/linux.c
 +++ b/grub-core/loader/linux.c
-@@ -4,6 +4,9 @@
- #include <grub/misc.h>
+@@ -5,6 +5,9 @@
  #include <grub/file.h>
  #include <grub/mm.h>
+ #include <grub/safemath.h>
 +#ifdef GRUB_MACHINE_EFI
 +#include <grub/efi/mok2verify.h>
 +#endif
  
  struct newc_head
  {
-@@ -253,6 +256,7 @@ grub_initrd_load (struct grub_linux_init
+@@ -279,6 +282,7 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
    int newc = 0;
    struct dir *root = 0;
    grub_ssize_t cursize = 0;
@@ -448,7 +461,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
    for (i = 0; i < initrd_ctx->nfiles; i++)
      {
-@@ -288,6 +292,25 @@ grub_initrd_load (struct grub_linux_init
+@@ -322,6 +326,25 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
  	  grub_initrd_close (initrd_ctx);
  	  return grub_errno;
  	}
@@ -474,7 +487,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
        ptr += cursize;
      }
    if (newc)
-@@ -296,7 +319,9 @@ grub_initrd_load (struct grub_linux_init
+@@ -330,7 +353,9 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
        ptr += ALIGN_UP_OVERHEAD (cursize, 4);
        ptr = make_header (ptr, "TRAILER!!!", sizeof ("TRAILER!!!") - 1, 0, 0);
      }
@@ -485,6 +498,8 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
 -  return GRUB_ERR_NONE;
 +  return err;
  }
+diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
+index 316ce53..5610106 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
 @@ -33,6 +33,9 @@
@@ -506,7 +521,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  /* Initialize the screen.  */
  void
  grub_normal_init_page (struct grub_term_output *term,
-@@ -202,13 +207,24 @@ grub_normal_init_page (struct grub_term_
+@@ -202,13 +207,24 @@ grub_normal_init_page (struct grub_term_output *term,
  {
    grub_ssize_t msg_len;
    int posx;
@@ -532,7 +547,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
    if (!msg_formatted)
      return;
   
-@@ -233,6 +249,8 @@ grub_normal_init_page (struct grub_term_
+@@ -233,6 +249,8 @@ grub_normal_init_page (struct grub_term_output *term,
    grub_free (unicode_msg);
  }
  
@@ -541,7 +556,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  static void
  read_lists (const char *val)
  {
-@@ -273,6 +291,20 @@ grub_normal_execute (const char *config,
+@@ -273,6 +291,20 @@ grub_normal_execute (const char *config, int nested, int batch)
  
    if (config)
      {
@@ -562,7 +577,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
        menu = read_config_file (config);
  
        /* Ignore any error.  */
-@@ -304,7 +336,10 @@ grub_enter_normal_mode (const char *conf
+@@ -304,7 +336,10 @@ grub_enter_normal_mode (const char *config)
    const char *val = grub_env_get ("strict_security");
    if (!(val && (val[0] == '1' || val[0] == 'e'))) {
      grub_boot_time ("Entering shell");
@@ -574,7 +589,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
    }
    nested_level--;
    if (grub_normal_exit_level)
-@@ -341,6 +376,13 @@ grub_cmd_normal (struct grub_command *cm
+@@ -341,6 +376,13 @@ grub_cmd_normal (struct grub_command *cmd __attribute__ ((unused)),
      grub_enter_normal_mode (argv[0]);
  
  quit:
@@ -602,6 +617,8 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
    /* Reload terminal colors when these variables are written to.  */
    grub_register_variable_hook ("color_normal", NULL, grub_env_write_color_normal);
+diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+index d5e0c79..512f710 100644
 --- a/grub-core/normal/menu.c
 +++ b/grub-core/normal/menu.c
 @@ -32,6 +32,9 @@
@@ -614,7 +631,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
  /* Time to delay after displaying an error message about a default/fallback
     entry failing to boot.  */
-@@ -773,18 +776,30 @@ run_menu (grub_menu_t menu, int nested,
+@@ -773,18 +776,30 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
  	      break;
  
  	    case 'c':
@@ -653,6 +670,8 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
  	    default:
  	      {
+diff --git a/grub-core/normal/menu_text.c b/grub-core/normal/menu_text.c
+index 18240e7..11aeea7 100644
 --- a/grub-core/normal/menu_text.c
 +++ b/grub-core/normal/menu_text.c
 @@ -27,6 +27,9 @@
@@ -665,7 +684,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  
  static grub_uint8_t grub_color_menu_normal;
  static grub_uint8_t grub_color_menu_highlight;
-@@ -165,6 +168,7 @@ command-line or ESC to discard edits and
+@@ -165,6 +168,7 @@ command-line or ESC to discard edits and return to the GRUB menu."),
      }
    else
      {
@@ -673,7 +692,7 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
        char *msg_translated;
  
        msg_translated = grub_xasprintf (_("Use the %C and %C keys to select which "
-@@ -180,19 +184,32 @@ command-line or ESC to discard edits and
+@@ -180,19 +184,32 @@ command-line or ESC to discard edits and return to the GRUB menu."),
  
        if (nested)
  	{
@@ -714,6 +733,9 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  	}	
      }
    return ret;
+diff --git a/include/grub/efi/mok2verify.h b/include/grub/efi/mok2verify.h
+new file mode 100644
+index 0000000..98ef2d4
 --- /dev/null
 +++ b/include/grub/efi/mok2verify.h
 @@ -0,0 +1,48 @@
@@ -765,3 +787,6 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
 +EXPORT_FUNC (grub_verify_file) (const char *path);
 +
 +#endif	/* ! GRUB_EFI_MOK2_VERIFY_HEADER */
+-- 
+2.17.1
+
