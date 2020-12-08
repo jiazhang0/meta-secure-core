@@ -5,6 +5,7 @@ _D=`dirname "$_S"`
 ROOT_DIR="`cd "$_D" && pwd`"
 
 KEYS_DIR="$ROOT_DIR/user-keys"
+OPENSSL_DAYS="3650"
 GPG_KEYNAME=
 GPG_EMAIL=
 GPG_COMMENT=
@@ -49,6 +50,8 @@ Options:
  -bgp <Boot Loader GPG passphrase>
  -bp <Boot loader config password>
  -ip <IMA passphrase>
+ --days          Specify the number of days to make a certificate valid for
+                 Default: $OPENSSL_DAYS
  -h|--help       Show this help information.
 Overides:
  -bc <gpg key comment>
@@ -133,6 +136,9 @@ while [ $# -gt 0 ]; do
         -ip)
             shift && IMA_PASS="$1"
             ;;
+        --days)
+            shift && OPENSSL_DAYS="$1"
+            ;;
         -h|--help)
             show_help `basename $0`
             exit 0
@@ -173,7 +179,7 @@ ca_sign() {
     # Self signing ?
     if [ "$key_name" = "$ca_key_name" ]; then
         openssl req -new -x509 -newkey rsa:2048 \
-            -sha256 -nodes -days 3650 \
+            -sha256 -nodes -days $OPENSSL_DAYS \
             -subj "$subject" \
             -keyout "$key_dir/$key_name.key" \
             -out "$key_dir/$key_name.crt" \
@@ -223,7 +229,7 @@ ca_sign() {
             -CA "$ca_cert" \
             -CAform "$ca_cert_form" \
             -CAkey "$ca_key_dir/$ca_key_name.key" \
-            -set_serial 1 -days 3650 \
+            -set_serial 1 -days $OPENSSL_DAYS \
             -extfile "$ROOT_DIR/openssl.cnf" -extensions v3_req \
             -out "$key_dir/$key_name.crt" \
                 || print_fatal "openssl failure"
