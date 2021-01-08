@@ -26,6 +26,7 @@ SRC_URI += "\
     file://Grub-get-and-set-efi-variables.patch \
     file://uefi_verify.patch \
     file://0001-grub-verify-Add-strict_security-variable.patch \
+    file://0001-fs-ext2-fix-the-file-not-found-error-when-symlink-fi.patch \
     file://grub-efi.cfg \
     file://boot-menu.inc \
     ${@d.getVar('GRUB_MOKVERIFY_PATCH', True) if d.getVar('UEFI_SELOADER', True) == '1' else ''} \
