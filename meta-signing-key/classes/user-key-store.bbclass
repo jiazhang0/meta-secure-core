@@ -14,7 +14,7 @@ MODSIGN = '${@bb.utils.contains("DISTRO_FEATURES", "modsign", "1", "0", d)}'
 IMA = '${@bb.utils.contains("DISTRO_FEATURES", "ima", "1", "0", d)}'
 SYSTEM_TRUSTED = '${@"1" if d.getVar("IMA", True) == "1" or d.getVar("MODSIGN", True) == "1" else "0"}'
 SECONDARY_TRUSTED = '${@"1" if d.getVar("SYSTEM_TRUSTED", True) == "1" else "0"}'
-RPM = '1'
+RPM ?= '1'
 
 def vprint(str, d):
     if d.getVar('USER_KEY_SHOW_VERBOSE', True) == '1':
