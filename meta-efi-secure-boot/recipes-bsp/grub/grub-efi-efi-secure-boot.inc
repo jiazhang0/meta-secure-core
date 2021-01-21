@@ -36,6 +36,7 @@ SRC_URI += "\
 # functions efi_call_foo and efi_shim_exit are not implemented for arm64 yet
 COMPATIBLE_HOST_aarch64 = 'null'
 
+GRUB_PREFIX_DIR ?= "/EFI/BOOT"
 EFI_BOOT_PATH ?= "/boot/efi/EFI/BOOT"
 
 GRUB_SECURE_BOOT_MODULES += "${@'efivar password_pbkdf2 ' if d.getVar('UEFI_SB', True) == '1' else ''}"
@@ -81,13 +82,13 @@ do_compile_append() {
 		cat<<EOF>${WORKDIR}/cfg
 insmod verify
 set strict_security=1
-search.file (\$cmdpath)/EFI/BOOT/grub.cfg root
-set prefix=(\$root)/EFI/BOOT
+search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
+set prefix=(\$root)${GRUB_PREFIX_DIR}
 EOF
 	else
 		cat<<EOF>${WORKDIR}/cfg
-search.file (\$cmdpath)/EFI/BOOT/grub.cfg root
-set prefix=(\$root)/EFI/BOOT
+search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
+set prefix=(\$root)${GRUB_PREFIX_DIR}
 EOF
 	fi
 }
@@ -130,7 +131,7 @@ do_install_append_class-target() {
     grub-editenv "${D}${EFI_BOOT_PATH}/grubenv" create
 
     install -d "${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi"
-    grub-mkimage -c ../cfg -p /EFI/BOOT -d "./grub-core" \
+    grub-mkimage -c ../cfg -p "${GRUB_PREFIX_DIR}" -d "./grub-core" \
         -O "${GRUB_TARGET}-efi" -o "${B}/${GRUB_IMAGE}" \
         ${GRUB_BUILDIN}
 
