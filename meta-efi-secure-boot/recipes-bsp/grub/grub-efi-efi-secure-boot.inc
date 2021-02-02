@@ -9,7 +9,9 @@ EXTRA_SRC_URI = "\
 
 GRUB_MOKVERIFY_PATCH = " \
    file://mok2verify-support-to-verify-non-PE-file-with-PKCS-7.patch \
-   file://mok2verify-multiboot.patch"
+   file://mok2verify-multiboot.patch \
+   file://verify-all-buffiles.patch \
+"
 
 SRC_URI += "\
     file://0001-pe32.h-add-header-structures-for-TE-and-DOS-executab.patch \
