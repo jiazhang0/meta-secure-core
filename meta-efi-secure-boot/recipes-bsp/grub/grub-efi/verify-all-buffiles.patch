@@ -1,0 +1,30 @@
+--- a/grub-core/io/bufio.c	2021-02-02 07:35:26.062890543 +0000
++++ b/grub-core/io/bufio.c	2021-02-02 07:41:06.659570989 +0000
+@@ -24,6 +24,9 @@
+ #include <grub/fs.h>
+ #include <grub/bufio.h>
+ #include <grub/dl.h>
++#ifdef GRUB_MACHINE_EFI
++#include <grub/efi/mok2verify.h>
++#endif
+ 
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
+@@ -91,7 +94,17 @@
+ grub_buffile_open (const char *name, enum grub_file_type type, grub_size_t size)
+ {
+   grub_file_t io, file;
++#ifdef GRUB_MACHINE_EFI
++  grub_err_t err;
+ 
++  err = grub_verify_file (name);
++  if (err != GRUB_ERR_NONE)
++    {
++      grub_error (err, "Security Violation: %s failed to load", name);
++      grub_print_error ();
++      grub_halt();
++    }
++#endif
+   io = grub_file_open (name, type);
+   if (! io)
+     return 0;
