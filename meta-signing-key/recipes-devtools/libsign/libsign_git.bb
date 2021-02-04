@@ -50,6 +50,6 @@ FILES_${PN} += "\
 "
 
 RDEPENDS_${PN}_class-target += "libcrypto"
-RDEPENDS_${PN}_class-native += "openssl"
+RDEPENDS_${PN}_class-native += "openssl-native"
 
 BBCLASSEXTEND = "native nativesdk"
