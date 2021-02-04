@@ -22,7 +22,7 @@ SRCREV = "e45324eba268723d39856111e7933c5c76238481"
 
 S = "${WORKDIR}/git"
 
-inherit native pythonnative lib_package cmake
+inherit pythonnative lib_package cmake native
 
 EXTRA_OECMAKE = "\
     -DCMAKE_BUILD_TYPE=Debug \
