@@ -1,0 +1,36 @@
+From a417070000e7cc1d2aab47a76a27d6b305c43298 Mon Sep 17 00:00:00 2001
+From: Hongxu Jia <hongxu.jia@windriver.com>
+Date: Sun, 7 Feb 2021 18:25:00 -0800
+Subject: [PATCH] compat glibc 2.33
+
+The glibc 2.33 remove macro _STAT_VER_LINUX [1],
+do not use it to represent linux system
+
+[1] https://sourceware.org/git/?p=glibc.git;a=blobdiff;f=sysdeps/unix/sysv/linux/bits/stat.h;h=b5426232088df446f502e6aea76a6cf03e71e1c4;hp=240628a6f4c9028a774c26a04a145c24110f669b;hb=8ed005daf0ab03e142500324a34087ce179ae78e;hpb=428985c436f442e91e27173bccaf28f547233586
+
+Upstream-Status: Inappropriate [oe specific]
+
+Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
+---
+ mtree.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/mtree.h b/mtree.h
+index accda0a..1cf796d 100644
+--- a/mtree.h
++++ b/mtree.h
+@@ -36,11 +36,9 @@
+ #define KEYDEFAULT \
+         (F_GID | F_MODE | F_NLINK | F_SIZE | F_SLINK | F_TIME | F_UID | F_FLAGS)
+ 
+-#ifdef _STAT_VER_LINUX
+ #define st_atimespec st_atim
+ #define st_ctimespec st_ctim
+ #define st_mtimespec st_mtim
+-#endif
+ 
+ #define MISMATCHEXIT    2
+ 
+-- 
+2.29.2
+

@@ -11,6 +11,7 @@ PV = "1.0.3+git${SRCPV}"
 SRC_URI = "git://github.com/archiecobbs/mtree-port.git \
            file://mtree-getlogin.patch \
            file://configure.ac-automake-error.patch \
+           file://0001-compat-glibc-2.33.patch \
            "
 SRCREV = "4f3e901aea980fc9a78ac8692fa12a22328b1d4a"
 
