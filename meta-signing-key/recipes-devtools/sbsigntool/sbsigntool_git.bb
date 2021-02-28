@@ -7,26 +7,19 @@ LIC_FILES_CHKSUM = "\
     file://COPYING;md5=a7710ac18adec371b84a9594ed04fd20 \
 "
 
-DEPENDS += "binutils openssl gnu-efi util-linux"
+DEPENDS += "binutils openssl gnu-efi gnu-efi-native"
+DEPENDS += "help2man-native coreutils-native openssl-native util-linux-native"
 
-PV = "0.6+git${SRCPV}"
+PV = "0.8+git${SRCPV}"
 
 SRC_URI = "\
-    git://kernel.ubuntu.com/jk/sbsigntool \
-    file://ccan.git.tar.bz2 \
-    file://fix-mixed-implicit-and-normal-rules.patch;apply=0 \
-    file://disable-man-page-creation.patch \
-    file://Fix-for-multi-sign.patch \
-    file://sbsign-add-x-option-to-avoid-overwrite-existing-sign.patch \
-    file://image-fix-the-segment-fault-caused-by-the-uninitiali.patch \
-    file://Fix-the-deprecated-ASN1_STRING_data-in-openssl-1.1.0.patch \
-    file://Update-OpenSSL-API-usage-to-support-OpenSSL-1.1.patch \
+    git://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git;protocol=https;name=sbsigntool \
 "
-SRCREV="951ee95a301674c046f55330cd7460e1314deff2"
+SRCREV="f12484869c9590682ac3253d583bf59b890bb826"
 
 S = "${WORKDIR}/git"
 
-inherit autotools-brokensep pkgconfig
+inherit native  autotools-brokensep pkgconfig
 
 def efi_arch(d):
     import re
@@ -50,23 +43,7 @@ EXTRA_OEMAKE += "\
 
 do_configure() {
     cd "${S}"
-    rm -rf "lib/ccan.git"
-    git clone "${WORKDIR}/ccan.git" lib/ccan.git
-    cd lib/ccan.git && \
-        git apply "${WORKDIR}/fix-mixed-implicit-and-normal-rules.patch" && \
-        cd -
-
-    OLD_CC="${CC}"
-
-    if [ ! -e lib/ccan ]; then
-        export CC="${BUILD_CC}"
-        TMPDIR=lib lib/ccan.git/tools/create-ccan-tree \
-            --build-type=automake lib/ccan \
-                talloc read_write_all build_assert array_size endian || exit 1
-    fi
-
-    export CC="${OLD_CC}"
-    ./autogen.sh --noconfigure
+    ./autogen.sh
     oe_runconf
 }
 
