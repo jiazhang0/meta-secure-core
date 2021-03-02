@@ -7,7 +7,7 @@ is not signed with an appropriate key, for instance) it will then \
 validate the binary against a built-in certificate. If this succeeds \
 and if the binary or signing key are not blacklisted then shim will \
 relocate and execute the binary."
-HOMEPAGE = "https://github.com/rhinstaller/shim.git"
+HOMEPAGE = "https://github.com/rhboot/shim.git"
 SECTION = "bootloaders"
 
 LICENSE = "BSD-2-Clause"
@@ -20,7 +20,7 @@ DEPENDS += "\
 PV = "12+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/rhinstaller/shim.git \
+    git://github.com/rhboot/shim.git \
     file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch;apply=0 \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
