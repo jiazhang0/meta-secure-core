@@ -1,4 +1,4 @@
-From 3aa619ea2c9d35cc242f0ae870782522176ce018 Mon Sep 17 00:00:00 2001
+From 14eda2e512ec14fcae9de63f87457e4dad1a0206 Mon Sep 17 00:00:00 2001
 From: Lans Zhang <jia.zhang@windriver.com>
 Date: Wed, 12 Jul 2017 16:02:13 +0800
 Subject: [PATCH] mok2verify: support to verify non-PE file with PKCS#7
@@ -52,10 +52,10 @@ Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
  create mode 100644 include/grub/efi/mok2verify.h
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index 18d2316..59a5cf1 100644
+index 2f2765e..f07d6ea 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -1869,6 +1869,12 @@ module = {
+@@ -1894,6 +1894,12 @@ module = {
    enable = efi;
  };
  
@@ -101,7 +101,7 @@ index bbca81e..3f44a7e 100644
    grub_machine_fini (grub_loader_flags);
  
 diff --git a/grub-core/gfxmenu/gui_label.c b/grub-core/gfxmenu/gui_label.c
-index a4c8178..da49c9e 100644
+index 1c19054..52d4755 100644
 --- a/grub-core/gfxmenu/gui_label.c
 +++ b/grub-core/gfxmenu/gui_label.c
 @@ -24,6 +24,9 @@
@@ -157,11 +157,11 @@ index a4c8178..da49c9e 100644
 +		  value = _("enter: boot, `e': options, `c': cmd-line");
 +	     }
  	   /* FIXME: Add more templates here if needed.  */
- 	  self->template = grub_strdup (value);
- 	  self->text = grub_xasprintf (value, self->value);
+ 
+ 	  if (grub_printf_fmt_check(value, "%d") != GRUB_ERR_NONE)
 diff --git a/grub-core/lib/efi/mok2verify.c b/grub-core/lib/efi/mok2verify.c
 new file mode 100644
-index 0000000..790efa0
+index 0000000..eb268a2
 --- /dev/null
 +++ b/grub-core/lib/efi/mok2verify.c
 @@ -0,0 +1,182 @@
@@ -241,11 +241,11 @@ index 0000000..790efa0
 +grub_is_secured (void)
 +{
 +  grub_efi_guid_t global_guid = GRUB_EFI_GLOBAL_VARIABLE_GUID;
-+  void *var;
++  void *var = NULL;
 +  grub_size_t var_size = 0;
 +  int secured = 0;
 +
-+  var = grub_efi_get_variable ("SecureBoot", &global_guid, &var_size);
++  grub_efi_get_variable ("SecureBoot", &global_guid, &var_size, &var);
 +  if (!var)
 +    return grub_error (GRUB_ERR_READ_ERROR, N_("cannot read variable"));
 +
@@ -254,8 +254,8 @@ index 0000000..790efa0
 +
 +  grub_free (var);
 +
-+  var = grub_efi_get_variable ("MokSBState", &grub_efi_mok2_verify_protoco_guid,
-+			       &var_size);
++  grub_efi_get_variable ("MokSBState", &grub_efi_mok2_verify_protoco_guid,
++			       &var_size, &var);
 +  if (!var || (var_size == 1 && *(grub_uint8_t *) var == 0))
 +    secured = 1;
 +
@@ -348,20 +348,20 @@ index 0000000..790efa0
 +
 +#pragma GCC diagnostic error "-Wvla"
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index 3a264b9..9caabdd 100644
+index 14d6a80..cfbb858 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
-@@ -40,6 +40,9 @@
- #include <grub/lib/cmdline.h>
+@@ -41,6 +41,9 @@
  #include <grub/linux.h>
  #include <grub/machine/kernel.h>
+ #include <grub/safemath.h>
 +#ifdef GRUB_MACHINE_EFI
 +#include <grub/efi/mok2verify.h>
 +#endif
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -656,6 +659,55 @@ grub_shim_verify (grub_addr_t addr, grub_ssize_t size)
+@@ -664,6 +667,55 @@ grub_shim_verify (grub_addr_t addr, grub_ssize_t size)
    return GRUB_ERR_NONE;
  }
  
@@ -417,7 +417,7 @@ index 3a264b9..9caabdd 100644
  static grub_err_t
  grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  		int argc, char *argv[])
-@@ -678,6 +730,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -686,6 +738,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
        goto fail;
      }
  
@@ -427,7 +427,7 @@ index 3a264b9..9caabdd 100644
    file = grub_file_open (argv[0], GRUB_FILE_TYPE_LINUX_KERNEL);
    if (! file)
      goto fail;
-@@ -1139,6 +1194,11 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+@@ -1145,6 +1200,11 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
   fail:
    grub_initrd_close (&initrd_ctx);
  
@@ -440,7 +440,7 @@ index 3a264b9..9caabdd 100644
  }
  
 diff --git a/grub-core/loader/linux.c b/grub-core/loader/linux.c
-index 8c8565a..7b989d4 100644
+index 3fe390f..8b743d7 100644
 --- a/grub-core/loader/linux.c
 +++ b/grub-core/loader/linux.c
 @@ -5,6 +5,9 @@
@@ -453,7 +453,7 @@ index 8c8565a..7b989d4 100644
  
  struct newc_head
  {
-@@ -279,6 +282,7 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
+@@ -278,6 +281,7 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
    int newc = 0;
    struct dir *root = 0;
    grub_ssize_t cursize = 0;
@@ -461,7 +461,7 @@ index 8c8565a..7b989d4 100644
  
    for (i = 0; i < initrd_ctx->nfiles; i++)
      {
-@@ -322,6 +326,25 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
+@@ -321,6 +325,25 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
  	  grub_initrd_close (initrd_ctx);
  	  return grub_errno;
  	}
@@ -487,7 +487,7 @@ index 8c8565a..7b989d4 100644
        ptr += cursize;
      }
    if (newc)
-@@ -330,7 +353,9 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
+@@ -329,7 +352,9 @@ grub_initrd_load (struct grub_linux_initrd_context *initrd_ctx,
        ptr += ALIGN_UP_OVERHEAD (cursize, 4);
        ptr = make_header (ptr, "TRAILER!!!", sizeof ("TRAILER!!!") - 1, 0, 0);
      }
@@ -499,10 +499,10 @@ index 8c8565a..7b989d4 100644
 +  return err;
  }
 diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index 316ce53..5610106 100644
+index 2c3f4f8..c97df84 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
-@@ -33,6 +33,9 @@
+@@ -34,6 +34,9 @@
  #include <grub/charset.h>
  #include <grub/script_sh.h>
  #include <grub/bufio.h>
@@ -512,7 +512,7 @@ index 316ce53..5610106 100644
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -195,6 +198,8 @@ read_config_file (const char *config)
+@@ -196,6 +199,8 @@ read_config_file (const char *config)
    return newmenu;
  }
  
@@ -521,7 +521,7 @@ index 316ce53..5610106 100644
  /* Initialize the screen.  */
  void
  grub_normal_init_page (struct grub_term_output *term,
-@@ -202,13 +207,24 @@ grub_normal_init_page (struct grub_term_output *term,
+@@ -203,13 +208,24 @@ grub_normal_init_page (struct grub_term_output *term,
  {
    grub_ssize_t msg_len;
    int posx;
@@ -547,7 +547,7 @@ index 316ce53..5610106 100644
    if (!msg_formatted)
      return;
   
-@@ -233,6 +249,8 @@ grub_normal_init_page (struct grub_term_output *term,
+@@ -234,6 +250,8 @@ grub_normal_init_page (struct grub_term_output *term,
    grub_free (unicode_msg);
  }
  
@@ -556,7 +556,7 @@ index 316ce53..5610106 100644
  static void
  read_lists (const char *val)
  {
-@@ -273,6 +291,20 @@ grub_normal_execute (const char *config, int nested, int batch)
+@@ -274,6 +292,20 @@ grub_normal_execute (const char *config, int nested, int batch)
  
    if (config)
      {
@@ -577,7 +577,7 @@ index 316ce53..5610106 100644
        menu = read_config_file (config);
  
        /* Ignore any error.  */
-@@ -304,7 +336,10 @@ grub_enter_normal_mode (const char *config)
+@@ -305,7 +337,10 @@ grub_enter_normal_mode (const char *config)
    const char *val = grub_env_get ("strict_security");
    if (!(val && (val[0] == '1' || val[0] == 'e'))) {
      grub_boot_time ("Entering shell");
@@ -589,7 +589,7 @@ index 316ce53..5610106 100644
    }
    nested_level--;
    if (grub_normal_exit_level)
-@@ -341,6 +376,13 @@ grub_cmd_normal (struct grub_command *cmd __attribute__ ((unused)),
+@@ -359,6 +394,13 @@ grub_cmd_normal (struct grub_command *cmd __attribute__ ((unused)),
      grub_enter_normal_mode (argv[0]);
  
  quit:
@@ -603,7 +603,7 @@ index 316ce53..5610106 100644
    return 0;
  }
  
-@@ -528,8 +570,11 @@ GRUB_MOD_INIT(normal)
+@@ -546,8 +588,11 @@ GRUB_MOD_INIT(normal)
    /* Register a command "normal" for the rescue mode.  */
    grub_register_command ("normal", grub_cmd_normal,
  			 0, N_("Enter normal mode."));
@@ -618,7 +618,7 @@ index 316ce53..5610106 100644
    /* Reload terminal colors when these variables are written to.  */
    grub_register_variable_hook ("color_normal", NULL, grub_env_write_color_normal);
 diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
-index d5e0c79..512f710 100644
+index 8397886..76c3f5a 100644
 --- a/grub-core/normal/menu.c
 +++ b/grub-core/normal/menu.c
 @@ -32,6 +32,9 @@
@@ -631,7 +631,7 @@ index d5e0c79..512f710 100644
  
  /* Time to delay after displaying an error message about a default/fallback
     entry failing to boot.  */
-@@ -773,18 +776,30 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
+@@ -772,18 +775,30 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
  	      break;
  
  	    case 'c':

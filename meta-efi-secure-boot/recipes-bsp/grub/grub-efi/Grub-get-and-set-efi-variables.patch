@@ -158,7 +158,7 @@ index 0000000..6aeda80
 +  if (EFI_VAR_INVALID == efi_type)
 +    return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("invalid format specifier"));
 +
-+  efi_var = grub_efi_get_variable (args[0], &global, &efi_var_size);
++  grub_efi_get_variable (args[0], &global, &efi_var_size, &efi_var);
 +  if (!efi_var || !efi_var_size)
 +    {
 +      status = grub_error (GRUB_ERR_READ_ERROR, N_("cannot read variable"));

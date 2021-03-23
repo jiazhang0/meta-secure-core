@@ -1,7 +1,7 @@
-From 8a7ad88b4880e25df1f54b80631dc035e1e25662 Mon Sep 17 00:00:00 2001
+From 9f330999565e1e82ce5b9460ffefa933cc47d67c Mon Sep 17 00:00:00 2001
 From: Jason Wessel <jason.wessel@windriver.com>
 Date: Thu, 17 Oct 2019 12:35:01 -0700
-Subject: [PATCH] grub verify:  Add strict_security variable
+Subject: [PATCH] grub verify: Add strict_security variable
 
 With strict_security set to 1, it is impossible to change the value of
 check_signatures.  It will also cause grub to reboot instead of
@@ -12,14 +12,16 @@ Upstream-Status: Pending
 
 Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
 ---
- grub-core/commands/pgp.c |   16 +++++++++++++++-
- grub-core/kern/main.c    |    9 +++++++++
- grub-core/normal/main.c  |    7 +++++--
+ grub-core/commands/pgp.c | 16 +++++++++++++++-
+ grub-core/kern/main.c    |  9 +++++++++
+ grub-core/normal/main.c  |  7 +++++--
  3 files changed, 29 insertions(+), 3 deletions(-)
 
+diff --git a/grub-core/commands/pgp.c b/grub-core/commands/pgp.c
+index 5daa1e9..ed8514c 100644
 --- a/grub-core/commands/pgp.c
 +++ b/grub-core/commands/pgp.c
-@@ -864,6 +864,7 @@ grub_cmd_verify_signature (grub_extcmd_c
+@@ -864,6 +864,7 @@ grub_cmd_verify_signature (grub_extcmd_context_t ctxt,
  }
  
  static int sec = 0;
@@ -60,17 +62,19 @@ Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
  
    grub_pk_trusted = 0;
    FOR_MODULES (header)
+diff --git a/grub-core/kern/main.c b/grub-core/kern/main.c
+index 73967e2..86e7f35 100644
 --- a/grub-core/kern/main.c
 +++ b/grub-core/kern/main.c
-@@ -29,6 +29,7 @@
- #include <grub/command.h>
+@@ -30,6 +30,7 @@
  #include <grub/reader.h>
  #include <grub/parser.h>
+ #include <grub/verify.h>
 +#include <grub/time.h>
  
  #ifdef GRUB_MACHINE_PCBIOS
  #include <grub/machine/memory.h>
-@@ -308,5 +309,13 @@ grub_main (void)
+@@ -312,5 +313,13 @@ grub_main (void)
    grub_boot_time ("After execution of embedded config. Attempt to go to normal mode");
  
    grub_load_normal_mode ();
@@ -84,9 +88,11 @@ Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
 +    }
    grub_rescue_run ();
  }
+diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
+index c4ebe9e..2c3f4f8 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
-@@ -301,8 +301,11 @@ grub_enter_normal_mode (const char *conf
+@@ -302,8 +302,11 @@ grub_enter_normal_mode (const char *config)
    grub_boot_time ("Entering normal mode");
    nested_level++;
    grub_normal_execute (config, 0, 0);
@@ -100,3 +106,6 @@ Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
    nested_level--;
    if (grub_normal_exit_level)
      grub_normal_exit_level--;
+-- 
+2.17.1
+
