@@ -41,6 +41,8 @@ def efi_arch(d):
 #    --with-libtool-sysroot \
 #"
 
+CFLAGS += "-Wno-error=maybe-uninitialized"
+
 HOST_EXTRACFLAGS += "\
     INCLUDES+='-I${S}/lib/ccan.git/ \
               -I${STAGING_INCDIR_NATIVE}/efi \
