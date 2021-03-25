@@ -33,7 +33,7 @@ python do_package_prepend () {
     else:
         for compr in d.getVar('INITRAMFS_FSTYPES').split():
             d.appendVar(d.expand('ALTERNATIVE_${PN}'), ' ' + d.expand('${INITRAMFS_IMAGE}') + ext)
-            d.setVarFlag('ALTERNATIVE_LINK_NAME', d.expand('${INITRAMFS_IMAGE}') + ext, d.expand('/boot/${INITRAMFS_IMAGE}.p7b'))
+            d.setVarFlag('ALTERNATIVE_LINK_NAME', d.expand('${INITRAMFS_IMAGE}') + ext, d.expand('/boot/${INITRAMFS_IMAGE}') + ext)
             d.setVarFlag('ALTERNATIVE_TARGET', d.expand('${INITRAMFS_IMAGE}') + ext, d.expand('/boot/${INITRAMFS_IMAGE}${INITRAMFS_EXT_NAME}.' + compr + ext))
             d.setVarFlag('ALTERNATIVE_PRIORITY', d.expand('${INITRAMFS_IMAGE}') + ext, '50101')
 }
