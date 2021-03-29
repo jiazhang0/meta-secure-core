@@ -81,17 +81,13 @@ python __anonymous () {
 do_compile_append() {
 	if [ "${GRUB_SIGN_VERIFY}" = "1" -a "${GRUB_SIGN_VERIFY_STRICT}" = "1" ] ; then
 		cat<<EOF>${WORKDIR}/cfg
-insmod verify
 set strict_security=1
-search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
-set prefix=(\$root)${GRUB_PREFIX_DIR}
-EOF
-	else
-		cat<<EOF>${WORKDIR}/cfg
-search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
-set prefix=(\$root)${GRUB_PREFIX_DIR}
 EOF
 	fi
+	cat<<EOF>>${WORKDIR}/cfg
+search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
+set prefix=(\$root)${GRUB_PREFIX_DIR}
+EOF
 }
 
 do_compile_append_class-native() {
