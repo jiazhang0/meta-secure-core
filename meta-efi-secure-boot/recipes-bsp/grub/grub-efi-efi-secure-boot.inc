@@ -13,7 +13,7 @@ GRUB_MOKVERIFY_PATCH = " \
    file://verify-all-buffiles.patch \
 "
 
-SRC_URI += "\
+SRC_URI_append_class-target += "\
     file://0001-pe32.h-add-header-structures-for-TE-and-DOS-executab.patch \
     file://0002-shim-add-needed-data-structures.patch \
     file://0003-efi-chainloader-implement-an-UEFI-Exit-service-for-s.patch \
@@ -47,13 +47,14 @@ GRUB_SIGNING_MODULES += "${@'pgp gcry_rsa gcry_sha256 gcry_sha512 --pubkey %s ' 
 
 GRUB_SELOADER_MODULES += "${@'mok2verify ' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
 
-GRUB_BUILDIN_append += "tftp reboot chain \
+GRUB_BUILDIN_append_class-target += "\
+  tftp reboot chain \
   ${GRUB_SECURE_BOOT_MODULES} \
   ${GRUB_SIGNING_MODULES} \
   ${GRUB_SELOADER_MODULES}"
 
 # For efi_call_foo and efi_shim_exit
-CFLAGS_append = " -fno-toplevel-reorder"
+CFLAGS_append_class-target = " -fno-toplevel-reorder"
 
 # Set a default root specifier.
 inherit user-key-store
@@ -78,7 +79,7 @@ python __anonymous () {
     d.setVar("GRUB_IMAGE", grubimage)
 }
 
-do_compile_append() {
+do_compile_append_class-target() {
 	if [ "${GRUB_SIGN_VERIFY}" = "1" -a "${GRUB_SIGN_VERIFY_STRICT}" = "1" ] ; then
 		cat<<EOF>${WORKDIR}/cfg
 set strict_security=1
