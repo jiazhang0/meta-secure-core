@@ -1,0 +1,40 @@
+From 5fe53d80b7294198687a96e72471ddb968c7de34 Mon Sep 17 00:00:00 2001
+From: Yi Zhao <yi.zhao@windriver.com>
+Date: Wed, 6 Jan 2021 17:07:26 +0800
+Subject: [PATCH] fs/ext2: fix the file not found error when symlink filesize
+ is 60
+
+We encountered a file not found error when the symlink filesize is 60:
+$ ls -l initrd
+lrwxrwxrwx 1 root root 60 Jan  6 16:37 initrd -> secure-core-image-initramfs-5.10.2-yoctodev-standard.cpio.gz
+
+When booting, we got the following error in grub:
+error: file `/initrd' not found
+
+The root cause is although the size of diro->inode.symlink is 60, it
+includes the trailing '\0'. So if the symlink filesize is exactly 60, it
+is also stored in a separate block rather than in the inode.
+
+Upstream-Status: Submitted [https://lists.gnu.org/archive/html/grub-devel/2021-01/msg00018.html]
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ grub-core/fs/ext2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/grub-core/fs/ext2.c b/grub-core/fs/ext2.c
+index ac33bcd68..cb5058e8b 100644
+--- a/grub-core/fs/ext2.c
++++ b/grub-core/fs/ext2.c
+@@ -732,7 +732,7 @@ grub_ext2_read_symlink (grub_fshelp_node_t node)
+   /* If the filesize of the symlink is bigger than
+      60 the symlink is stored in a separate block,
+      otherwise it is stored in the inode.  */
+-  if (grub_le_to_cpu32 (diro->inode.size) <= sizeof (diro->inode.symlink))
++  if (grub_le_to_cpu32 (diro->inode.size) < sizeof (diro->inode.symlink))
+     grub_memcpy (symlink,
+ 		 diro->inode.symlink,
+ 		 grub_le_to_cpu32 (diro->inode.size));
+-- 
+2.25.1
+
