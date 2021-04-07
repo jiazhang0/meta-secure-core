@@ -1,0 +1,47 @@
+From ca81ba93b6536916673b6cb9cb6aef7652aee971 Mon Sep 17 00:00:00 2001
+From: Yi Zhao <yi.zhao@windriver.com>
+Date: Wed, 7 Apr 2021 11:00:37 +0800
+Subject: [PATCH] kern/efi/init.c: disable inside lockdown and shim_lock
+ verifiers
+
+The lockdown support[1] and secure boot detection[2] have been added to
+grub 2.06. These verifiers are registered when UEFI Secure Boot is
+enabled. Unfortunately, they conflict with the current MOK2 Verify
+mechanism. So disable them when enable SELoader.
+
+Fixes grub error:
+error: failed to verify kernel /bzImage
+
+[1] http://git.savannah.gnu.org/cgit/grub.git/commit/?id=578c95298bcc46e0296f4c786db64c2ff26ce2cc
+[2] http://git.savannah.gnu.org/cgit/grub.git/commit/?id=d7e54b2e5feee95d2f83058ed30d883c450d1473
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ grub-core/kern/efi/init.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/grub-core/kern/efi/init.c b/grub-core/kern/efi/init.c
+index 7facacf..67b18e9 100644
+--- a/grub-core/kern/efi/init.c
++++ b/grub-core/kern/efi/init.c
+@@ -95,6 +95,7 @@ grub_efi_init (void)
+   /* Initialize the memory management system.  */
+   grub_efi_mm_init ();
+ 
++#if 0
+   /*
+    * Lockdown the GRUB and register the shim_lock verifier
+    * if the UEFI Secure Boot is enabled.
+@@ -104,6 +105,7 @@ grub_efi_init (void)
+       grub_lockdown ();
+       grub_shim_lock_verifier_setup ();
+     }
++#endif
+ 
+   efi_call_4 (grub_efi_system_table->boot_services->set_watchdog_timer,
+ 	      0, 0, 0, NULL);
+-- 
+2.17.1
+
