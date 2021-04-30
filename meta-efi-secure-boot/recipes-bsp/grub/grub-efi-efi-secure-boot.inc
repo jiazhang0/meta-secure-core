@@ -85,6 +85,8 @@ do_compile_append_class-target() {
 		cat<<EOF>${WORKDIR}/cfg
 set strict_security=1
 EOF
+  else
+    > ${WORKDIR}/cfg
 	fi
 	cat<<EOF>>${WORKDIR}/cfg
 search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
