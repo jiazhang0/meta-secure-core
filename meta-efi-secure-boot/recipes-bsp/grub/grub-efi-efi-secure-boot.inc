@@ -69,15 +69,16 @@ python __anonymous () {
     # or SELoader.
     import re
 
-    target = d.getVar('TARGET_ARCH', True)
-    if target == "x86_64":
-        grubimage = "grubx64.efi"
-    elif re.match('i.86', target):
-        grubimage = "grubia32.efi"
-    else:
-        raise bb.parse.SkipPackage("grub-efi is incompatible with target %s" % target)
+    if d.getVar('UEFI_SELOADER', True) == "1":
+        target = d.getVar('TARGET_ARCH', True)
+        if target == "x86_64":
+            grubimage = "grubx64.efi"
+        elif re.match('i.86', target):
+            grubimage = "grubia32.efi"
+        else:
+            raise bb.parse.SkipPackage("grub-efi is incompatible with target %s" % target)
 
-    d.setVar("GRUB_IMAGE", grubimage)
+        d.setVar("GRUB_IMAGE", grubimage)
 }
 
 do_compile_append_class-target() {
@@ -181,6 +182,7 @@ addtask chownboot after do_deploy before do_package
 # Append the do_deploy() in oe-core.
 do_deploy_append_class-target() {
     install -m 0644 "${D}${EFI_BOOT_PATH}/${GRUB_IMAGE}" "${DEPLOYDIR}"
+    install -m 0664 "${DEPLOYDIR}/${GRUB_IMAGE}" "${DEPLOYDIR}/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE}"
 
     # Deploy the stacked grub configs.
     install -m 0600 "${D}${EFI_BOOT_PATH}/grubenv" "${DEPLOYDIR}"
@@ -197,6 +199,7 @@ do_deploy_append_class-target() {
 
     install -d "${DEPLOYDIR}/efi-unsigned"
     install -m 0644 "${B}/${GRUB_IMAGE}" "${DEPLOYDIR}/efi-unsigned"
+    install -m 0644 "${B}/${GRUB_IMAGE}" "${DEPLOYDIR}/efi-unsigned/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE}"
     PSEUDO_DISABLED=1 cp -af "${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi" "${DEPLOYDIR}/efi-unsigned"
 }
 
