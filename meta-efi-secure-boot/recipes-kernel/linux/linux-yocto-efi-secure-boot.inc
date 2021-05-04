@@ -18,6 +18,10 @@ fakeroot python do_sign() {
     if d.expand('${UEFI_SB}') != '1':
         return
 
+    if d.expand('${UEFI_SELOADER}') == '0' and d.expand('${GRUB_SIGN_VERIFY}') == '0':
+        bb.debug(1, "Skipping signature, no bootloader need it")
+        return
+
     import shutil
 
     for type in d.expand('${KERNEL_IMAGETYPES}').split():
@@ -29,6 +33,8 @@ fakeroot python do_sign() {
         # SELoader signature is always based on the unsigned kernel image,
         # disallowing chainloader to kernel efi-stub.
         uks_bl_sign(kernel, d)
+
+        #if d.getVar('GRUB_SIGN_VERIFY', True) == "1":
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}'))
         ext = d.expand('${SB_FILE_EXT}')
@@ -54,6 +60,10 @@ fakeroot python do_sign_bundled_kernel() {
     if (d.expand('${INITRAMFS_IMAGE}') == '') or (d.expand('${INITRAMFS_IMAGE_BUNDLE}') != '1'):
         return
 
+    if d.expand('${UEFI_SELOADER}') == '0' and d.expand('${GRUB_SIGN_VERIFY}') == '0':
+        bb.debug(1, "Skipping signature, no bootloader need it")
+        return
+
     import shutil
 
     for type in d.expand('${KERNEL_IMAGETYPES}').split():
@@ -66,9 +76,10 @@ fakeroot python do_sign_bundled_kernel() {
         # disallowing chainloader to kernel efi-stub.
         uks_bl_sign(kernel, d)
 
-        shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin'))
-        ext = d.expand('${SB_FILE_EXT}')
-        shutil.copyfile(kernel + ext, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin' + ext))
+        if d.getVar('GRUB_SIGN_VERIFY', True) == "1":
+            shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin'))
+            ext = d.expand('${SB_FILE_EXT}')
+            shutil.copyfile(kernel + ext, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin' + ext))
 }
 addtask sign_bundled_kernel after do_bundle_initramfs before do_deploy
 
