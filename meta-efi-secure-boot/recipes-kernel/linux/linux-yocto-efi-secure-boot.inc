@@ -34,7 +34,6 @@ fakeroot python do_sign() {
         # disallowing chainloader to kernel efi-stub.
         uks_bl_sign(kernel, d)
 
-        #if d.getVar('GRUB_SIGN_VERIFY', True) == "1":
 
         shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-${KERNEL_RELEASE}'))
         ext = d.expand('${SB_FILE_EXT}')
@@ -76,10 +75,9 @@ fakeroot python do_sign_bundled_kernel() {
         # disallowing chainloader to kernel efi-stub.
         uks_bl_sign(kernel, d)
 
-        if d.getVar('GRUB_SIGN_VERIFY', True) == "1":
-            shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin'))
-            ext = d.expand('${SB_FILE_EXT}')
-            shutil.copyfile(kernel + ext, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin' + ext))
+        shutil.copyfile(kernel, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin'))
+        ext = d.expand('${SB_FILE_EXT}')
+        shutil.copyfile(kernel + ext, d.expand('${D}/boot/') + type + d.expand('-initramfs-${MACHINE}.bin' + ext))
 }
 addtask sign_bundled_kernel after do_bundle_initramfs before do_deploy
 
