@@ -172,7 +172,7 @@ python do_sign() {
 addtask sign after do_install before do_deploy do_package
 
 fakeroot do_chownboot() {
-    if [ "${GRUB_SIGN_VERIFY}" = "1"]; then
+    if [ "${GRUB_SIGN_VERIFY}" = "1" ]; then
         chown root:root -R "${D}${EFI_BOOT_PATH}/grub.cfg${SB_FILE_EXT}"
         chown root:root -R "${D}${EFI_BOOT_PATH}/boot-menu.inc${SB_FILE_EXT}"
         [ x"${UEFI_SB}" = x"1" ] && {
