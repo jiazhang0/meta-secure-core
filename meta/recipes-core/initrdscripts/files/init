@@ -4,6 +4,8 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 ROOTFS_MOUNT="/rootfs"
 INIT="/sbin/init"
 
+is_encrypted=0
+
 mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t devtmpfs none /dev
@@ -33,12 +35,14 @@ mkdir -p "$ROOTFS_MOUNT"
 try_to_mount_rootfs() {
     local mount_flags="rw,noatime,iversion"
 
-    mount -o "$mount_flags" "$ROOTFS_DEV" "$ROOTFS_MOUNT" \
-        2>/dev/null && return 0
-
-    [ -x /init.cryptfs ] &&
-        /init.cryptfs "$ROOTFS_MOUNT" "$ROOTFS_DEV" \
-            "$mount_flags" && return 0
+    if [ $is_encrypted -eq 1 ] ; then
+        [ -x /init.cryptfs ] &&
+            /init.cryptfs "$ROOTFS_MOUNT" "$ROOTFS_DEV" \
+                "$mount_flags" && return 0
+    else
+        mount -o "$mount_flags" "$ROOTFS_DEV" "$ROOTFS_MOUNT" \
+            2>/dev/null && return 0
+    fi
 
     return 1
 }

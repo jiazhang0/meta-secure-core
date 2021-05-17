@@ -11,6 +11,10 @@ SRC_URI = "\
 do_install() {
     install -m 0755 "${WORKDIR}/init" "${D}/init"
 
+    if [ "${FULL_DISK_ENCRYPTION}" = "1" ] && [ ${@bb.utils.contains("DISTRO_FEATURES", "luks", 'true', '', d)} ]; then
+        sed -i '0,/is_encrypted=0/s//is_encrypted=1/' ${D}/init
+    fi
+
     # Create device nodes expected by kernel in initramfs
     # before executing /init.
     install -d "${D}/dev"
