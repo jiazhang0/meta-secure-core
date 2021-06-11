@@ -304,7 +304,11 @@ create_ima_user_key() {
 create_boot_pw_key() {
         local bootprog=`which grub-mkpasswd-pbkdf2`
         if [ "$bootprog" = "" ] ; then
-                print_fatal "ERROR could not locate \"grub-mkpasswd-pbkdf2\" please install it or set the path to the host native sysroot"
+            # Locate grub2-mkpasswd-pbkdf2 on RHEL/CentOS/Fedora
+            bootprog=`which grub2-mkpasswd-pbkdf2`
+            if [ "$bootprog" = "" ] ; then
+                print_fatal "ERROR could not locate \"grub-mkpasswd-pbkdf2\" or \"grub2-mkpasswd-pbkdf2\" please install it or set the path to the host native sysroot"
+            fi
         fi
         (echo "$BOOT_PASS"; echo "$BOOT_PASS") | $bootprog > $BOOT_KEYS_DIR/boot_cfg_pw.tmp
         if [ $? != 0 ] ; then
