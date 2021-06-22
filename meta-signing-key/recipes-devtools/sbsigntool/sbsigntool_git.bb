@@ -23,7 +23,7 @@ SRCREV_sbsigntools  ?= "f12484869c9590682ac3253d583bf59b890bb826"
 SRCREV_ccan         ?= "b1f28e17227f2320d07fe052a8a48942fe17caa5"
 SRCREV_FORMAT       =  "sbsigntools_ccan"
 
-PV = "0.9.2-git${SRCPV}"
+PV = "0.9.4-git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
