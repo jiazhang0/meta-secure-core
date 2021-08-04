@@ -55,7 +55,7 @@ EXTRA_OEMAKE += "\
                   -I${STAGING_INCDIR}/efi/${@efi_arch(d)}' \
 "
 
-do_configure_prepend() {
+do_configure:prepend() {
     cd ${S}
 
     if [ ! -e lib/ccan ]; then

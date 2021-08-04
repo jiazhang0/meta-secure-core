@@ -1,4 +1,4 @@
-DEPENDS_append_class-target += "\
+DEPENDS:append:class-target = " \
     ${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "sbsigntool-native", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", "libsign-native", "", d)} \
     openssl-native \

@@ -21,8 +21,8 @@ inherit pkgconfig autotools
 # Specify any options you want to pass to the configure script using EXTRA_OECONF:
 EXTRA_OECONF = ""
 
-FILES_${PN}-dev += "${includedir}"
+FILES:${PN}-dev += "${includedir}"
 
-RDEPENDS_${PN}_class-target += "libcrypto libattr keyutils"
+RDEPENDS:${PN}:class-target += "libcrypto libattr keyutils"
 
 BBCLASSEXTEND = "native nativesdk"

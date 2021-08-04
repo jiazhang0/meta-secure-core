@@ -41,7 +41,7 @@ testsuite_SUBDIRS = "\
 CFLAGS += "-DOPENSSL_NO_DES"
 LDFLAGS += "-L${STAGING_LIBDIR} -lcrypto -lpthread"
 
-do_configure_prepend() {
+do_configure:prepend() {
     cp -f "${S}/tcg/Makefile" "${S}"
     cp -f "${S}/tcg/init/makefile" "${S}/tcg/init/Makefile"
     # remove test case about DES
@@ -57,10 +57,10 @@ do_install() {
     install -m 0755 tsstests.sh "${D}/opt/tss-testsuite"
 }
  
-FILES_${PN} += "/opt/*"
-FILES_${PN}-dbg += "\
+FILES:${PN} += "/opt/*"
+FILES:${PN}-dbg += "\
     /opt/tss-testsuite/tcg/*/.debug \
     /opt/tss-testsuite/tcg/*/*/.debug \
 "
 
-RDEPENDS_${PN} += "tpm-tools openssl bash"
+RDEPENDS:${PN} += "tpm-tools openssl bash"

@@ -7,14 +7,14 @@ DEPENDS += "\
     attr-native \
 "
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     attr \
     ima-inspect \
     util-linux-switch-root.static \
 "
 
 # Note any private key is not available if user key signing model used.
-RRECOMMENDS_${PN} += "\
+RRECOMMENDS:${PN} += "\
     key-store-ima-cert \
     key-store-system-trusted-cert \
 "

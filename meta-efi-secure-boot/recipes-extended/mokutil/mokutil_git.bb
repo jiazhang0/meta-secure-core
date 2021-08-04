@@ -24,6 +24,6 @@ EXTRA_OEMAKE += "\
 
 COMPATIBLE_HOST = '(i.86|x86_64|arm|aarch64).*-linux'
 
-FILES_${PN} += "${datadir}/bash-completion/*"
+FILES:${PN} += "${datadir}/bash-completion/*"
 
-RDEPENDS_${PN} += "openssl efivar"
+RDEPENDS:${PN} += "openssl efivar"

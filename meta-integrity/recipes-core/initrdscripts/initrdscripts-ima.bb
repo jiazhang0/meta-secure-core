@@ -10,13 +10,13 @@ SRC_URI = "\
 
 S = "${WORKDIR}"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 do_install() {
     install -m 0500 "${WORKDIR}/init.ima" "${D}"
 }
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     /init.ima \
 "
 
@@ -28,7 +28,7 @@ FILES_${PN} += "\
 # @gawk: awk
 # @util-linux: mount, umount
 # @ima-evm-utils: evmctl
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     coreutils \
     grep \
     gawk \
@@ -38,6 +38,6 @@ RDEPENDS_${PN} += "\
     ima-policy \
 "
 
-RRECOMMENDS_${PN} += "\
+RRECOMMENDS:${PN} += "\
     key-store-ima-cert \
 "

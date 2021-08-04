@@ -31,4 +31,4 @@ do_install () {
     install -m 0644 "${MODULE_NAME}.ko" "$dir"
 }
 
-RPROVIDES_${PN} += "kernel-module-${MODULE_NAME}"
+RPROVIDES:${PN} += "kernel-module-${MODULE_NAME}"

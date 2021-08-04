@@ -1,2 +1,2 @@
-RDEPENDS_${PN} += "lvm2"
-RRECOMMENDS_${PN}_append_class-target = " lvm2-udevrules"
+RDEPENDS:${PN} += "lvm2"
+RRECOMMENDS:${PN}:append:class-target = " lvm2-udevrules"

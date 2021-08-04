@@ -3,7 +3,7 @@ require efitools.inc
 # The generated native binaries are used during native and target build
 DEPENDS += "${BPN}-native gnu-efi openssl"
 
-SRC_URI_append += "\
+SRC_URI:append = " \
     file://LockDown-enable-the-enrollment-for-DBX.patch \
     file://LockDown-show-the-error-message-with-3-sec-timeout.patch \
     file://Makefile-do-not-build-signed-efi-image.patch \
@@ -16,7 +16,7 @@ COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
 
 inherit user-key-store deploy
 
-EXTRA_OEMAKE_append += "\
+EXTRA_OEMAKE:append = " \
     INCDIR_PREFIX='${STAGING_DIR_TARGET}' \
     CRTPATH_PREFIX='${STAGING_DIR_TARGET}' \
     SIGN_EFI_SIG_LIST='${STAGING_BINDIR_NATIVE}/sign-efi-sig-list' \
@@ -67,7 +67,7 @@ python do_prepare_signing_keys() {
 addtask prepare_signing_keys after do_configure before do_compile
 do_prepare_signing_keys[prefuncs] += "check_deploy_keys"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${EFI_BOOT_PATH}
     install -m 0755 ${D}${datadir}/efitools/efi/LockDown.efi ${D}${EFI_BOOT_PATH}
 }
@@ -82,6 +82,6 @@ do_deploy() {
 }
 addtask deploy after do_install before do_build
 
-RDEPENDS_${PN}_append += "\
+RDEPENDS:${PN}:append = " \
     parted mtools coreutils util-linux openssl libcrypto \
 "

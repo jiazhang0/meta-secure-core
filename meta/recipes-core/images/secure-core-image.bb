@@ -5,4 +5,4 @@ IMAGE_INSTALL += "\
 "
 
 inherit extrausers
-EXTRA_USERS_PARAMS_prepend += " usermod -P toor root;"
+EXTRA_USERS_PARAMS += "usermod -P toor root;"

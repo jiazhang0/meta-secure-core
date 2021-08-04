@@ -2,6 +2,6 @@ DESCRIPTION = "Linux Integrity Measurement Architecture (IMA) subsystem for init
 
 include packagegroup-ima.inc
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     initrdscripts-ima \
 "

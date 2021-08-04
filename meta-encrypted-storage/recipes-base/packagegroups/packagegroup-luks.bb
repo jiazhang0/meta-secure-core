@@ -6,7 +6,7 @@ require packagegroup-luks.inc
 # The common packages shared between initramfs and rootfs
 # are listed in the .inc.
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     util-linux-fdisk \
     parted \
     packagegroup-tpm2 \

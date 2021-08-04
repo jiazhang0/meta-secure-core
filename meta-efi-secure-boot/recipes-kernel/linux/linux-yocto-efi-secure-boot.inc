@@ -4,8 +4,8 @@ efi_secure_boot_sccs = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', \
                          'cfg/efi-ext.scc', '', d)} \
 "
-KERNEL_FEATURES_append_x86 += "${efi_secure_boot_sccs}"
-KERNEL_FEATURES_append_x86-64 += "${efi_secure_boot_sccs}"
+KERNEL_FEATURES:append:x86 = " ${efi_secure_boot_sccs}"
+KERNEL_FEATURES:append:x86-64 = " ${efi_secure_boot_sccs}"
 
 inherit user-key-store
 
@@ -75,7 +75,7 @@ fakeroot python do_sign_bundled_kernel() {
 }
 addtask sign_bundled_kernel after do_bundle_initramfs before do_deploy
 
-do_deploy_append() {
+do_deploy:append() {
     install -d "${DEPLOYDIR}/efi-unsigned"
 
     for imageType in ${KERNEL_IMAGETYPES}; do
@@ -102,9 +102,9 @@ do_deploy_append() {
 }
 
 # Ship *.p7b or *.sig files to related packages
-python do_package_prepend() {
+python do_package:prepend() {
     for type in d.expand('${KERNEL_IMAGETYPES}').split():
         typelower = type.lower()
-        d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}${SB_FILE_EXT}'))
-        d.appendVar('FILES_kernel-image-' + typelower, ' /boot/' + type + d.expand('${SB_FILE_EXT}'))
+        d.appendVar('FILES:kernel-image-' + typelower, ' /boot/' + type + d.expand('-${KERNEL_VERSION_NAME}${SB_FILE_EXT}'))
+        d.appendVar('FILES:kernel-image-' + typelower, ' /boot/' + type + d.expand('${SB_FILE_EXT}'))
 }

@@ -3,7 +3,7 @@ the Minimal RAM-based Initial Root Filesystem (initramfs), which finds the \
 first 'init' program more efficiently."
 LICENSE = "MIT"
 
-ROOTFS_BOOTSTRAP_INSTALL_append += "\
+ROOTFS_BOOTSTRAP_INSTALL:append = " \
     ${@bb.utils.contains("DISTRO_FEATURES", "tpm2", \
                          "packagegroup-tpm2-initramfs", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "ima", \

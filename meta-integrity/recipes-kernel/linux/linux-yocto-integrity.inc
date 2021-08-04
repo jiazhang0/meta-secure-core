@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/linux-yocto:"
 
 IMA_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ima', '1', '0', d)}"
 MODSIGN_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'modsign', '1', '0', d)}"
@@ -19,7 +19,7 @@ INHIBIT_PACKAGE_STRIP = "${@'1' if d.getVar('MODSIGN_ENABLED', True) == '1' else
 
 inherit user-key-store
 
-do_configure_prepend() {
+do_configure:prepend() {
     sys_cert="${STAGING_DIR_TARGET}${sysconfdir}/keys/system_trusted_key.crt"
     if [ ${MODSIGN_ENABLED} = "1" ]; then
         modsign_key="${@uks_modsign_keys_dir(d)}/modsign_key.key"

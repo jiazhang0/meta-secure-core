@@ -1,9 +1,9 @@
 inherit user-key-store
 
-PACKAGECONFIG_append = " secureboot"
+PACKAGECONFIG:append = " secureboot"
 
 # For SELoader
-do_compile_class-target_append() {
+do_compile:class-target:append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'secureboot', 'true', 'false', d)}; then
 	secbuild_dir="${S}/Build/SecurityPkg/RELEASE_${FIXED_GCCVER}"
         ${S}/OvmfPkg/build.sh $PARALLEL_JOBS -a $OVMF_ARCH -b RELEASE -t ${FIXED_GCCVER} ${OVMF_SECURE_BOOT_FLAGS} -p SecurityPkg/SecurityPkg.dsc
@@ -14,7 +14,7 @@ do_compile_class-target_append() {
 
 EFI_TARGET = "/boot/efi/EFI/BOOT"
 
-do_install_class-target_append() {
+do_install:class-target:append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'secureboot', 'true', 'false', d)}; then
         mkdir -p ${D}${EFI_TARGET}
         if [ x"${UEFI_SB}" = x"1" ]; then
@@ -30,13 +30,13 @@ do_install_class-target_append() {
 python do_sign() {
 }
 
-python do_sign_class-target() {
+python do_sign:class-target() {
     sb_sign(d.expand('${WORKDIR}/ovmf/Hash2DxeCrypto.efi'), d.expand('${WORKDIR}/ovmf/Hash2DxeCrypto.efi.signed'), d)
     sb_sign(d.expand('${WORKDIR}/ovmf/Pkcs7VerifyDxe.efi'), d.expand('${WORKDIR}/ovmf/Pkcs7VerifyDxe.efi.signed'), d)
 }
 addtask sign after do_compile before do_install do_deploy
 
-do_deploy_class-target_append() {
+do_deploy:class-target:append() {
     if [ x"${UEFI_SB}" = x"1" ]; then
         install -d ${DEPLOYDIR}/efi-unsigned
         install ${WORKDIR}/ovmf/Pkcs7VerifyDxe.efi "${DEPLOYDIR}/efi-unsigned/Pkcs7VerifyDxe.efi"
@@ -53,7 +53,7 @@ PACKAGES += " \
    ovmf-pkcs7-efi \
 "
 
-FILES_ovmf-pkcs7-efi += " \
+FILES:ovmf-pkcs7-efi += " \
     ${EFI_TARGET}/Hash2DxeCrypto.efi \
     ${EFI_TARGET}/Pkcs7VerifyDxe.efi \
 "

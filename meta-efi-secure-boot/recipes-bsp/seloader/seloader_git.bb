@@ -45,8 +45,8 @@ EXTRA_OEMAKE = "\
     LIB_GCC="`${CC} -print-libgcc-file-name`" \
 "
 
-EFI_ARCH_x86 = "ia32"
-EFI_ARCH_x86-64 = "x64"
+EFI_ARCH:x86 = "ia32"
+EFI_ARCH:x86-64 = "x64"
 
 EFI_TARGET = "/boot/efi/EFI/BOOT"
 
@@ -91,8 +91,8 @@ do_deploy() {
 }
 addtask deploy after do_install before do_build
 
-RDEPENDS_${PN} += "ovmf-pkcs7-efi"
+RDEPENDS:${PN} += "ovmf-pkcs7-efi"
 
-FILES_${PN} += "${EFI_TARGET}"
+FILES:${PN} += "${EFI_TARGET}"
 
 SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/efi-unsigned"

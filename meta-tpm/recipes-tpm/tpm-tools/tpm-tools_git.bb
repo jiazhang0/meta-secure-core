@@ -11,7 +11,7 @@ LICENSE = "CPL-1.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=059e8cd6165cb4c31e351f2b69388fd9"
 
 DEPENDS = "libtspi openssl"
-DEPENDS_class-native = "trousers-native"
+DEPENDS:class-native = "trousers-native"
 
 PV = "1.3.9.1+git${SRCPV}"
 
@@ -26,7 +26,7 @@ S = "${WORKDIR}/git"
 
 inherit autotools-brokensep gettext perlnative
 
-do_configure_prepend() {
+do_configure:prepend() {
     mkdir -p po
     mkdir -p m4
     cp -R po_/* po/
@@ -34,7 +34,7 @@ do_configure_prepend() {
     touch m4/Makefile.am
 }
 
-do_install_append() {
+do_install:append() {
     #install -m 0755 "src/tpm_mgmt/tpm_startup" "${D}${sbindir}/tpm_startup"
     #install -m 0744 "src/tpm_mgmt/tpm_reset" "${D}${sbindir}/tpm_reset"
     #install -m 0744 "../tpm_integrationtest" "${D}${bindir}/tpm_integrationtest"
