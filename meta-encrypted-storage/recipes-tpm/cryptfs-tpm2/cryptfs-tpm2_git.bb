@@ -25,6 +25,7 @@ SRC_URI = "\
     file://0001-encrypt_secret.py-switch-to-python3.patch \
     file://0002-luks-setup.sh-Updated-TPM-Tools.patch \
     file://0001-lib-Makefile-set-correct-soname-for-libcryptfs-tpm2.patch \
+    file://0001-Remove-build-time-from-show_banner.patch \
 "
 SRCREV = "87c35c63090a33d4de437f518b8da9f2d1f1d828"
 
