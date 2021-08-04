@@ -1,0 +1,58 @@
+From b97871b4af8c91d9a294b48d15a2fec58287bb62 Mon Sep 17 00:00:00 2001
+From: Yi Zhao <yi.zhao@windriver.com>
+Date: Wed, 4 Aug 2021 10:15:18 +0800
+Subject: [PATCH] Remove build time from show_banner
+
+Fix build reproducibility issue:
+
+| main.c: In function 'show_banner':
+| main.c:43:62: error: macro "__DATE__" might prevent reproducible builds [-Werror=date-time]
+|    43 |         info_cont("Build Time: " __DATE__ " " __TIME__ "\n\n");
+|       |                                                              ^
+| main.c:43:34: error: macro "__TIME__" might prevent reproducible builds [-Werror=date-time]
+|    43 |         info_cont("Build Time: " __DATE__ " " __TIME__ "\n\n");
+|       |                                  ^~~~~~~~
+| cc1: all warnings being treated as errors
+
+Upstream-Status: Submitted [https://github.com/jiazhang0/cryptfs-tpm2/pull/12]
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ src/cryptfs-tpm2/main.c | 3 +--
+ src/tcti-probe/main.c   | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/cryptfs-tpm2/main.c b/src/cryptfs-tpm2/main.c
+index 0795a25..fd105b6 100644
+--- a/src/cryptfs-tpm2/main.c
++++ b/src/cryptfs-tpm2/main.c
+@@ -40,7 +40,6 @@ show_banner(void)
+ 	info_cont("(C)Copyright 2016-2017, Wind River Systems, Inc.\n");
+ 	info_cont("Version: %s+git-%s\n", VERSION, cryptfs_tpm2_git_commit);
+ 	info_cont("Build Machine: %s\n", cryptfs_tpm2_build_machine);
+-	info_cont("Build Time: " __DATE__ " " __TIME__ "\n\n");
+ }
+ 
+ static void
+@@ -224,4 +223,4 @@ main(int argc, char *argv[], char *envp[])
+ 		show_banner();
+ 
+ 	return subcommand_run_current();
+-}
+\ No newline at end of file
++}
+diff --git a/src/tcti-probe/main.c b/src/tcti-probe/main.c
+index 068e2cb..9421bd8 100644
+--- a/src/tcti-probe/main.c
++++ b/src/tcti-probe/main.c
+@@ -42,7 +42,6 @@ show_banner(void)
+ 	info_cont("(C)Copyright 2017, Wind River Systems, Inc.\n");
+ 	info_cont("Version: %s+git-%s\n", VERSION, cryptfs_tpm2_git_commit);
+ 	info_cont("Build Machine: %s\n", cryptfs_tpm2_build_machine);
+-	info_cont("Build Time: " __DATE__ " " __TIME__ "\n\n");
+ }
+ 
+ static void
+-- 
+2.25.1
+
