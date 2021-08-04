@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "\
 
 inherit packagegroup
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
     trousers \
     tpm-tools \
     tpm-quote-tools \
@@ -14,7 +14,7 @@ RDEPENDS_${PN} = "\
     rng-tools \
 "
 
-RRECOMMENDS_${PN} = "\
+RRECOMMENDS:${PN} = "\
     kernel-module-tpm-rng \
     kernel-module-tpm-tis \
     kernel-module-tpm-atmel \

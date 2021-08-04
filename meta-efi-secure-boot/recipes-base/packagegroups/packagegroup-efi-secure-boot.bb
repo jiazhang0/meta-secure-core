@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "\
 S = "${WORKDIR}"
 
 SELOADER_PKG = "${@'seloader' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 pkgs = "\
     grub-efi \
@@ -18,15 +18,15 @@ pkgs = "\
     shim \
 "
 
-RDEPENDS_${PN}_x86 = "${pkgs}"
-RDEPENDS_${PN}_x86-64 = "${pkgs}"
+RDEPENDS:${PN}:x86 = "${pkgs}"
+RDEPENDS:${PN}:x86-64 = "${pkgs}"
 
 kmods = "\
     kernel-module-efivarfs \
     kernel-module-efivars \
 "
 
-RRECOMMENDS_${PN}_x86 += "${kmods}"
-RRECOMMENDS_${PN}_x86-64 += "${kmods}"
+RRECOMMENDS:${PN}:x86 += "${kmods}"
+RRECOMMENDS:${PN}:x86-64 += "${kmods}"
 
-IMAGE_INSTALL_remove += "grub"
+IMAGE_INSTALL:remove += "grub"

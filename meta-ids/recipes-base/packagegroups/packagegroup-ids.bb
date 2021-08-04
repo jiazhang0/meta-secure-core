@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "\
 
 inherit packagegroup
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     snort \
     mtree \
 "

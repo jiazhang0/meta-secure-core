@@ -8,7 +8,7 @@ S = "${WORKDIR}"
 
 inherit user-key-store
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 KEY_DIR = "${sysconfdir}/keys"
 # For RPM verification
@@ -32,11 +32,11 @@ python () {
         return
 
     pn = d.getVar('PN', True) + '-rpm-pubkey'
-    d.setVar('PACKAGES_prepend', pn + ' ')
-    d.setVar('FILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
-    d.setVar('CONFFILES_' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
+    d.setVar('PACKAGES:prepend', pn + ' ')
+    d.setVar('FILES:' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
+    d.setVar('CONFFILES:' + pn, d.getVar('RPM_KEY_DIR', True) + '/RPM-GPG-KEY-' + d.getVar('RPM_GPG_NAME', True))
     mlprefix = d.getVar('MLPREFIX')
-    d.appendVar('RDEPENDS_' + pn, ' %srpm' % mlprefix)
+    d.appendVar('RDEPENDS:' + pn, ' %srpm' % mlprefix)
 }
 
 do_install() {
@@ -84,7 +84,7 @@ key_store_sysroot_preprocess() {
     sysroot_stage_dir "${D}${sysconfdir}" "${SYSROOT_DESTDIR}${sysconfdir}"
 }
 
-pkg_postinst_ontarget_${PN}-rpm-pubkey() {
+pkg_postinst_ontarget:${PN}-rpm-pubkey() {
     keydir="${RPM_KEY_DIR}"
 
     [ ! -d "$keydir" ] && mkdir -p "$keydir"
@@ -112,20 +112,20 @@ PACKAGES_DYNAMIC = "\
     ${PN}-rpm-pubkey \
 "
 
-FILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
-CONFFILES_${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+FILES:${PN}-system-trusted-cert = "${SYSTEM_CERT}"
+CONFFILES:${PN}-system-trusted-cert = "${SYSTEM_CERT}"
 
-FILES_${PN}-secondary-trusted-cert = "\
+FILES:${PN}-secondary-trusted-cert = "\
     ${SECONDARY_TRUSTED_CERT} \
     ${SECONDARY_TRUSTED_DER_ENC_CERT} \
     "
-CONFFILES_${PN}-secondary-trusted-cert = "\
+CONFFILES:${PN}-secondary-trusted-cert = "\
     ${SECONDARY_TRUSTED_CERT} \
     ${SECONDARY_TRUSTED_DER_ENC_CERT} \
     "
 
-FILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
-CONFFILES_${PN}-modsign-cert = "${MODSIGN_CERT}"
+FILES:${PN}-modsign-cert = "${MODSIGN_CERT}"
+CONFFILES:${PN}-modsign-cert = "${MODSIGN_CERT}"
 
-FILES_${PN}-ima-cert = "${IMA_CERT}"
-CONFFILES_${PN}-ima-cert = "${IMA_CERT}"
+FILES:${PN}-ima-cert = "${IMA_CERT}"
+CONFFILES:${PN}-ima-cert = "${IMA_CERT}"

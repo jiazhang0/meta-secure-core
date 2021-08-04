@@ -1,5 +1,5 @@
 DEPENDS += "openssl-native"
-FILESEXTRAPATHS_prepend := "${THISDIR}/grub-efi:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/grub-efi:"
 
 GRUB_SIGN_VERIFY_STRICT ?= "1"
 
@@ -13,7 +13,7 @@ GRUB_MOKVERIFY_PATCH = " \
    file://verify-all-buffiles.patch \
 "
 
-SRC_URI_append_class-target += "\
+SRC_URI:append:class-target = " \
     file://0001-pe32.h-add-header-structures-for-TE-and-DOS-executab.patch \
     file://0002-shim-add-needed-data-structures.patch \
     file://0003-efi-chainloader-implement-an-UEFI-Exit-service-for-s.patch \
@@ -36,7 +36,7 @@ SRC_URI_append_class-target += "\
 "
 
 # functions efi_call_foo and efi_shim_exit are not implemented for arm64 yet
-COMPATIBLE_HOST_aarch64 = 'null'
+COMPATIBLE_HOST:aarch64 = 'null'
 
 GRUB_PREFIX_DIR ?= "/EFI/BOOT"
 EFI_BOOT_PATH ?= "/boot/efi/EFI/BOOT"
@@ -48,14 +48,14 @@ GRUB_SIGNING_MODULES += "${@'pgp gcry_rsa gcry_sha256 gcry_sha512 --pubkey %s ' 
 
 GRUB_SELOADER_MODULES += "${@'mok2verify ' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
 
-GRUB_BUILDIN_append_class-target += "\
+GRUB_BUILDIN:append:class-target = " \
   tftp reboot chain \
   ${GRUB_SECURE_BOOT_MODULES} \
   ${GRUB_SIGNING_MODULES} \
   ${GRUB_SELOADER_MODULES}"
 
 # For efi_call_foo and efi_shim_exit
-CFLAGS_append_class-target = " -fno-toplevel-reorder"
+CFLAGS:append:class-target = " -fno-toplevel-reorder"
 
 # Set a default root specifier.
 inherit user-key-store
@@ -80,7 +80,7 @@ python __anonymous () {
     d.setVar("GRUB_IMAGE", grubimage)
 }
 
-do_compile_append_class-target() {
+do_compile:append:class-target() {
 	if [ "${GRUB_SIGN_VERIFY}" = "1" -a "${GRUB_SIGN_VERIFY_STRICT}" = "1" ] ; then
 		cat<<EOF>${WORKDIR}/cfg
 set strict_security=1
@@ -94,15 +94,15 @@ set prefix=(\$root)${GRUB_PREFIX_DIR}
 EOF
 }
 
-do_compile_append_class-native() {
+do_compile:append:class-native() {
     make grub-editenv
 }
 
-do_install_append_class-native() {
+do_install:append:class-native() {
     install -m 0755 grub-editenv "${D}${bindir}"
 }
 
-do_install_append_class-target() {
+do_install:append:class-target() {
     local menu="${WORKDIR}/boot-menu.inc"
 
     # Enable the default IMA rules if IMA is enabled and luks is disabled.
@@ -145,13 +145,13 @@ do_install_append_class-target() {
     rm -f ${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi/*.module
 }
 
-python do_sign_prepend_class-target() {
+python do_sign:prepend:class-target() {
     bb.build.exec_func("check_deploy_keys", d)
     if d.getVar('GRUB_SIGN_VERIFY') == '1':
         bb.build.exec_func("check_boot_public_key", d)
 }
 
-fakeroot python do_sign_class-target() {
+fakeroot python do_sign:class-target() {
     image_dir = d.getVar('D', True)
     efi_boot_path = d.getVar('EFI_BOOT_PATH', True)
     grub_image = d.getVar('GRUB_IMAGE', True)
@@ -181,7 +181,7 @@ fakeroot do_chownboot() {
 addtask chownboot after do_deploy before do_package
 
 # Append the do_deploy() in oe-core.
-do_deploy_append_class-target() {
+do_deploy:append:class-target() {
     install -m 0644 "${D}${EFI_BOOT_PATH}/${GRUB_IMAGE}" "${DEPLOYDIR}"
 
     # Deploy the stacked grub configs.
@@ -202,9 +202,9 @@ do_deploy_append_class-target() {
     PSEUDO_DISABLED=1 cp -af "${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi" "${DEPLOYDIR}/efi-unsigned"
 }
 
-FILES_${PN} += "${EFI_BOOT_PATH}"
+FILES:${PN} += "${EFI_BOOT_PATH}"
 
-CONFFILES_${PN} += "\
+CONFFILES:${PN} += "\
     ${EFI_BOOT_PATH}/grub.cfg \
     ${EFI_BOOT_PATH}/grubenv \
     ${EFI_BOOT_PATH}/boot-menu.inc \

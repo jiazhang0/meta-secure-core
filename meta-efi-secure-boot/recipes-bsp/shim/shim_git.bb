@@ -30,7 +30,7 @@ SRC_URI = "\
     file://0001-MokManager-Use-CompareMem-on-MokListNode.Type-instea.patch \
     file://0001-console.c-Fix-compilation-against-latest-usr-include.patch \
 "
-SRC_URI_append_x86-64 = "\
+SRC_URI:append:x86-64 = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
                          'file://shim' + d.expand('EFI_ARCH') + '.efi.signed file://LICENSE' \
                          if uks_signing_model(d) == 'sample' else '', '', d)} \
@@ -66,7 +66,7 @@ EXTRA_OEMAKE = "\
     ENABLE_SBSIGN=1 \
 "
 
-EXTRA_OEMAKE_append_x86-64 = " OVERRIDE_SECURITY_POLICY=1"
+EXTRA_OEMAKE:append:x86-64 = " OVERRIDE_SECURITY_POLICY=1"
 
 PARALLEL_MAKE = ""
 COMPATIBLE_HOST = '(i.86|x86_64).*-linux'
@@ -75,8 +75,8 @@ EFI_TARGET = "/boot/efi/EFI/BOOT"
 
 MSFT = "${@bb.utils.contains('DISTRO_FEATURES', 'msft', '1', '0', d)}"
 
-EFI_ARCH_x86 = "ia32"
-EFI_ARCH_x86-64 = "x64"
+EFI_ARCH:x86 = "ia32"
+EFI_ARCH:x86-64 = "x64"
 
 # Prepare the signing certificate and keys
 python do_prepare_signing_keys() {
@@ -148,4 +148,4 @@ do_deploy() {
 }
 addtask deploy after do_install before do_build
 
-FILES_${PN} += "${EFI_TARGET}"
+FILES:${PN} += "${EFI_TARGET}"

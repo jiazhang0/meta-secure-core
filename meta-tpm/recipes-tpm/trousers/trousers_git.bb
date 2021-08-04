@@ -39,7 +39,7 @@ inherit autotools pkgconfig useradd update-rc.d \
 EXTRA_OECONF="--with-gui=none"
 
 # Fix build failure for gcc-10
-CFLAGS_append = " -fcommon"
+CFLAGS:append = " -fcommon"
 
 PACKAGECONFIG ?= "gmp "
 PACKAGECONFIG[gmp] = "--with-gmp, --with-gmp=no, gmp"
@@ -49,14 +49,14 @@ INITSCRIPT_NAME = "trousers"
 INITSCRIPT_PARAMS = "start 99 2 3 4 5 . stop 19 0 1 6 ."
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "--system tss"
-USERADD_PARAM_${PN} = "--system -M -d /var/lib/tpm -s /bin/false -g tss tss"
+GROUPADD_PARAM:${PN} = "--system tss"
+USERADD_PARAM:${PN} = "--system -M -d /var/lib/tpm -s /bin/false -g tss tss"
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "tcsd.service"
+SYSTEMD_SERVICE:${PN} = "tcsd.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
-do_install_append() {
+do_install:append() {
     install -d "${D}${sysconfdir}/init.d"
     install -m 0755 "${WORKDIR}/trousers.init.sh" "${D}${sysconfdir}/init.d/trousers"
 
@@ -82,28 +82,28 @@ PACKAGES =+ "\
     libtspi-staticdev \
 "
 
-FILES_libtspi = "\
+FILES:libtspi = "\
     ${libdir}/libtspi.so.* \
 "
-FILES_libtspi-dbg = "\
+FILES:libtspi-dbg = "\
     ${libdir}/.debug \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/tspi \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/trspi \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/include/*.h \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/include/tss \
 "
-FILES_libtspi-dev = "\
+FILES:libtspi-dev = "\
     ${includedir} \
     ${libdir}/*.so \
 "
-FILES_libtspi-doc = "\
+FILES:libtspi-doc = "\
     ${mandir}/man3 \
 "
-FILES_libtspi-staticdev = "\
+FILES:libtspi-staticdev = "\
     ${libdir}/*.la \
     ${libdir}/*.a \
 "
-FILES_${PN}-dbg += "\
+FILES:${PN}-dbg += "\
     ${sbindir}/.debug \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/tcs \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/tcsd \
@@ -111,9 +111,9 @@ FILES_${PN}-dbg += "\
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/trousers \
     ${prefix}/src/debug/${PN}/${PV}-${PR}/${PN}-${PV}/src/include/trousers \
 "
-FILES_${PN}-dev += "${libdir}/trousers"
-FILES_${PN} += "${systemd_unitdir}/system/tcsd.service"
+FILES:${PN}-dev += "${libdir}/trousers"
+FILES:${PN} += "${systemd_unitdir}/system/tcsd.service"
 
-CONFFILES_${PN} += "${sysconfig}/tcsd.conf"
+CONFFILES:${PN} += "${sysconfig}/tcsd.conf"
 
 BBCLASSEXTEND = "native"

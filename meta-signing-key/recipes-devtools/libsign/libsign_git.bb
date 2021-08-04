@@ -39,17 +39,17 @@ EXTRA_OEMAKE = "\
     BINDIR="${bindir}" \
     LIBDIR="${libdir}" \
 "
-SECURITY_LDFLAGS_remove_pn-${BPN} = "-fstack-protector-strong"
+SECURITY_LDFLAGS:remove:pn-${BPN} = "-fstack-protector-strong"
 
 do_install() {
     oe_runmake install DESTDIR="${D}"
 }
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${libdir}/signaturelet \
 "
 
-RDEPENDS_${PN}_class-target += "libcrypto"
-RDEPENDS_${PN}_class-native += "openssl-native"
+RDEPENDS:${PN}:class-target += "libcrypto"
+RDEPENDS:${PN}:class-native += "openssl-native"
 
 BBCLASSEXTEND = "native nativesdk"

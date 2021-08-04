@@ -44,7 +44,7 @@ EXTRA_OEMAKE = "\
     EXTRA_CFLAGS="${CFLAGS}" \
     EXTRA_LDFLAGS="${LDFLAGS}" \
 "
-SECURITY_LDFLAGS_remove_pn-${BPN} = "-fstack-protector-strong"
+SECURITY_LDFLAGS:remove:pn-${BPN} = "-fstack-protector-strong"
 
 PARALLEL_MAKE = ""
 
@@ -60,7 +60,7 @@ PACKAGES =+ "\
     ${PN}-initramfs \
 "
 
-FILES_${PN}-initramfs = "\
+FILES:${PN}-initramfs = "\
     /init.cryptfs \
 "
 
@@ -75,7 +75,7 @@ FILES_${PN}-initramfs = "\
 # @cryptsetup: cryptsetup
 # @tpm2-tools: tpm2_*
 # @tpm2-abrmd: optional
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     libtss2 \
     libtss2-tcti-device \
     libtss2-tcti-mssim \
@@ -98,7 +98,7 @@ RDEPENDS_${PN} += "\
 # @cryptfs-tpm2: cryptfs-tpm2
 # @net-tools: ifconfig
 # @util-linux: mount, umount, blkid
-RDEPENDS_${PN}-initramfs += "\
+RDEPENDS:${PN}-initramfs += "\
     bash \
     coreutils \
     grep \
@@ -113,7 +113,7 @@ RDEPENDS_${PN}-initramfs += "\
     util-linux-blkid \
 "
 
-RRECOMMENDS_${PN}-initramfs += "\
+RRECOMMENDS:${PN}-initramfs += "\
     kernel-module-tpm-crb \
     kernel-module-tpm-tis \
 "

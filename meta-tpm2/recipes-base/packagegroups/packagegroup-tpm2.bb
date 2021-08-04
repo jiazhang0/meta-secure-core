@@ -1,11 +1,11 @@
 require packagegroup-tpm2.inc
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     tpm2-abrmd \
     tpm2-tools \
     rng-tools \
 "
 
-RRECOMMENDS_${PN} += "\
+RRECOMMENDS:${PN} += "\
     kernel-module-tpm-rng \
 "

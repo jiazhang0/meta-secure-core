@@ -32,7 +32,7 @@ inherit autotools-brokensep pkgconfig
 # The definitions below are used to decrypt the passwords of both srk and loaded key.
 dec_pw ?= "\\"\\\x1\\"\\"nc\\"\\"\\\x3\\"\\"nd\\"\\"\\\x1\\"\\"a\\""
 dec_salt ?= "\\"r\\"\\"\\\x00\\\x00\\"\\"t\\""
-CFLAGS_append += "-DDEC_PW=${dec_pw} -DDEC_SALT=${dec_salt}"
+CFLAGS:append = " -DDEC_PW=${dec_pw} -DDEC_SALT=${dec_salt}"
 
 # Due to the limit of escape character, the hybrid must be written in
 # above style. The actual values defined below in C code style are:
@@ -40,31 +40,31 @@ CFLAGS_append += "-DDEC_PW=${dec_pw} -DDEC_SALT=${dec_salt}"
 # dec_salt[] = {'r', 0x00, 0x00, 't'};
 
 # Uncomment below line if using the plain srk password for development
-#CFLAGS_append += "-DTPM_SRK_PLAIN_PW"
+#CFLAGS:append = " -DTPM_SRK_PLAIN_PW"
 
 # Uncomment below line if using the plain tpm key password for development
-#CFLAGS_append += "-DTPM_KEY_PLAIN_PW"
+#CFLAGS:append = " -DTPM_KEY_PLAIN_PW"
 
-do_configure_prepend() {
+do_configure:prepend() {
     cd ${B}
     cp LICENSE COPYING
     touch NEWS AUTHORS ChangeLog README
 }
 
-FILES_${PN}-staticdev += "${libdir}/ssl/engines-1.1/tpm.la"
-FILES_${PN}-dbg += "\
+FILES:${PN}-staticdev += "${libdir}/ssl/engines-1.1/tpm.la"
+FILES:${PN}-dbg += "\
     ${libdir}/ssl/engines-1.1/.debug \
     ${libdir}/engines-1.1/.debug \
     ${prefix}/local/ssl/lib/engines-1.1/.debug \
 "
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${libdir}/ssl/engines-1.1/tpm.so* \
     ${libdir}/engines-1.1/tpm.so* \
     ${libdir}/libtpm.so* \
     ${prefix}/local/ssl/lib/engines-1.1/tpm.so* \
 "
 
-RDEPENDS_${PN} += "libcrypto libtspi"
+RDEPENDS:${PN} += "libcrypto libtspi"
 
-INSANE_SKIP_${PN} = "libdir"
-INSANE_SKIP_${PN}-dbg = "libdir"
+INSANE_SKIP:${PN} = "libdir"
+INSANE_SKIP:${PN}-dbg = "libdir"

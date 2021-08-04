@@ -18,7 +18,7 @@ do_install() {
     mknod -m 0600 "${D}/dev/console" c 5 1
 }
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     /init \
     /dev \
     /run \
@@ -32,7 +32,7 @@ FILES_${PN} = "\
 # @grep: grep
 # @gawk: awk
 # @eudev or udev: udevd, udevadm
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     coreutils \
     util-linux-mount \
     grep \
@@ -42,7 +42,7 @@ RDEPENDS_${PN} += "\
 
 # @initrdscripts-ima: init.ima
 # @cryptfs-tpm2-initramfs: init.cryptfs
-RRECOMMENDS_${PN} += "\
+RRECOMMENDS:${PN} += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'ima', 'initrdscripts-ima', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'luks', 'cryptfs-tpm2-initramfs', '', d)} \
 "

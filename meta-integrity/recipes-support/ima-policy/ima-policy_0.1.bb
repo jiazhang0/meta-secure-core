@@ -16,4 +16,4 @@ do_install() {
         "${D}${sysconfdir}/ima"
 }
 
-FILES_${PN} = "${sysconfdir}"
+FILES:${PN} = "${sysconfdir}"

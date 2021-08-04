@@ -21,11 +21,11 @@ check_rpm_public_key[prefuncs] += "check_deploy_keys"
 do_package_write_rpm[depends] += "${GPG_DEP}"
 do_rootfs[depends] += "${GPG_DEP}"
 
-python do_package_write_rpm_prepend() {
+python do_package_write_rpm:prepend() {
     bb.build.exec_func("check_rpm_public_key", d)
 }
 
-python do_rootfs_prepend() {
+python do_rootfs:prepend() {
     bb.build.exec_func("check_rpm_public_key", d)
 }
 

@@ -1,7 +1,7 @@
 SUMMARY = "The root image of SecureCore."
 LICENSE = "MIT"
 
-SECURE_CORE_IMAGE_EXTRA_INSTALL_append += "\
+SECURE_CORE_IMAGE_EXTRA_INSTALL:append = " \
     ${@bb.utils.contains("DISTRO_FEATURES", "efi-secure-boot", \
                          "packagegroup-efi-secure-boot", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "tpm", \
@@ -30,6 +30,6 @@ INITRAMFS_IMAGE ?= "secure-core-image-initramfs"
 inherit core-image
 
 IMAGE_ROOTFS_SIZE ?= "8192"
-IMAGE_ROOTFS_EXTRA_SPACE_append = "\
+IMAGE_ROOTFS_EXTRA_SPACE:append = " \
     ${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "" ,d)} \
 "
