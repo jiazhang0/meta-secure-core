@@ -51,13 +51,13 @@ other layers needed. e.g.:
     /path/to/yocto/meta \
     /path/to/yocto/meta-poky \
     /path/to/yocto/meta-yocto-bsp \
-    /path/to/yocto/meta-meta-secure-core/meta \
-    /path/to/yocto/meta-meta-secure-core/meta-signing-key \
-    /path/to/yocto/meta-meta-secure-core/meta-tpm \
-    /path/to/yocto/meta-meta-secure-core/meta-tpm2 \
-    /path/to/yocto/meta-meta-secure-core/meta-efi-secure-boot \
-    /path/to/yocto/meta-meta-secure-core/meta-integrity \
-    /path/to/yocto/meta-meta-secure-core/meta-encrypted-storage \
+    /path/to/yocto/meta-secure-core/meta \
+    /path/to/yocto/meta-secure-core/meta-signing-key \
+    /path/to/yocto/meta-secure-core/meta-tpm \
+    /path/to/yocto/meta-secure-core/meta-tpm2 \
+    /path/to/yocto/meta-secure-core/meta-efi-secure-boot \
+    /path/to/yocto/meta-secure-core/meta-integrity \
+    /path/to/yocto/meta-secure-core/meta-encrypted-storage \
     "
 
 or run bitbake-layers to add the meta-secure-core and its sub-layers:
