@@ -20,6 +20,7 @@ PV = "0.3.2+git${SRCPV}"
 
 SRC_URI = "\
     git://github.com/jiazhang0/libsign.git \
+    file://0001-selsign.c-remove-build-time-from-show_banner.patch \
 "
 SRCREV = "eb3a5927dd18e166014cf1e2eb6e9e461cf973fb"
 
