@@ -12,7 +12,7 @@ DEPENDS += "binutils openssl gnu-efi util-linux"
 PV = "0.6+git${SRCPV}"
 
 SRC_URI = "\
-    git://kernel.ubuntu.com/jk/sbsigntool \
+    git://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git;protocol=https \
     file://ccan.git.tar.bz2 \
     file://fix-mixed-implicit-and-normal-rules.patch;apply=0 \
     file://disable-man-page-creation.patch \
