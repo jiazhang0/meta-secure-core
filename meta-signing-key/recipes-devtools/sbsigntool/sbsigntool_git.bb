@@ -37,9 +37,9 @@ def efi_arch(d):
     return arch
 
 # Avoids build breaks when using no-static-libs.inc
-#DISABLE_STATIC_class-target = ""
+#DISABLE_STATIC:class-target = ""
 
-#EXTRA_OECONF_remove_class-target += "\
+#EXTRA_OECONF:remove:class-target += "\
 #    --with-libtool-sysroot \
 #"
 
