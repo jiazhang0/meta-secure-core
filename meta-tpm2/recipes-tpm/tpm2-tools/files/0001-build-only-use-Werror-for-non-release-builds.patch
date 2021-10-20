@@ -1,0 +1,34 @@
+From 0d7cb21f01e390ee42d5238d297e48b39b23205a Mon Sep 17 00:00:00 2001
+From: Jonas Witschel <diabonas@gmx.de>
+Date: Fri, 14 May 2021 12:03:24 +0200
+Subject: [PATCH] build: only use -Werror for non-release builds
+
+While we want to catch any compiler warnings during development, a release
+build should never fail due to e.g. stricter static checks introduced by new
+compiler versions.
+
+Upstream-Status: Backport
+[https://github.com/tpm2-software/tpm2-tools/commit/a691a7de76a5d57af90a868d68c5f48e4e47015b]
+
+Signed-off-by: Jonas Witschel <diabonas@gmx.de>
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index fd7fa55..7ad2806 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -178,7 +178,7 @@ AS_IF([test x"$enable_hardening" != x"no"], [
+ 
+   add_hardened_c_flag([-Wall])
+   add_hardened_c_flag([-Wextra])
+-  add_hardened_c_flag([-Werror])
++  AS_IF([test "x$ax_is_release" = "xno"], [add_hardened_c_flag([-Werror])])
+ 
+   add_hardened_c_flag([-Wformat])
+   add_hardened_c_flag([-Wformat-security])
+-- 
+2.17.1
+

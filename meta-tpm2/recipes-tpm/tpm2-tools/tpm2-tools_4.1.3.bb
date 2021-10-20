@@ -9,6 +9,7 @@ DEPENDS = "tpm2-abrmd tpm2-tss openssl curl autoconf-archive"
 SRC_URI = "https://github.com/tpm2-software/${BPN}/releases/download/${PV}/${BPN}-${PV}.tar.gz \
            file://0001-tests-switch-to-python3.patch \
            file://CVE-2021-3565.patch \
+           file://0001-build-only-use-Werror-for-non-release-builds.patch \
           "
 
 SRC_URI[md5sum] = "48e0f58232b6a86fe4d007acf12af283"
