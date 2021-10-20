@@ -18,6 +18,7 @@ SRC_URI = " \
     file://0003-sbsign-add-x-option-to-avoid-overwrite-existing-sign.patch  \
     file://0001-src-Makefile.am-Add-read_write_all.c-to-common_SOURC.patch \
     file://0001-fileio.c-initialize-local-variables-before-use-in-fu.patch \
+    file://0001-Makefile.am-do-not-use-Werror.patch \
 "
 SRCREV_sbsigntools  ?= "f12484869c9590682ac3253d583bf59b890bb826"
 SRCREV_ccan         ?= "b1f28e17227f2320d07fe052a8a48942fe17caa5"
