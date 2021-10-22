@@ -8,7 +8,7 @@ PACKAGECONFIG:append = " \
 EXTRA_OECONF:remove += "\
     --disable-plugins \
 "
-EXTRA_OECONF:append:class-native = " --disable-inhibit-plugin"
+EXTRA_OECONF:append:class-native = " --disable-inhibit-plugin --with-audit=no"
 
 SRC_URI:append = " \
                   file://macros.ima \
