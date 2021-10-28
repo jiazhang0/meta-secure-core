@@ -7,13 +7,14 @@ SECTION = "tpm"
 DEPENDS = "autoconf-archive-native libgcrypt openssl"
 
 SRC_URI = "https://github.com/tpm2-software/${BPN}/releases/download/${PV}/${BPN}-${PV}.tar.gz"
-SRC_URI[md5sum] = "8dec49505bdb29acb61c837c5e8dce68"
-SRC_URI[sha256sum] = "9d8c8866829e3ff5e1649ecd82498cb1329e0691139458e53b69e6061febe3d3"
+SRC_URI[md5sum] = "515cf2c53799e7d498481eb2569dcb03"
+SRC_URI[sha256sum] = "20e6da532a7ef90c8e50cca51f276053ec505eee0167c18e2b07c1e747118b58"
 
 inherit autotools pkgconfig systemd extrausers
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[oxygen] = ",--disable-doxygen-doc, "
+PACKAGECONFIG[fapi] = "--enable-fapi,--disable-fapi,json-c"
 
 EXTRA_OECONF += "--enable-static --with-udevrulesdir=${nonarch_base_libdir}/udev/rules.d/"
 EXTRA_OECONF:remove = " --disable-static"
