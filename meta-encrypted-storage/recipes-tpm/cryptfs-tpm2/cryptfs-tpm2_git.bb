@@ -22,14 +22,12 @@ PV = "0.7.0+git${SRCPV}"
 SRC_URI = "\
     git://github.com/jiazhang0/cryptfs-tpm2.git \
     file://0001-luks-setup.sh-Add-support-for-qemu-with-the-swtpm.patch \
-    file://0001-encrypt_secret.py-switch-to-python3.patch \
     file://0002-luks-setup.sh-Updated-TPM-Tools.patch \
-    file://0001-lib-Makefile-set-correct-soname-for-libcryptfs-tpm2.patch \
     file://0001-Remove-build-time-from-show_banner.patch \
     file://0001-env.mk-fix-LDFLAGS-expansion.patch \
     file://0001-encrypt_secret.py-fix-for-python3.patch \
 "
-SRCREV = "87c35c63090a33d4de437f518b8da9f2d1f1d828"
+SRCREV = "62e7f4777495df4aeb0e02d3c761eea6f236f588"
 
 S = "${WORKDIR}/git"
 
