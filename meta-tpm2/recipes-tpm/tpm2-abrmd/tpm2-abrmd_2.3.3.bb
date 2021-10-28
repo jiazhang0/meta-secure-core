@@ -19,7 +19,7 @@ SRC_URI = "\
     file://tpm2-abrmd.default \
 "
 
-SRCREV = "5d4c1fe8ab18b9b56012fe3cf67021e2ebbb7c05"
+SRCREV = "4cdda466010a3699ebe967d990ac715ae3de7d35"
 
 S = "${WORKDIR}/git"
 
