@@ -1,0 +1,49 @@
+From cde750dd594a6f5d7c463030ecbb9947fad2a12d Mon Sep 17 00:00:00 2001
+From: Petr Gotthard <petr.gotthard@centrum.cz>
+Date: Mon, 2 Aug 2021 15:50:26 +0200
+Subject: [PATCH] Remove deprecated OpenSSL_add_all_algorithms
+
+From OpenSSL 1.1.0 it is deprecated. No explicit initialisation or
+de-initialisation is required.
+
+Signed-off-by: Petr Gotthard <petr.gotthard@centrum.cz>
+
+Upstream-Status: Backport
+[https://github.com/tpm2-software/tpm2-tss/commit/e5bb5fb9f070c619415160f8889c372b769431b8]
+
+Signed-off-by: Yi Zhao <yi.zhao@windriver.com>
+---
+ src/tss2-esys/esys_crypto_ossl.c    | 2 +-
+ src/tss2-fapi/ifapi_get_intl_cert.c | 3 ---
+ 2 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/src/tss2-esys/esys_crypto_ossl.c b/src/tss2-esys/esys_crypto_ossl.c
+index a0e200f..e599ac7 100644
+--- a/src/tss2-esys/esys_crypto_ossl.c
++++ b/src/tss2-esys/esys_crypto_ossl.c
+@@ -1174,7 +1174,7 @@ iesys_cryptossl_sym_aes_decrypt(uint8_t * key,
+  *
+  * Initialize OpenSSL internal tables.
+  *
+- * @retval TSS2_RC_SUCCESS always returned because OpenSSL_add_all_algorithms
++ * @retval TSS2_RC_SUCCESS always returned
+  * does not deliver
+  * a return code.
+  */
+diff --git a/src/tss2-fapi/ifapi_get_intl_cert.c b/src/tss2-fapi/ifapi_get_intl_cert.c
+index 613f408..deda7fb 100644
+--- a/src/tss2-fapi/ifapi_get_intl_cert.c
++++ b/src/tss2-fapi/ifapi_get_intl_cert.c
+@@ -369,9 +369,6 @@ out_free_json:
+     json_object_put(jso);
+ 
+ out:
+-    /* In some case this call was necessary after curl usage */
+-    OpenSSL_add_all_algorithms();
+-
+     free(hash);
+     if (rc == 0) {
+         return TSS2_RC_SUCCESS;
+-- 
+2.17.1
+
