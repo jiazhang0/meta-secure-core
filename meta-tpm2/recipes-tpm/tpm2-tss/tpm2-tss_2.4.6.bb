@@ -6,7 +6,11 @@ SECTION = "tpm"
 
 DEPENDS = "autoconf-archive-native libgcrypt openssl"
 
-SRC_URI = "https://github.com/tpm2-software/${BPN}/releases/download/${PV}/${BPN}-${PV}.tar.gz"
+SRC_URI = "https://github.com/tpm2-software/${BPN}/releases/download/${PV}/${BPN}-${PV}.tar.gz \
+           file://0001-Drop-support-for-OpenSSL-1.1.0.patch \
+           file://0002-Implement-EVP_PKEY-export-import-for-OpenSSL-3.0.patch \
+           file://0003-Remove-deprecated-OpenSSL_add_all_algorithms.patch \
+          "
 SRC_URI[md5sum] = "515cf2c53799e7d498481eb2569dcb03"
 SRC_URI[sha256sum] = "20e6da532a7ef90c8e50cca51f276053ec505eee0167c18e2b07c1e747118b58"
 
