@@ -20,7 +20,7 @@ DEPENDS += "\
 PV = "12+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/rhinstaller/shim.git \
+    git://github.com/rhboot/shim.git;protocol=https \
     file://0001-shim-allow-to-verify-sha1-digest-for-Authenticode.patch;apply=0 \
     file://0005-Fix-signing-failure-due-to-not-finding-certificate.patch;apply=0 \
     file://0006-Prevent-from-removing-intermediate-.efi.patch \
