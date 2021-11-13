@@ -17,7 +17,7 @@ PROVIDES = "${PACKAGES}"
 PV = "0.3.14+git${SRCPV}"
 
 SRC_URI = "\
-    git://git.code.sf.net/p/trousers/trousers \
+    git://git.code.sf.net/p/trousers/trousers;branch=master \
     file://fix-deadlock-and-potential-hung.patch \
     file://fix-event-log-parsing-problem.patch \
     file://fix-incorrect-report-of-insufficient-buffer.patch \

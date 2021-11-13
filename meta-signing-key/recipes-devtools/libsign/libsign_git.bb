@@ -19,7 +19,7 @@ DEPENDS += "openssl"
 PV = "0.3.2+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/jiazhang0/libsign.git \
+    git://github.com/jiazhang0/libsign.git;branch=master;protocol=https \
     file://0001-selsign.c-remove-build-time-from-show_banner.patch \
     file://0001-env.mk-fix-LDFLAGS-expansion.patch \
 "

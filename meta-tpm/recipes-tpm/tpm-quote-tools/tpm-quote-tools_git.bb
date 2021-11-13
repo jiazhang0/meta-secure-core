@@ -18,7 +18,7 @@ DEPENDS = "libtspi tpm-tools"
 PV = "1.0.4+git${SRCPV}"
 
 SRC_URI = "\
-    git://git.code.sf.net/p/tpmquotetools/tpm-quote-tools \
+    git://git.code.sf.net/p/tpmquotetools/tpm-quote-tools;branch=master \
 "
 SRCREV = "d70da818778f641c05de8eb205fb72782e5555db"
 
