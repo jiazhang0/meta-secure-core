@@ -20,7 +20,7 @@ DEPENDS += "tpm2-tss tpm2-abrmd pkgconfig-native"
 PV = "0.7.0+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/jiazhang0/cryptfs-tpm2.git \
+    git://github.com/jiazhang0/cryptfs-tpm2.git;branch=master;protocol=https \
     file://0001-luks-setup.sh-Add-support-for-qemu-with-the-swtpm.patch \
     file://0002-luks-setup.sh-Updated-TPM-Tools.patch \
     file://0001-Remove-build-time-from-show_banner.patch \

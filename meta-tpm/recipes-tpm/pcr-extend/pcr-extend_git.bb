@@ -9,7 +9,7 @@ DEPENDS = "libtspi"
 PV = "0.1+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/flihp/pcr-extend.git \
+    git://github.com/flihp/pcr-extend.git;branch=master;protocol=https \
 "
 SRCREV = "c02ad8f628b3d99f6d4c087b402fe31a40ee6316"
 

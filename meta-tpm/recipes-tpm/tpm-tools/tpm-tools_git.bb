@@ -16,7 +16,7 @@ DEPENDS:class-native = "trousers-native"
 PV = "1.3.9.1+git${SRCPV}"
 
 SRC_URI = "\
-    git://git.code.sf.net/p/trousers/tpm-tools \
+    git://git.code.sf.net/p/trousers/tpm-tools;branch=master \
     file://tpm-tools-extendpcr.patch \
     file://03-fix-bool-error-parseStringWithValues.patch;apply=0 \
 "

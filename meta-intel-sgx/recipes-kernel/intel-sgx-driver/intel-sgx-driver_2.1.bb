@@ -12,7 +12,7 @@ DEPENDS = "virtual/kernel"
 PV = "2.1+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/intel/linux-sgx-driver.git \
+    git://github.com/intel/linux-sgx-driver.git;branch=master;protocol=https \
 "
 SRCREV = "2a509c203533f9950fa3459fe91864051bc021a2"
 

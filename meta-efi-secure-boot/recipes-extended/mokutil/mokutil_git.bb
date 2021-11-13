@@ -8,7 +8,7 @@ DEPENDS += "openssl efivar virtual/crypt"
 PV = "0.3.0+git${SRCPV}"
 
 SRC_URI = "\
-    git://github.com/lcp/mokutil.git \
+    git://github.com/lcp/mokutil.git;branch=master;protocol=https \
     file://0001-mokutil.c-fix-typo-enrollement-enrollment.patch \
 "
 SRCREV = "e19adc575c1f9d8f08b7fbc594a0887ace63f83f"

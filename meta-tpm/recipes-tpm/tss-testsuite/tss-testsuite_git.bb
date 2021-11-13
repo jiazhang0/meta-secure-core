@@ -18,7 +18,7 @@ DEPENDS = "trousers"
 PV = "git${SRCPV}"
 
 SRC_URI = "\
-    git://git.code.sf.net/p/trousers/testsuite \
+    git://git.code.sf.net/p/trousers/testsuite;branch=master \
     file://fix-failure-of-.so-LD-with-cortexa8t-neon-wrswrap-linux.patch \
     file://testsuite-transport-init.patch \
     file://Tspi_TPM_LoadMaintenancePubKey01.patch \
