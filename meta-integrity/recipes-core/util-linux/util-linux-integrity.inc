@@ -1,4 +1,4 @@
-CFLAGS:remove += "-pie -fpie"
+CFLAGS:remove = "-pie -fpie"
 
 # We need -no-pie in case the default is to generate pie code.
 #

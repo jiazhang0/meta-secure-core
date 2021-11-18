@@ -29,4 +29,4 @@ kmods = "\
 RRECOMMENDS:${PN}:x86 += "${kmods}"
 RRECOMMENDS:${PN}:x86-64 += "${kmods}"
 
-IMAGE_INSTALL:remove += "grub"
+IMAGE_INSTALL:remove = "grub"
