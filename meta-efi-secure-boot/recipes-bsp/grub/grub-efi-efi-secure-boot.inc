@@ -89,7 +89,7 @@ EOF
     > ${WORKDIR}/cfg
 	fi
 	cat<<EOF>>${WORKDIR}/cfg
-search.file ${GRUB_PREFIX_DIR}/grub.cfg root
+search.file (\$cmdpath)${GRUB_PREFIX_DIR}/grub.cfg root
 set prefix=(\$root)${GRUB_PREFIX_DIR}
 EOF
 }
