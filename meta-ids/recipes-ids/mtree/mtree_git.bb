@@ -3,7 +3,7 @@ DESCRIPTION = "mtree compares a file hierarchy against a specification, creates 
 
 SECTION = "utils"
 
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bb19ea4eac951288efda4010c5c669a8"
 
 PV = "1.0.3+git${SRCPV}"
