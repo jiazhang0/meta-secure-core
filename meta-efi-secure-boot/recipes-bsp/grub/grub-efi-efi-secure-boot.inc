@@ -48,7 +48,8 @@ GRUB_SIGNING_MODULES += "${@'pgp gcry_rsa gcry_sha256 gcry_sha512 --pubkey %s ' 
 
 GRUB_SELOADER_MODULES += "${@'mok2verify ' if d.getVar('UEFI_SELOADER', True) == '1' else ''}"
 
-GRUB_BUILDIN:append:class-target = " \
+GRUB_SECURE_BUILDIN ??= ""
+GRUB_SECURE_BUILDIN:append:class-target = " \
   tftp reboot chain \
   ${GRUB_SECURE_BOOT_MODULES} \
   ${GRUB_SIGNING_MODULES} \
@@ -134,7 +135,7 @@ do_install:append:class-target() {
     install -d "${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi"
     grub-mkimage -c ../cfg -p "${GRUB_PREFIX_DIR}" -d "./grub-core" \
         -O "${GRUB_TARGET}-efi" -o "${B}/${GRUB_IMAGE}" \
-        ${GRUB_BUILDIN}
+        ${GRUB_BUILDIN} ${GRUB_SECURE_BUILDIN}
 
     install -m 0644 "${B}/${GRUB_IMAGE}" "${D}${EFI_BOOT_PATH}/${GRUB_IMAGE}"
 
