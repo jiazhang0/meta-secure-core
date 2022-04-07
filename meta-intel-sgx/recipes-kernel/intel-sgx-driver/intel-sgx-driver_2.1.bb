@@ -4,7 +4,7 @@ is an Intel technology for application developers seeking to \
 protect select code and data from disclosure or modification."
 HOMEPAGE = "https://github.com/intel/linux-sgx-driver"
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://License.txt;md5=b54f8941f6087efb6be3deb0f1e617f7"
 
 DEPENDS = "virtual/kernel"

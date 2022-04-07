@@ -7,7 +7,7 @@ efi-readvar and efi-updatevar commands. Aside from needing efitools \
 in the Linux 3.8 kernel. \
 "
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e28f66b16cb46be47b20a4cdfe6e99a1"
 
 DEPENDS:append = " \
