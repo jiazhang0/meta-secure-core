@@ -95,4 +95,4 @@ RDEPENDS:${PN} += "ovmf-pkcs7-efi"
 
 FILES:${PN} += "${EFI_TARGET}"
 
-SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/efi-unsigned"
+SSTATE_ALLOW_OVERLAP_FILES += "${DEPLOY_DIR_IMAGE}/efi-unsigned"

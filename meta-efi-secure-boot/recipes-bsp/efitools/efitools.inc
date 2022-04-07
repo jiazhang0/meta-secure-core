@@ -76,4 +76,4 @@ fakeroot python do_sign() {
 
 FILES:${PN} += "${EFI_BOOT_PATH}"
 
-SSTATE_DUPWHITELIST += "${DEPLOY_DIR_IMAGE}/LockDown.efi"
+SSTATE_ALLOW_OVERLAP_FILES += "${DEPLOY_DIR_IMAGE}/LockDown.efi"
