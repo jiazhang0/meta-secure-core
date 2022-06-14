@@ -53,7 +53,7 @@ do_install() {
 
 inherit update-alternatives
 
-ALTERNATIVES_${PN} = ""
+ALTERNATIVE:${PN} = ""
 
 python do_package:prepend () {
     if d.getVar('BUNDLE') == '1':
