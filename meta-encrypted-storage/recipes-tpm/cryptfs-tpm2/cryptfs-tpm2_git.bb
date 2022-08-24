@@ -26,6 +26,7 @@ SRC_URI = "\
     file://0001-Remove-build-time-from-show_banner.patch \
     file://0001-env.mk-fix-LDFLAGS-expansion.patch \
     file://0001-encrypt_secret.py-fix-for-python3.patch \
+    file://0001-env.mk-add-ld-option-noexecstack.patch \
 "
 SRCREV = "62e7f4777495df4aeb0e02d3c761eea6f236f588"
 

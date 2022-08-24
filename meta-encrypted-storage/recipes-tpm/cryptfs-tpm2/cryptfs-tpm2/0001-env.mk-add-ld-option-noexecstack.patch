@@ -1,0 +1,26 @@
+env.mk: add ld option 'noexecstack'
+
+Add ld option '-z noexecstack' to fix warnings:
+
+  ld: warning: secret_area.o: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+
+Upstream-Status: Pending
+
+Signed-off-by: Kai Kang <kai.kang@windriver.com>
+---
+ env.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/env.mk b/env.mk
+index f250d3a..6370aba 100644
+--- a/env.mk
++++ b/env.mk
+@@ -34,6 +34,7 @@ passphrase_secret ?= h31i05
+ secret_xor_byte_code ?= 0x48
+ 
+ LDFLAGS := -Wl,--warn-common -Wl,--no-undefined -Wl,--fatal-warnings \
++	   -Wl,-z,noexecstack \
+ 	   $(EXTRA_LDFLAGS)
+ CFLAGS := -D_GNU_SOURCE -std=gnu99 -O2 -Wall -Werror \
+ 	  $(addprefix -I, $(TOPDIR)/src/include \
