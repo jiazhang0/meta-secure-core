@@ -146,6 +146,14 @@ do_install:append:class-target() {
     # Install the modules to grub-efi's search path
     make -C grub-core install DESTDIR="${D}${EFI_BOOT_PATH}" pkglibdir=""
 
+    # Remove build host references
+    find "${D}${EFI_BOOT_PATH}" -name modinfo.sh -type f -exec \
+        sed -i \
+        -e 's,--sysroot=${STAGING_DIR_TARGET},,g' \
+        -e 's|${DEBUG_PREFIX_MAP}||g' \
+        -e 's:${RECIPE_SYSROOT_NATIVE}::g' \
+        {} +
+
     # Remove .module
     rm -f ${D}${EFI_BOOT_PATH}/${GRUB_TARGET}-efi/*.module
 }
