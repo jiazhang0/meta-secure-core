@@ -483,6 +483,14 @@ Rescue mode is always disabled as long as UEFI Secure Boot is enabled.
 shim, MOK manager, grub and kernel is not supported.
 - grub module is not supported by SELoader for the integrity check.
 
+Patches
+=======
+
+Please submit any patches against the meta-efi-secure-boot layer to the
+maintainer:
+
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
+
 ### Reference
 [shim - implement MOK Verify Protocol](https://github.com/rhboot/shim)
 

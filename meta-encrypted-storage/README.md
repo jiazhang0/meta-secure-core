@@ -175,5 +175,12 @@ operation is required if the target board doesn't have a TPM device.
   retrieve the passphrase in a safe way. If the installer enables both of
   them, the default IMA rules will be not used.
 
+### Patches
+
+Please submit any patches against the meta-tpm2 layer to the
+maintainer:
+
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
+
 ### Reference
 - [OpenEmbedded layer for TPM 2.0 enablement](https://github.com/jiazhang0/meta-secure-core/tree/master/meta-tpm2)

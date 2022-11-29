@@ -19,3 +19,12 @@ ready for use:
 ```
 Then, you can use the TPM for a specific need, such as key generation,
 sealing encrypted data, etc.
+
+Patches
+=======
+
+Please submit any patches against the meta-tpm2 layer to the
+maintainer:
+
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
+
