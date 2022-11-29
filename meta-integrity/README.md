@@ -188,6 +188,14 @@ The following best practices should be applied with using IMA.
   retrieve the passphrase in a safe way. If both of them are enabled, the
   default IMA rules will be not used.
 
+Patches
+=======
+
+Please submit any patches against the meta-integrity layer to the
+maintainer:
+
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
+
 ### Reference
 [Official IMA wiki page](https://sourceforge.net/p/linux-ima/wiki/Home/)
 

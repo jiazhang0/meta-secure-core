@@ -57,3 +57,13 @@ For example:
 Note:
 - "env TPM_SRK_PW=#WELLKNOWN#" is used to pass well-known key.
 - Detail description about openssl-tpm-engine, please refer to the README in source code.
+
+
+Patches
+=======
+
+Please submit any patches against the meta-tpm layer to the
+maintainer:
+
+Maintainer: Jia Zhang <zhang.jia@linux.alibaba.com>
+
