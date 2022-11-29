@@ -1,2 +1,1 @@
-RDEPENDS:${PN} += "lvm2"
-RRECOMMENDS:${PN}:append:class-target = " lvm2-udevrules"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'luks', '${BPN}-luks.inc', '', d)}
