@@ -1,4 +1,4 @@
-From 70a30826d1cfb7a90c34760896dfd92b9c396f52 Mon Sep 17 00:00:00 2001
+From c2b23e972b657cdb5e0794c93d342f167fffb3e3 Mon Sep 17 00:00:00 2001
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 Date: Fri, 27 Mar 2015 08:31:27 -0700
 Subject: [PATCH 7/7] efi: chainloader: take care of unload undershim
@@ -10,34 +10,32 @@ sure we free that memory when unloading.
 
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- grub-core/loader/efi/chainloader.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ grub-core/loader/efi/chainloader.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index 1c9795c..d0ceb6e 100644
+index baa85be..7b733a7 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
-@@ -586,8 +586,18 @@ grub_chainloader_unload (void)
-   grub_efi_boot_services_t *b;
+@@ -590,7 +590,17 @@ grub_chainloader_unload (void *context)
+     grub_free (loaded_image->load_options);
  
    b = grub_efi_system_table->boot_services;
 -  efi_call_1 (b->unload_image, image_handle);
--  efi_call_2 (b->free_pages, address, pages);
 +  if (!shim_used)
-+    {
-+      efi_call_1 (b->unload_image, image_handle);
-+      efi_call_2 (b->free_pages, address, pages);
-+    }
++  {
++	  efi_call_1 (b->unload_image, image_handle);
++  }
 +  else
-+    {
-+      if (shim_buffer)
-+	{
-+	  efi_call_2 (b->free_pages, shim_buffer, shim_pages);
-+	}
-+    }
++  {
++	  if (shim_buffer)
++	  {
++		  efi_call_2 (b->free_pages, shim_buffer, shim_pages);
++	  }
++  }
  
-   grub_free (file_path);
-   grub_free (cmdline);
+   grub_dl_unref (my_mod);
+   return GRUB_ERR_NONE;
 -- 
-1.9.1
+2.25.1
 

@@ -1,4 +1,4 @@
-From f922ac74714d01972a3c291e15f0c316b67e40eb Mon Sep 17 00:00:00 2001
+From a99c7ea281b02f14abd0911886cabbea9fc81649 Mon Sep 17 00:00:00 2001
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 Date: Fri, 27 Mar 2015 08:26:08 -0700
 Subject: [PATCH 5/7] efi: chainloader: use shim to load and verify an image
@@ -15,22 +15,22 @@ image is parsed and loaded.
 
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- grub-core/loader/efi/chainloader.c | 49 +++++++++++++++++++++++++++++++-------
+ grub-core/loader/efi/chainloader.c | 49 ++++++++++++++++++++++++------
  1 file changed, 40 insertions(+), 9 deletions(-)
 
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index 1f8f061..e988945 100644
+index 74c84a7..667b4c3 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
-@@ -739,6 +739,7 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
-   char *filename;
-   void *boot_image = 0;
-   grub_efi_handle_t dev_handle = 0;
+@@ -760,6 +760,7 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
+   grub_efi_uintn_t pages = 0;
+   grub_efi_char16_t *cmdline = NULL;
+   grub_efi_handle_t image_handle = NULL;
 +  struct grub_shim_pe_coff_loader_image_context context;
  
    if (argc == 0)
      return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
-@@ -870,23 +871,53 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
+@@ -886,23 +887,53 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
    if (status != GRUB_EFI_SUCCESS)
      {
        if (status == GRUB_EFI_OUT_OF_RESOURCES)
@@ -94,5 +94,5 @@ index 1f8f061..e988945 100644
    if (argc > 1)
      {
 -- 
-1.9.1
+2.25.1
 
