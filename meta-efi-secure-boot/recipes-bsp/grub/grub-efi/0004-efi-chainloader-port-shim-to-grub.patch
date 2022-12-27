@@ -1,4 +1,4 @@
-From e097b4e25469aabdceac79c45cca27029824c1b5 Mon Sep 17 00:00:00 2001
+From 061a1200d52bdfc6160cfad5fbe1cef125f8d3a2 Mon Sep 17 00:00:00 2001
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 Date: Fri, 27 Mar 2015 08:19:21 -0700
 Subject: [PATCH 4/7] efi: chainloader: port shim to grub
@@ -22,11 +22,11 @@ Shim can be found here: https://github.com/rhinstaller/shim
 
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- grub-core/loader/efi/chainloader.c | 534 +++++++++++++++++++++++++++++++++++++
+ grub-core/loader/efi/chainloader.c | 534 +++++++++++++++++++++++++++++
  1 file changed, 534 insertions(+)
 
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index 3f3e6e3..bd83859 100644
+index 7557eb2..74c84a7 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
 @@ -32,6 +32,7 @@
@@ -37,10 +37,10 @@ index 3f3e6e3..bd83859 100644
  #include <grub/command.h>
  #include <grub/i18n.h>
  #include <grub/net.h>
-@@ -45,6 +46,539 @@ static grub_efi_uintn_t pages;
- static grub_efi_device_path_t *file_path;
- static grub_efi_handle_t image_handle;
- static grub_efi_char16_t *cmdline;
+@@ -43,6 +44,539 @@
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
+ static grub_dl_t my_mod;
 +static grub_int32_t shim_used;
 +static grub_efi_physical_address_t shim_buffer;
 +static grub_efi_uintn_t shim_pages;
@@ -576,7 +576,7 @@ index 3f3e6e3..bd83859 100644
 +}
  
  static grub_err_t
- grub_chainloader_unload (void)
+ grub_chainloader_unload (void *context)
 -- 
-1.9.1
+2.25.1
 
