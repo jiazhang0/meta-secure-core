@@ -29,6 +29,8 @@ SRC_URI = "\
     file://0012-netboot-replace-the-depreciated-EFI_PXE_BASE_CODE.patch \
     file://0001-MokManager-Use-CompareMem-on-MokListNode.Type-instea.patch \
     file://0001-console.c-Fix-compilation-against-latest-usr-include.patch \
+    file://CVE-2022-28737-0001.patch \
+    file://CVE-2022-28737-0002.patch \
 "
 SRC_URI:append:x86-64 = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'msft', \
