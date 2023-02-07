@@ -1,3 +1,5 @@
+**NOTE: The development and maintenance work of this project is formally transferred to https://github.com/Wind-River/meta-secure-core. Don't use this depreciated project.**
+
 ### meta-secure-core
 This layer provides the following common and platform-specific security
 features:
